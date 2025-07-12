@@ -6,12 +6,8 @@ class Database {
         this.sharedFiles = [];
         this.currentUser = null;
         this.isDeveloper = false;
-        this.countries = [];
         
-        // Initialize countries first for quick access
-        this.initializeCountries();
-        
-        // Then load from localStorage
+        // Load from localStorage
         this.loadFromLocalStorage();
         
         // Initialize demo data if empty
@@ -27,7 +23,6 @@ class Database {
             fullName: "Tarciano ENZEMA NCHAMA",
             email: "enzemajr@gmail.com",
             gender: "Hombre",
-            country: "GQ",
             phone: "+240222084663",
             password: "Enzema0097@&",
             status: "active",
@@ -43,7 +38,6 @@ class Database {
                 fullName: "Usuario Demo 1",
                 email: "demo1@gmail.com",
                 gender: "Hombre",
-                country: "ES",
                 phone: "+34123456789",
                 password: "Demo1123@#",
                 status: "active",
@@ -55,7 +49,6 @@ class Database {
                 fullName: "Usuario Demo 2",
                 email: "demo2@gmail.com",
                 gender: "Mujer",
-                country: "US",
                 phone: "+12125551234",
                 password: "Demo2123@#",
                 status: "active",
@@ -76,35 +69,6 @@ class Database {
         this.saveToLocalStorage();
     }
     
-    initializeCountries() {
-        // Full list of countries with phone prefixes (optimized)
-        this.countries = [
-            { code: "US", name: "Estados Unidos", prefix: "+1" },
-            { code: "GB", name: "Reino Unido", prefix: "+44" },
-            { code: "ES", name: "España", prefix: "+34" },
-            { code: "FR", name: "Francia", prefix: "+33" },
-            { code: "DE", name: "Alemania", prefix: "+49" },
-            { code: "IT", name: "Italia", prefix: "+39" },
-            { code: "GQ", name: "Guinea Ecuatorial", prefix: "+240" },
-            { code: "MX", name: "México", prefix: "+52" },
-            { code: "AR", name: "Argentina", prefix: "+54" },
-            { code: "BR", name: "Brasil", prefix: "+55" },
-            { code: "CO", name: "Colombia", prefix: "+57" },
-            { code: "PE", name: "Perú", prefix: "+51" },
-            { code: "CL", name: "Chile", prefix: "+56" },
-            { code: "JP", name: "Japón", prefix: "+81" },
-            { code: "CN", name: "China", prefix: "+86" },
-            { code: "IN", name: "India", prefix: "+91" },
-            { code: "RU", name: "Rusia", prefix: "+7" },
-            { code: "ZA", name: "Sudáfrica", prefix: "+27" },
-            { code: "NG", name: "Nigeria", prefix: "+234" },
-            { code: "EG", name: "Egipto", prefix: "+20" }
-        ];
-        
-        // Save countries immediately as they're essential
-        localStorage.setItem('mYpuB_countries', JSON.stringify(this.countries));
-    }
-    
     generateId() {
         return Math.random().toString(36).substr(2, 9);
     }
@@ -119,12 +83,10 @@ class Database {
         const users = localStorage.getItem('mYpuB_users');
         const files = localStorage.getItem('mYpuB_files');
         const sharedFiles = localStorage.getItem('mYpuB_sharedFiles');
-        const countries = localStorage.getItem('mYpuB_countries');
         
         if (users) this.users = JSON.parse(users);
         if (files) this.files = JSON.parse(files);
         if (sharedFiles) this.sharedFiles = JSON.parse(sharedFiles);
-        if (countries) this.countries = JSON.parse(countries);
     }
     
     // User methods
@@ -210,7 +172,7 @@ class Database {
         return true;
     }
     
-    // File methods
+    // File methods - SUBIR TU module
     uploadFile(fileData) {
         const newFile = {
             id: this.generateId(),
@@ -243,6 +205,7 @@ class Database {
         return this.files.filter(f => f.userId === userId);
     }
     
+    // File methods - GALERÍA module
     getPublicFiles() {
         return this.files.filter(f => f.visibility === "public");
     }
@@ -331,15 +294,6 @@ class Database {
                 return { ...sf, file, fromUser };
             });
     }
-    
-    getCountryByCode(code) {
-        return this.countries.find(c => c.code === code);
-    }
-    
-    getCountryPrefix(code) {
-        const country = this.getCountryByCode(code);
-        return country ? country.prefix : "+";
-    }
 }
 
 // Main App Class
@@ -348,7 +302,6 @@ class mYpuBApp {
         this.db = new Database();
         this.initElements();
         this.initEventListeners();
-        this.renderCountries();
         
         if (localStorage.getItem('mYpuB_currentUser')) {
             const user = JSON.parse(localStorage.getItem('mYpuB_currentUser'));
@@ -375,9 +328,7 @@ class mYpuBApp {
         this.fullName = document.getElementById('fullName');
         this.email = document.getElementById('email');
         this.gender = document.getElementById('gender');
-        this.country = document.getElementById('country');
         this.phone = document.getElementById('phone');
-        this.phonePrefix = document.getElementById('phonePrefix');
         this.password = document.getElementById('password');
         this.confirmPassword = document.getElementById('confirmPassword');
         this.passwordStrength = document.getElementById('passwordStrength');
@@ -403,13 +354,13 @@ class mYpuBApp {
         // Section elements
         this.sectionContents = document.querySelectorAll('.section-content');
         
-        // Upload section
+        // SUBIR TU section (Upload)
         this.uploadForm = document.getElementById('uploadForm');
         this.fileInput = document.getElementById('fileInput');
         this.folderName = document.getElementById('folderName');
         this.userFiles = document.getElementById('userFiles');
         
-        // Gallery section
+        // GALERÍA section (Gallery)
         this.galleryFiles = document.getElementById('galleryFiles');
         this.searchGallery = document.getElementById('searchGallery');
         this.sortOptions = document.querySelectorAll('[data-sort]');
@@ -459,13 +410,6 @@ class mYpuBApp {
             this.updatePasswordStrength();
         });
         
-        this.country.addEventListener('change', () => {
-            const selectedCountry = this.db.countries.find(c => c.code === this.country.value);
-            if (selectedCountry) {
-                this.phonePrefix.textContent = selectedCountry.prefix;
-            }
-        });
-        
         // Help events
         this.helpBtn.addEventListener('click', () => {
             this.helpPanel.style.display = 'block';
@@ -496,7 +440,7 @@ class mYpuBApp {
             });
         });
         
-        // Upload form
+        // SUBIR TU form (Upload)
         this.uploadForm.addEventListener('submit', (e) => {
             e.preventDefault();
             this.handleFileUpload();
@@ -508,29 +452,18 @@ class mYpuBApp {
             this.handleFileShare();
         });
         
-        // Search in gallery
+        // Search in GALERÍA
         this.searchGallery.addEventListener('input', () => {
             this.renderGalleryFiles();
         });
         
-        // Sort options in gallery
+        // Sort options in GALERÍA
         this.sortOptions.forEach(option => {
             option.addEventListener('click', (e) => {
                 e.preventDefault();
                 const sortBy = option.getAttribute('data-sort');
                 this.renderGalleryFiles(sortBy);
             });
-        });
-    }
-    
-    renderCountries() {
-        this.country.innerHTML = '<option value="" selected disabled>Seleccione su país</option>';
-        
-        this.db.countries.forEach(country => {
-            const option = document.createElement('option');
-            option.value = country.code;
-            option.textContent = `${country.name} (${country.prefix})`;
-            this.country.appendChild(option);
         });
     }
     
@@ -598,11 +531,6 @@ class mYpuBApp {
             return;
         }
         
-        if (!this.country.value) {
-            this.showToast('Error', 'Por favor selecciona tu país', 'danger');
-            return;
-        }
-        
         if (!this.phone.value) {
             this.showToast('Error', 'Por favor ingresa tu número de teléfono', 'danger');
             return;
@@ -625,8 +553,7 @@ class mYpuBApp {
             fullName: this.fullName.value,
             email: this.email.value,
             gender: this.gender.value,
-            country: this.country.value,
-            phone: this.phonePrefix.textContent + this.phone.value,
+            phone: this.phone.value,
             password: this.password.value
         };
         
@@ -637,7 +564,6 @@ class mYpuBApp {
             this.showMainApp();
             this.showWelcomeMessage(result.user);
             this.registerFormEl.reset();
-            this.phonePrefix.textContent = '+';
         } else {
             this.showToast('Error', result.message, 'danger');
         }
@@ -780,6 +706,7 @@ class mYpuBApp {
         this.toastNotification.show();
     }
     
+    // SUBIR TU module - File upload handling
     handleFileUpload() {
         if (!this.db.currentUser) {
             this.showToast('Error', 'No has iniciado sesión', 'danger');
@@ -877,6 +804,7 @@ class mYpuBApp {
         }
     }
     
+    // GALERÍA module - Gallery handling
     renderGalleryFiles(sortBy = 'newest') {
         let publicFiles = this.db.getPublicFiles();
         
@@ -1183,14 +1111,11 @@ class mYpuBApp {
         }
         
         users.forEach(user => {
-            const country = this.db.getCountryByCode(user.country);
-            const countryName = country ? country.name : 'Desconocido';
-            
             const row = document.createElement('tr');
             row.innerHTML = `
                 <td>${user.fullName}</td>
                 <td>${user.email}</td>
-                <td>${countryName}</td>
+                <td>${user.phone}</td>
                 <td>
                     <span class="badge ${user.status === 'active' ? 'bg-success' : 'bg-danger'}">
                         ${user.status === 'active' ? 'Activo' : 'Bloqueado'}
