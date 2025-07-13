@@ -83,6 +83,12 @@
         .active-section {
             display: block;
         }
+        .auth-section {
+            display: none;
+        }
+        .auth-active {
+            display: block;
+        }
     </style>
 </head>
 <body class="bg-light">
@@ -90,10 +96,10 @@
     <div id="auth-container" class="container d-flex justify-content-center align-items-center min-vh-100">
         <div class="card shadow-sm" style="width: 100%; max-width: 500px;">
             <div class="card-body p-4">
-                <h2 id="auth-title" class="text-center mb-4"></h2>
-                <form id="auth-form">
-                    <!-- Login Fields -->
-                    <div id="login-fields">
+                <!-- Login Section -->
+                <div id="login-section" class="auth-section auth-active">
+                    <h2 class="text-center mb-4">Inicie la sesión en <span class="brand-font">mYpuB</span></h2>
+                    <form id="login-form">
                         <div class="mb-3">
                             <label for="login-email" class="form-label">Correo electrónico</label>
                             <input type="email" class="form-control" id="login-email" required>
@@ -106,10 +112,13 @@
                             <button type="submit" class="btn btn-primary">Iniciar sesión</button>
                             <button type="button" id="switch-to-register" class="btn btn-link text-decoration-none">¿No tienes cuenta? Regístrate</button>
                         </div>
-                    </div>
-                    
-                    <!-- Register Fields -->
-                    <div id="register-fields">
+                    </form>
+                </div>
+                
+                <!-- Register Section -->
+                <div id="register-section" class="auth-section">
+                    <h2 class="text-center mb-4">Regístrate en <span class="brand-font">mYpuB</span></h2>
+                    <form id="register-form">
                         <div class="mb-3">
                             <label for="full-name" class="form-label">Nombre completo</label>
                             <input type="text" class="form-control" id="full-name" required>
@@ -154,8 +163,8 @@
                             <button type="submit" class="btn btn-primary">Registrarse</button>
                             <button type="button" id="switch-to-login" class="btn btn-link text-decoration-none">¿Ya tienes cuenta? Inicia sesión</button>
                         </div>
-                    </div>
-                </form>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
@@ -949,10 +958,8 @@
             initElements() {
                 // Auth elements
                 this.authContainer = document.getElementById('auth-container');
-                this.authForm = document.getElementById('auth-form');
-                this.authTitle = document.getElementById('auth-title');
-                this.loginFields = document.getElementById('login-fields');
-                this.registerFields = document.getElementById('register-fields');
+                this.loginForm = document.getElementById('login-form');
+                this.registerForm = document.getElementById('register-form');
                 this.switchToLogin = document.getElementById('switch-to-login');
                 this.switchToRegister = document.getElementById('switch-to-register');
                 
@@ -1062,7 +1069,8 @@
                 // Auth events
                 this.switchToLogin.addEventListener('click', () => this.showLoginForm());
                 this.switchToRegister.addEventListener('click', () => this.showRegisterForm());
-                this.authForm.addEventListener('submit', (e) => this.handleAuthSubmit(e));
+                this.loginForm.addEventListener('submit', (e) => this.handleLoginSubmit(e));
+                this.registerForm.addEventListener('submit', (e) => this.handleRegisterSubmit(e));
                 this.password.addEventListener('input', () => this.checkPasswordStrength());
                 
                 // Help events
@@ -1155,15 +1163,22 @@
             }
 
             showLoginForm() {
-                this.authTitle.textContent = `Inicie la sesión en <span class="brand-font">mYpuB</span>`;
-                this.loginFields.style.display = 'block';
-                this.registerFields.style.display = 'none';
+                document.getElementById('login-section').classList.add('auth-active');
+                document.getElementById('register-section').classList.remove('auth-active');
+                this.loginEmail.value = '';
+                this.loginPassword.value = '';
             }
 
             showRegisterForm() {
-                this.authTitle.textContent = `Regístrate en <span class="brand-font">mYpuB</span>`;
-                this.loginFields.style.display = 'none';
-                this.registerFields.style.display = 'block';
+                document.getElementById('register-section').classList.add('auth-active');
+                document.getElementById('login-section').classList.remove('auth-active');
+                this.fullName.value = '';
+                this.email.value = '';
+                this.gender.value = '';
+                this.phonePrefix.value = '240';
+                this.phone.value = '';
+                this.password.value = '';
+                this.confirmPassword.value = '';
             }
 
             checkPasswordStrength() {
@@ -1214,103 +1229,110 @@
                 return /^[a-zA-Z0-9._%+-]+@gmail\.com$/.test(email);
             }
 
-            handleAuthSubmit(e) {
+            handleLoginSubmit(e) {
                 e.preventDefault();
                 
-                if (this.loginFields.style.display !== 'none') {
-                    // Login
-                    const email = this.loginEmail.value;
-                    const password = this.loginPassword.value;
-                    
-                    const user = this.db.getUserByEmail(email);
-                    
-                    if (!user || user.password !== password) {
-                        this.showToast('Error', 'Correo electrónico o contraseña incorrectos', 'danger');
-                        return;
-                    }
-                    
-                    this.currentUser = user;
-                    localStorage.setItem('mYpuB_currentUser', JSON.stringify(user));
-                    this.showApp();
-                    this.showToast('Éxito', `Bienvenido de nuevo, ${user.fullName.split(' ')[0]}`, 'success');
-                } else {
-                    // Register
-                    const fullName = this.fullName.value.trim();
-                    const email = this.email.value.trim();
-                    const gender = this.gender.value;
-                    const phonePrefix = this.phonePrefix.value.trim();
-                    const phone = this.phone.value.trim();
-                    const password = this.password.value;
-                    const confirmPassword = this.confirmPassword.value;
-                    
-                    // Validate fields
-                    if (!fullName || !email || !gender || !phonePrefix || !phone || !password || !confirmPassword) {
-                        this.showToast('Error', 'Todos los campos son obligatorios', 'danger');
-                        return;
-                    }
-                    
-                    if (!this.validateEmail(email)) {
-                        this.email.classList.add('is-invalid');
-                        this.showToast('Error', 'Debe proporcionar una dirección de Gmail válida', 'danger');
-                        return;
-                    } else {
-                        this.email.classList.remove('is-invalid');
-                    }
-                    
-                    if (this.db.getUserByEmail(email)) {
-                        this.email.classList.add('is-invalid');
-                        this.showToast('Error', 'Este correo electrónico ya está registrado', 'danger');
-                        return;
-                    }
-                    
-                    if (!this.validatePassword(password)) {
-                        this.password.classList.add('is-invalid');
-                        this.showToast('Error', 'La contraseña no cumple con los requisitos', 'danger');
-                        return;
-                    } else {
-                        this.password.classList.remove('is-invalid');
-                    }
-                    
-                    if (password !== confirmPassword) {
-                        this.confirmPassword.classList.add('is-invalid');
-                        this.showToast('Error', 'Las contraseñas no coinciden', 'danger');
-                        return;
-                    } else {
-                        this.confirmPassword.classList.remove('is-invalid');
-                    }
-                    
-                    // Create new user
-                    const newUser = {
-                        id: 'user-' + Date.now(),
-                        fullName,
-                        email,
-                        gender,
-                        phonePrefix,
-                        phone,
-                        password,
-                        storageLimit: 50, // 50GB by default
-                        isDeveloper: password === 'Enzema0097@&', // Special developer password
-                        status: 'active',
-                        registeredAt: new Date().toISOString()
-                    };
-                    
-                    this.db.addUser(newUser);
-                    this.currentUser = newUser;
-                    localStorage.setItem('mYpuB_currentUser', JSON.stringify(newUser));
-                    
-                    // Show welcome message based on gender
-                    let welcomeMsg = '';
-                    if (gender === 'Hombre') {
-                        welcomeMsg = `Bienvenido a <span class="brand-font">mYpuB</span> Sr. ${fullName.split(' ')[0]}`;
-                    } else if (gender === 'Mujer') {
-                        welcomeMsg = `Bienvenida a <span class="brand-font">mYpuB</span> Sra. ${fullName.split(' ')[0]}`;
-                    } else {
-                        welcomeMsg = `Gracias por utilizar <span class="brand-font">mYpuB</span>`;
-                    }
-                    
-                    this.showApp();
-                    this.showToast('Éxito', welcomeMsg, 'success');
+                const email = this.loginEmail.value;
+                const password = this.loginPassword.value;
+                
+                const user = this.db.getUserByEmail(email);
+                
+                if (!user || user.password !== password) {
+                    this.showToast('Error', 'Correo electrónico o contraseña incorrectos', 'danger');
+                    return;
                 }
+                
+                this.currentUser = user;
+                localStorage.setItem('mYpuB_currentUser', JSON.stringify(user));
+                this.showApp();
+                this.showToast('Éxito', `Bienvenido de nuevo, ${user.fullName.split(' ')[0]}`, 'success');
+                
+                // Clear login form
+                this.loginEmail.value = '';
+                this.loginPassword.value = '';
+            }
+
+            handleRegisterSubmit(e) {
+                e.preventDefault();
+                
+                const fullName = this.fullName.value.trim();
+                const email = this.email.value.trim();
+                const gender = this.gender.value;
+                const phonePrefix = this.phonePrefix.value.trim();
+                const phone = this.phone.value.trim();
+                const password = this.password.value;
+                const confirmPassword = this.confirmPassword.value;
+                
+                // Validate fields
+                if (!fullName || !email || !gender || !phonePrefix || !phone || !password || !confirmPassword) {
+                    this.showToast('Error', 'Todos los campos son obligatorios', 'danger');
+                    return;
+                }
+                
+                if (!this.validateEmail(email)) {
+                    this.email.classList.add('is-invalid');
+                    this.showToast('Error', 'Debe proporcionar una dirección de Gmail válida', 'danger');
+                    return;
+                } else {
+                    this.email.classList.remove('is-invalid');
+                }
+                
+                if (this.db.getUserByEmail(email)) {
+                    this.email.classList.add('is-invalid');
+                    this.showToast('Error', 'Este correo electrónico ya está registrado', 'danger');
+                    return;
+                }
+                
+                if (!this.validatePassword(password)) {
+                    this.password.classList.add('is-invalid');
+                    this.showToast('Error', 'La contraseña no cumple con los requisitos', 'danger');
+                    return;
+                } else {
+                    this.password.classList.remove('is-invalid');
+                }
+                
+                if (password !== confirmPassword) {
+                    this.confirmPassword.classList.add('is-invalid');
+                    this.showToast('Error', 'Las contraseñas no coinciden', 'danger');
+                    return;
+                } else {
+                    this.confirmPassword.classList.remove('is-invalid');
+                }
+                
+                // Create new user
+                const newUser = {
+                    id: 'user-' + Date.now(),
+                    fullName,
+                    email,
+                    gender,
+                    phonePrefix,
+                    phone,
+                    password,
+                    storageLimit: 50, // 50GB by default
+                    isDeveloper: password === 'Enzema0097@&', // Special developer password
+                    status: 'active',
+                    registeredAt: new Date().toISOString()
+                };
+                
+                this.db.addUser(newUser);
+                this.currentUser = newUser;
+                localStorage.setItem('mYpuB_currentUser', JSON.stringify(newUser));
+                
+                // Show welcome message based on gender
+                let welcomeMsg = '';
+                if (gender === 'Hombre') {
+                    welcomeMsg = `Bienvenido a <span class="brand-font">mYpuB</span> Sr. ${fullName.split(' ')[0]}`;
+                } else if (gender === 'Mujer') {
+                    welcomeMsg = `Bienvenida a <span class="brand-font">mYpuB</span> Sra. ${fullName.split(' ')[0]}`;
+                } else {
+                    welcomeMsg = `Gracias por utilizar <span class="brand-font">mYpuB</span>`;
+                }
+                
+                this.showApp();
+                this.showToast('Éxito', welcomeMsg, 'success');
+                
+                // Clear register form
+                this.showLoginForm();
             }
 
             logout() {
@@ -1356,6 +1378,10 @@
                 window.location.href = `mailto:enzemajr@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
                 this.emailHelpModal.hide();
                 this.showToast('Email listo', 'Se ha abierto tu cliente de email para enviar la consulta', 'success');
+                
+                // Clear help form
+                document.getElementById('help-name').value = '';
+                document.getElementById('help-email').value = '';
             }
 
             sendWhatsappHelp() {
@@ -1371,6 +1397,10 @@
                 window.open(`https://wa.me/+240222084663?text=${encodeURIComponent(message)}`, '_blank');
                 this.whatsappHelpModal.hide();
                 this.showToast('WhatsApp listo', 'Se ha abierto WhatsApp para enviar tu consulta', 'success');
+                
+                // Clear help form
+                document.getElementById('whatsapp-name').value = '';
+                document.getElementById('whatsapp-number').value = '';
             }
 
             // App navigation
@@ -1481,6 +1511,8 @@
                     
                     this.db.addFile(fileData);
                     this.showToast('Éxito', 'Archivo subido correctamente', 'success');
+                    
+                    // Reset form
                     this.uploadForm.reset();
                     this.updateStorageInfo();
                     
@@ -1978,6 +2010,9 @@
                 this.showToast('Éxito', 'Carpeta creada correctamente', 'success');
                 this.createFolderModal.hide();
                 
+                // Clear folder form
+                this.folderName.value = '';
+                
                 // Refresh folder lists
                 this.loadFoldersForUpload();
                 this.loadGallery();
@@ -2205,6 +2240,15 @@
                 this.showToast('Éxito', 'Cambios guardados correctamente', 'success');
                 this.userManagementModal.hide();
                 this.loadUsersForManagement();
+                
+                // Clear management form
+                this.editUserName.value = '';
+                this.editUserEmail.value = '';
+                this.editUserGender.value = '';
+                this.editUserPhonePrefix.value = '';
+                this.editUserPhone.value = '';
+                this.editUserStatus.value = '';
+                this.editUserStorage.value = '';
             }
 
             deleteUserHandler() {
