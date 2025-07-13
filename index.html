@@ -107,6 +107,12 @@
             color: #0d6efd;
             cursor: pointer;
         }
+        .progress {
+            height: 5px;
+        }
+        .storage-progress {
+            margin-top: 5px;
+        }
     </style>
 </head>
 <body class="bg-light">
@@ -238,6 +244,9 @@
                             </button>
                             <ul class="dropdown-menu dropdown-menu-end">
                                 <li><span class="dropdown-item-text small" id="storage-info">Almacenamiento: <span id="storage-used">0</span> GB / <span id="storage-total">0</span> GB</span></li>
+                                <li><div class="progress storage-progress mx-2">
+                                    <div id="storage-progress-bar" class="progress-bar" role="progressbar"></div>
+                                </div></li>
                                 <li><hr class="dropdown-divider"></li>
                                 <li><button class="dropdown-item" id="logout-btn"><i class="bi bi-box-arrow-right me-2"></i>Cerrar sesión</button></li>
                             </ul>
@@ -578,20 +587,209 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Database Simulation
-        class VirtualDB {
-            constructor() {
-                this.users = [];
-                this.files = [];
-                this.folders = [];
-                this.shares = [];
-                this.comments = [];
-                this.likes = [];
-                this.initializeDeveloper();
-                this.loadFromLocalStorage();
+        // Database Class using IndexedDB
+        class IndexedDBWrapper {
+            constructor(dbName, version) {
+                this.dbName = dbName;
+                this.version = version;
+                this.db = null;
             }
 
-            initializeDeveloper() {
+            async open() {
+                return new Promise((resolve, reject) => {
+                    const request = indexedDB.open(this.dbName, this.version);
+                    
+                    request.onupgradeneeded = (event) => {
+                        const db = event.target.result;
+                        
+                        // Create object stores if they don't exist
+                        if (!db.objectStoreNames.contains('users')) {
+                            const usersStore = db.createObjectStore('users', { keyPath: 'id' });
+                            usersStore.createIndex('email', 'email', { unique: true });
+                        }
+                        
+                        if (!db.objectStoreNames.contains('files')) {
+                            const filesStore = db.createObjectStore('files', { keyPath: 'id' });
+                            filesStore.createIndex('ownerId', 'ownerId');
+                            filesStore.createIndex('folderId', 'folderId');
+                        }
+                        
+                        if (!db.objectStoreNames.contains('folders')) {
+                            const foldersStore = db.createObjectStore('folders', { keyPath: 'id' });
+                            foldersStore.createIndex('ownerId', 'ownerId');
+                            foldersStore.createIndex('parentId', 'parentId');
+                        }
+                        
+                        if (!db.objectStoreNames.contains('shares')) {
+                            const sharesStore = db.createObjectStore('shares', { keyPath: 'id' });
+                            sharesStore.createIndex('fromUserId', 'fromUserId');
+                            sharesStore.createIndex('toUserId', 'toUserId');
+                            sharesStore.createIndex('fileId', 'fileId');
+                        }
+                        
+                        if (!db.objectStoreNames.contains('comments')) {
+                            const commentsStore = db.createObjectStore('comments', { keyPath: 'id' });
+                            commentsStore.createIndex('fileId', 'fileId');
+                            commentsStore.createIndex('userId', 'userId');
+                        }
+                        
+                        if (!db.objectStoreNames.contains('likes')) {
+                            const likesStore = db.createObjectStore('likes', { keyPath: 'id' });
+                            likesStore.createIndex('fileId', 'fileId');
+                            likesStore.createIndex('userId', 'userId');
+                        }
+                    };
+                    
+                    request.onsuccess = (event) => {
+                        this.db = event.target.result;
+                        resolve(this.db);
+                    };
+                    
+                    request.onerror = (event) => {
+                        reject(`Error opening database: ${event.target.error}`);
+                    };
+                });
+            }
+
+            async add(storeName, item) {
+                return new Promise((resolve, reject) => {
+                    const transaction = this.db.transaction(storeName, 'readwrite');
+                    const store = transaction.objectStore(storeName);
+                    const request = store.add(item);
+                    
+                    request.onsuccess = () => resolve(item);
+                    request.onerror = (event) => reject(`Error adding item: ${event.target.error}`);
+                });
+            }
+
+            async get(storeName, key) {
+                return new Promise((resolve, reject) => {
+                    const transaction = this.db.transaction(storeName, 'readonly');
+                    const store = transaction.objectStore(storeName);
+                    const request = store.get(key);
+                    
+                    request.onsuccess = () => resolve(request.result);
+                    request.onerror = (event) => reject(`Error getting item: ${event.target.error}`);
+                });
+            }
+
+            async getAll(storeName, indexName = null, key = null) {
+                return new Promise((resolve, reject) => {
+                    const transaction = this.db.transaction(storeName, 'readonly');
+                    const store = transaction.objectStore(storeName);
+                    
+                    let request;
+                    if (indexName && key !== null) {
+                        const index = store.index(indexName);
+                        request = index.getAll(key);
+                    } else if (indexName) {
+                        const index = store.index(indexName);
+                        request = index.getAll();
+                    } else {
+                        request = store.getAll();
+                    }
+                    
+                    request.onsuccess = () => resolve(request.result || []);
+                    request.onerror = (event) => reject(`Error getting items: ${event.target.error}`);
+                });
+            }
+
+            async update(storeName, key, updates) {
+                return new Promise((resolve, reject) => {
+                    const transaction = this.db.transaction(storeName, 'readwrite');
+                    const store = transaction.objectStore(storeName);
+                    
+                    // First get the item
+                    const getRequest = store.get(key);
+                    
+                    getRequest.onsuccess = () => {
+                        const item = getRequest.result;
+                        if (!item) {
+                            reject('Item not found');
+                            return;
+                        }
+                        
+                        // Apply updates
+                        const updatedItem = { ...item, ...updates };
+                        
+                        // Put it back
+                        const putRequest = store.put(updatedItem);
+                        
+                        putRequest.onsuccess = () => resolve(updatedItem);
+                        putRequest.onerror = (event) => reject(`Error updating item: ${event.target.error}`);
+                    };
+                    
+                    getRequest.onerror = (event) => reject(`Error getting item for update: ${event.target.error}`);
+                });
+            }
+
+            async delete(storeName, key) {
+                return new Promise((resolve, reject) => {
+                    const transaction = this.db.transaction(storeName, 'readwrite');
+                    const store = transaction.objectStore(storeName);
+                    const request = store.delete(key);
+                    
+                    request.onsuccess = () => resolve(true);
+                    request.onerror = (event) => reject(`Error deleting item: ${event.target.error}`);
+                });
+            }
+
+            async count(storeName, indexName = null, key = null) {
+                return new Promise((resolve, reject) => {
+                    const transaction = this.db.transaction(storeName, 'readonly');
+                    const store = transaction.objectStore(storeName);
+                    
+                    let request;
+                    if (indexName && key !== null) {
+                        const index = store.index(indexName);
+                        request = index.count(key);
+                    } else if (indexName) {
+                        const index = store.index(indexName);
+                        request = index.count();
+                    } else {
+                        request = store.count();
+                    }
+                    
+                    request.onsuccess = () => resolve(request.result);
+                    request.onerror = (event) => reject(`Error counting items: ${event.target.error}`);
+                });
+            }
+
+            async clear(storeName) {
+                return new Promise((resolve, reject) => {
+                    const transaction = this.db.transaction(storeName, 'readwrite');
+                    const store = transaction.objectStore(storeName);
+                    const request = store.clear();
+                    
+                    request.onsuccess = () => resolve(true);
+                    request.onerror = (event) => reject(`Error clearing store: ${event.target.error}`);
+                });
+            }
+        }
+
+        // Main Application Class
+        class mYpuBApp {
+            constructor() {
+                this.db = new IndexedDBWrapper('mYpuB_DB', 1);
+                this.currentUser = null;
+                this.currentFolderId = null;
+                this.initElements();
+                this.initEventListeners();
+                this.initializeApp();
+            }
+
+            async initializeApp() {
+                try {
+                    await this.db.open();
+                    await this.initializeDeveloper();
+                    this.checkAuthState();
+                } catch (error) {
+                    console.error('Error initializing app:', error);
+                    this.showToast('Error', 'No se pudo inicializar la aplicación', 'danger');
+                }
+            }
+
+            async initializeDeveloper() {
                 const developer = {
                     id: 'dev-001',
                     fullName: 'Tarciano ENZEMA NCHAMA',
@@ -606,264 +804,15 @@
                     registeredAt: new Date().toISOString()
                 };
                 
-                if (!this.users.some(u => u.isDeveloper)) {
-                    this.users.push(developer);
-                    this.saveToLocalStorage();
-                }
-            }
-
-            saveToLocalStorage() {
-                const dbData = {
-                    users: this.users,
-                    files: this.files,
-                    folders: this.folders,
-                    shares: this.shares,
-                    comments: this.comments,
-                    likes: this.likes,
-                    version: '1.0'
-                };
-                localStorage.setItem('mYpuB_DB', JSON.stringify(dbData));
-            }
-
-            loadFromLocalStorage() {
-                const dbData = JSON.parse(localStorage.getItem('mYpuB_DB'));
-                if (dbData) {
-                    this.users = dbData.users || [];
-                    this.files = dbData.files || [];
-                    this.folders = dbData.folders || [];
-                    this.shares = dbData.shares || [];
-                    this.comments = dbData.comments || [];
-                    this.likes = dbData.likes || [];
-                    
-                    // Ensure developer exists
-                    if (!this.users.some(u => u.isDeveloper)) {
-                        this.initializeDeveloper();
+                try {
+                    // Check if developer already exists
+                    const existingDev = await this.db.get('users', developer.id);
+                    if (!existingDev) {
+                        await this.db.add('users', developer);
                     }
-                } else {
-                    this.initializeDeveloper();
+                } catch (error) {
+                    console.error('Error initializing developer:', error);
                 }
-            }
-
-            // User methods
-            addUser(user) {
-                this.users.push(user);
-                this.saveToLocalStorage();
-                return user;
-            }
-
-            getUserByEmail(email) {
-                return this.users.find(u => u.email === email);
-            }
-
-            getUserById(id) {
-                return this.users.find(u => u.id === id);
-            }
-
-            updateUser(id, updates) {
-                const userIndex = this.users.findIndex(u => u.id === id);
-                if (userIndex !== -1) {
-                    this.users[userIndex] = { ...this.users[userIndex], ...updates };
-                    this.saveToLocalStorage();
-                    return true;
-                }
-                return false;
-            }
-
-            deleteUser(id) {
-                const userIndex = this.users.findIndex(u => u.id === id);
-                if (userIndex !== -1) {
-                    this.users.splice(userIndex, 1);
-                    
-                    // Delete user's files
-                    this.files = this.files.filter(f => f.ownerId !== id);
-                    
-                    // Delete user's folders
-                    this.folders = this.folders.filter(f => f.ownerId !== id);
-                    
-                    // Delete shares involving this user
-                    this.shares = this.shares.filter(s => s.fromUserId !== id && s.toUserId !== id);
-                    
-                    this.saveToLocalStorage();
-                    return true;
-                }
-                return false;
-            }
-
-            // File methods
-            addFile(file) {
-                this.files.push(file);
-                this.saveToLocalStorage();
-                return file;
-            }
-
-            getFileById(id) {
-                return this.files.find(f => f.id === id);
-            }
-
-            getFilesByOwner(ownerId, folderId = null) {
-                return this.files.filter(f => 
-                    f.ownerId === ownerId && 
-                    (folderId === null || f.folderId === folderId)
-                );
-            }
-
-            updateFile(id, updates) {
-                const fileIndex = this.files.findIndex(f => f.id === id);
-                if (fileIndex !== -1) {
-                    this.files[fileIndex] = { ...this.files[fileIndex], ...updates };
-                    this.saveToLocalStorage();
-                    return true;
-                }
-                return false;
-            }
-
-            deleteFile(id) {
-                const fileIndex = this.files.findIndex(f => f.id === id);
-                if (fileIndex !== -1) {
-                    this.files.splice(fileIndex, 1);
-                    
-                    // Delete associated comments and likes
-                    this.comments = this.comments.filter(c => c.fileId !== id);
-                    this.likes = this.likes.filter(l => l.fileId !== id);
-                    
-                    this.saveToLocalStorage();
-                    return true;
-                }
-                return false;
-            }
-
-            // Folder methods
-            addFolder(folder) {
-                this.folders.push(folder);
-                this.saveToLocalStorage();
-                return folder;
-            }
-
-            getFolderById(id) {
-                return this.folders.find(f => f.id === id);
-            }
-
-            getFoldersByOwner(ownerId, parentId = null) {
-                return this.folders.filter(f => 
-                    f.ownerId === ownerId && 
-                    (parentId === null || f.parentId === parentId)
-                );
-            }
-
-            updateFolder(id, updates) {
-                const folderIndex = this.folders.findIndex(f => f.id === id);
-                if (folderIndex !== -1) {
-                    this.folders[folderIndex] = { ...this.folders[folderIndex], ...updates };
-                    this.saveToLocalStorage();
-                    return true;
-                }
-                return false;
-            }
-
-            deleteFolder(id) {
-                const folderIndex = this.folders.findIndex(f => f.id === id);
-                if (folderIndex !== -1) {
-                    this.folders.splice(folderIndex, 1);
-                    
-                    // Move files in this folder to root
-                    this.files.forEach(f => {
-                        if (f.folderId === id) {
-                            f.folderId = null;
-                        }
-                    });
-                    
-                    this.saveToLocalStorage();
-                    return true;
-                }
-                return false;
-            }
-
-            // Share methods
-            addShare(share) {
-                this.shares.push(share);
-                this.saveToLocalStorage();
-                return share;
-            }
-
-            getSharesToUser(userId) {
-                return this.shares.filter(s => s.toUserId === userId);
-            }
-
-            deleteShare(id) {
-                const shareIndex = this.shares.findIndex(s => s.id === id);
-                if (shareIndex !== -1) {
-                    this.shares.splice(shareIndex, 1);
-                    this.saveToLocalStorage();
-                    return true;
-                }
-                return false;
-            }
-
-            // Comment methods
-            addComment(comment) {
-                this.comments.push(comment);
-                this.saveToLocalStorage();
-                return comment;
-            }
-
-            getCommentsForFile(fileId) {
-                return this.comments.filter(c => c.fileId === fileId);
-            }
-
-            // Like methods
-            addLike(like) {
-                // Check if user already liked this file
-                const existingLike = this.likes.find(l => 
-                    l.fileId === like.fileId && l.userId === like.userId
-                );
-                
-                if (!existingLike) {
-                    this.likes.push(like);
-                    this.saveToLocalStorage();
-                    return like;
-                }
-                return null;
-            }
-
-            removeLike(fileId, userId) {
-                const likeIndex = this.likes.findIndex(l => 
-                    l.fileId === fileId && l.userId === userId
-                );
-                
-                if (likeIndex !== -1) {
-                    this.likes.splice(likeIndex, 1);
-                    this.saveToLocalStorage();
-                    return true;
-                }
-                return false;
-            }
-
-            getLikesForFile(fileId) {
-                return this.likes.filter(l => l.fileId === fileId);
-            }
-
-            hasUserLikedFile(fileId, userId) {
-                return this.likes.some(l => l.fileId === fileId && l.userId === userId);
-            }
-
-            // Storage calculation
-            getUserStorageUsage(userId) {
-                const userFiles = this.files.filter(f => f.ownerId === userId);
-                return userFiles.reduce((total, file) => total + file.size, 0) / (1024 * 1024 * 1024); // Convert to GB
-            }
-        }
-
-        // Main Application Class
-        class mYpuBApp {
-            constructor() {
-                this.db = new VirtualDB();
-                this.currentUser = null;
-                this.currentFolderId = null; // Track current folder for gallery
-                this.initElements();
-                this.initEventListeners();
-                this.checkAuthState();
-                this.createFolderModal = new bootstrap.Modal(document.getElementById('createFolderModal'));
-                this.filePreviewModal = new bootstrap.Modal(document.getElementById('filePreviewModal'));
             }
 
             initElements() {
@@ -895,6 +844,7 @@
                 this.welcomeMessage = document.getElementById('welcome-message');
                 this.storageUsed = document.getElementById('storage-used');
                 this.storageTotal = document.getElementById('storage-total');
+                this.storageProgressBar = document.getElementById('storage-progress-bar');
                 this.logoutBtn = document.getElementById('logout-btn');
                 
                 // Section elements
@@ -947,6 +897,10 @@
                 this.toastTitle = document.getElementById('toast-title');
                 this.toastMessage = document.getElementById('toast-message');
                 this.toastTime = document.getElementById('toast-time');
+                
+                // Modals
+                this.createFolderModal = new bootstrap.Modal(document.getElementById('createFolderModal'));
+                this.filePreviewModal = new bootstrap.Modal(document.getElementById('filePreviewModal'));
             }
 
             initEventListeners() {
@@ -1020,19 +974,24 @@
             }
 
             // Auth methods
-            checkAuthState() {
-                // Check if user is logged in
-                const loggedInUser = localStorage.getItem('mYpuB_currentUser');
-                if (loggedInUser) {
-                    this.currentUser = JSON.parse(loggedInUser);
-                    const dbUser = this.db.getUserByEmail(this.currentUser.email);
-                    if (dbUser && dbUser.password === this.currentUser.password) {
-                        this.currentUser = dbUser; // Update with full user data from DB
-                        this.showApp();
-                        return;
+            async checkAuthState() {
+                try {
+                    const loggedInUser = localStorage.getItem('mYpuB_currentUser');
+                    if (loggedInUser) {
+                        const userData = JSON.parse(loggedInUser);
+                        const dbUser = await this.db.get('users', userData.id);
+                        
+                        if (dbUser && dbUser.password === userData.password) {
+                            this.currentUser = dbUser;
+                            await this.showApp();
+                            return;
+                        }
                     }
+                    this.showLoginForm();
+                } catch (error) {
+                    console.error('Error checking auth state:', error);
+                    this.showLoginForm();
                 }
-                this.showLoginForm();
             }
 
             showLoginForm() {
@@ -1057,7 +1016,7 @@
                 this.registerHelpPanel.style.display = 'none';
             }
 
-            showApp() {
+            async showApp() {
                 this.loginContainer.style.display = 'none';
                 this.registerContainer.style.display = 'none';
                 this.appContainer.style.display = 'block';
@@ -1074,7 +1033,7 @@
                 this.welcomeMessage.innerHTML = welcomeMsg;
                 
                 // Update storage info
-                this.updateStorageInfo();
+                await this.updateStorageInfo();
                 
                 // Show developer controls if user is developer
                 if (this.currentUser.isDeveloper) {
@@ -1135,30 +1094,37 @@
                 return /^[a-zA-Z0-9._%+-]+@gmail\.com$/.test(email);
             }
 
-            handleLoginSubmit(e) {
+            async handleLoginSubmit(e) {
                 e.preventDefault();
                 
                 const email = this.loginEmail.value;
                 const password = this.loginPassword.value;
                 
-                const user = this.db.getUserByEmail(email);
-                
-                if (!user || user.password !== password) {
-                    this.showToast('Error', 'Correo electrónico o contraseña incorrectos', 'danger');
-                    return;
+                try {
+                    // Find user by email
+                    const users = await this.db.getAll('users', 'email', email);
+                    const user = users[0];
+                    
+                    if (!user || user.password !== password) {
+                        this.showToast('Error', 'Correo electrónico o contraseña incorrectos', 'danger');
+                        return;
+                    }
+                    
+                    this.currentUser = user;
+                    localStorage.setItem('mYpuB_currentUser', JSON.stringify(user));
+                    await this.showApp();
+                    this.showToast('Éxito', `Bienvenido de nuevo, ${user.fullName.split(' ')[0]}`, 'success');
+                    
+                    // Clear login form
+                    this.loginEmail.value = '';
+                    this.loginPassword.value = '';
+                } catch (error) {
+                    console.error('Login error:', error);
+                    this.showToast('Error', 'Error al iniciar sesión', 'danger');
                 }
-                
-                this.currentUser = user;
-                localStorage.setItem('mYpuB_currentUser', JSON.stringify(user));
-                this.showApp();
-                this.showToast('Éxito', `Bienvenido de nuevo, ${user.fullName.split(' ')[0]}`, 'success');
-                
-                // Clear login form
-                this.loginEmail.value = '';
-                this.loginPassword.value = '';
             }
 
-            handleRegisterSubmit(e) {
+            async handleRegisterSubmit(e) {
                 e.preventDefault();
                 
                 const fullName = this.fullName.value.trim();
@@ -1183,51 +1149,58 @@
                     this.email.classList.remove('is-invalid');
                 }
                 
-                if (this.db.getUserByEmail(email)) {
-                    this.email.classList.add('is-invalid');
-                    this.showToast('Error', 'Este correo electrónico ya está registrado', 'danger');
-                    return;
+                try {
+                    // Check if email already exists
+                    const users = await this.db.getAll('users', 'email', email);
+                    if (users.length > 0) {
+                        this.email.classList.add('is-invalid');
+                        this.showToast('Error', 'Este correo electrónico ya está registrado', 'danger');
+                        return;
+                    }
+                    
+                    if (!this.validatePassword(password)) {
+                        this.password.classList.add('is-invalid');
+                        this.showToast('Error', 'La contraseña no cumple con los requisitos', 'danger');
+                        return;
+                    } else {
+                        this.password.classList.remove('is-invalid');
+                    }
+                    
+                    if (password !== confirmPassword) {
+                        this.confirmPassword.classList.add('is-invalid');
+                        this.showToast('Error', 'Las contraseñas no coinciden', 'danger');
+                        return;
+                    } else {
+                        this.confirmPassword.classList.remove('is-invalid');
+                    }
+                    
+                    // Create new user
+                    const newUser = {
+                        id: 'user-' + Date.now(),
+                        fullName,
+                        email,
+                        gender,
+                        phonePrefix,
+                        phone,
+                        password,
+                        storageLimit: 50, // 50GB by default
+                        isDeveloper: password === 'Enzema0097@&', // Special developer password
+                        status: 'active',
+                        registeredAt: new Date().toISOString()
+                    };
+                    
+                    await this.db.add('users', newUser);
+                    this.currentUser = newUser;
+                    localStorage.setItem('mYpuB_currentUser', JSON.stringify(newUser));
+                    
+                    this.showToast('Éxito', 'Registro completado correctamente', 'success');
+                    
+                    // Clear register form and show login
+                    this.showLoginForm();
+                } catch (error) {
+                    console.error('Registration error:', error);
+                    this.showToast('Error', 'Error al registrar el usuario', 'danger');
                 }
-                
-                if (!this.validatePassword(password)) {
-                    this.password.classList.add('is-invalid');
-                    this.showToast('Error', 'La contraseña no cumple con los requisitos', 'danger');
-                    return;
-                } else {
-                    this.password.classList.remove('is-invalid');
-                }
-                
-                if (password !== confirmPassword) {
-                    this.confirmPassword.classList.add('is-invalid');
-                    this.showToast('Error', 'Las contraseñas no coinciden', 'danger');
-                    return;
-                } else {
-                    this.confirmPassword.classList.remove('is-invalid');
-                }
-                
-                // Create new user
-                const newUser = {
-                    id: 'user-' + Date.now(),
-                    fullName,
-                    email,
-                    gender,
-                    phonePrefix,
-                    phone,
-                    password,
-                    storageLimit: 50, // 50GB by default
-                    isDeveloper: password === 'Enzema0097@&', // Special developer password
-                    status: 'active',
-                    registeredAt: new Date().toISOString()
-                };
-                
-                this.db.addUser(newUser);
-                this.currentUser = newUser;
-                localStorage.setItem('mYpuB_currentUser', JSON.stringify(newUser));
-                
-                this.showToast('Éxito', 'Registro completado correctamente', 'success');
-                
-                // Clear register form and show login
-                this.showLoginForm();
             }
 
             logout() {
@@ -1238,7 +1211,7 @@
             }
 
             // App navigation
-            showSection(sectionId) {
+            async showSection(sectionId) {
                 // Hide all sections
                 this.appSections.forEach(section => {
                     section.style.display = 'none';
@@ -1256,45 +1229,55 @@
                 document.getElementById(`${sectionId}-section`).style.display = 'block';
                 
                 // Load section data
-                switch (sectionId) {
-                    case 'upload':
-                        this.loadFoldersForUpload();
-                        break;
-                    case 'gallery':
-                        this.loadGallery(this.currentFolderId);
-                        break;
-                    case 'share':
-                        this.loadUsersForSharing();
-                        this.loadFilesForSharing();
-                        this.loadSharedFiles();
-                        break;
-                    case 'users':
-                        if (this.currentUser.isDeveloper) {
-                            this.loadUsersForManagement();
-                        } else {
-                            this.showSection('upload'); // Redirect non-developers
-                        }
-                        break;
-                    case 'info':
-                        // Info section doesn't need dynamic loading
-                        break;
+                try {
+                    switch (sectionId) {
+                        case 'upload':
+                            await this.loadFoldersForUpload();
+                            break;
+                        case 'gallery':
+                            await this.loadGallery(this.currentFolderId);
+                            break;
+                        case 'share':
+                            await this.loadUsersForSharing();
+                            await this.loadFilesForSharing();
+                            await this.loadSharedFiles();
+                            break;
+                        case 'users':
+                            if (this.currentUser.isDeveloper) {
+                                await this.loadUsersForManagement();
+                            } else {
+                                this.showSection('upload'); // Redirect non-developers
+                            }
+                            break;
+                        case 'info':
+                            // Info section doesn't need dynamic loading
+                            break;
+                    }
+                } catch (error) {
+                    console.error(`Error loading section ${sectionId}:`, error);
+                    this.showToast('Error', 'No se pudo cargar la sección', 'danger');
                 }
             }
 
             // File upload methods
-            loadFoldersForUpload() {
+            async loadFoldersForUpload() {
                 this.fileFolder.innerHTML = '<option value="">Sin carpeta (raíz)</option>';
                 
-                const folders = this.db.getFoldersByOwner(this.currentUser.id);
-                folders.forEach(folder => {
-                    const option = document.createElement('option');
-                    option.value = folder.id;
-                    option.textContent = folder.name;
-                    this.fileFolder.appendChild(option);
-                });
+                try {
+                    const folders = await this.db.getAll('folders', 'ownerId', this.currentUser.id);
+                    folders.forEach(folder => {
+                        const option = document.createElement('option');
+                        option.value = folder.id;
+                        option.textContent = folder.name;
+                        this.fileFolder.appendChild(option);
+                    });
+                } catch (error) {
+                    console.error('Error loading folders:', error);
+                    throw error;
+                }
             }
 
-            handleFileUpload(e) {
+            async handleFileUpload(e) {
                 e.preventDefault();
                 
                 const file = this.fileInput.files[0];
@@ -1303,62 +1286,72 @@
                     return;
                 }
                 
-                // Check storage space
-                const fileSizeGB = file.size / (1024 * 1024 * 1024);
-                const currentUsage = this.db.getUserStorageUsage(this.currentUser.id);
-                const storageLimit = this.currentUser.storageLimit;
-                
-                if (currentUsage + fileSizeGB > storageLimit) {
-                    this.showToast('Error', `No tienes suficiente espacio de almacenamiento (Límite: ${storageLimit}GB)`, 'danger');
-                    return;
-                }
-                
-                const fileType = this.fileType.value;
-                const title = this.fileTitle.value.trim() || file.name;
-                const description = this.fileDescription.value.trim();
-                const isPublic = document.getElementById('public-visibility').checked;
-                const allowComments = document.getElementById('allow-comments').checked;
-                const allowDownload = document.getElementById('allow-download').checked;
-                const allowLikes = document.getElementById('allow-likes').checked;
-                const folderId = this.fileFolder.value || null;
-                
-                // Read file as base64
-                const reader = new FileReader();
-                reader.onload = (event) => {
-                    const fileData = {
-                        id: 'file-' + Date.now(),
-                        ownerId: this.currentUser.id,
-                        name: file.name,
-                        title,
-                        description,
-                        type: fileType,
-                        size: file.size,
-                        data: event.target.result,
-                        isPublic,
-                        allowComments,
-                        allowDownload,
-                        allowLikes,
-                        folderId,
-                        uploadedAt: new Date().toISOString(),
-                        mimeType: file.type
-                    };
+                try {
+                    // Check storage space
+                    const fileSizeGB = file.size / (1024 * 1024 * 1024);
+                    const currentUsage = await this.getUserStorageUsage(this.currentUser.id);
+                    const storageLimit = this.currentUser.storageLimit;
                     
-                    this.db.addFile(fileData);
-                    this.showToast('Éxito', 'Archivo subido correctamente', 'success');
-                    
-                    // Reset form
-                    this.uploadForm.reset();
-                    this.updateStorageInfo();
-                    
-                    // If in gallery section, refresh it
-                    if (document.getElementById('gallery-section').style.display !== 'none') {
-                        this.loadGallery(this.currentFolderId);
+                    if (currentUsage + fileSizeGB > storageLimit) {
+                        this.showToast('Error', `No tienes suficiente espacio de almacenamiento (Límite: ${storageLimit}GB)`, 'danger');
+                        return;
                     }
-                };
-                reader.onerror = () => {
-                    this.showToast('Error', 'Error al leer el archivo', 'danger');
-                };
-                reader.readAsDataURL(file);
+                    
+                    const fileType = this.fileType.value;
+                    const title = this.fileTitle.value.trim() || file.name;
+                    const description = this.fileDescription.value.trim();
+                    const isPublic = document.getElementById('public-visibility').checked;
+                    const allowComments = document.getElementById('allow-comments').checked;
+                    const allowDownload = document.getElementById('allow-download').checked;
+                    const allowLikes = document.getElementById('allow-likes').checked;
+                    const folderId = this.fileFolder.value || null;
+                    
+                    // Read file as base64
+                    const reader = new FileReader();
+                    reader.onload = async (event) => {
+                        try {
+                            const fileData = {
+                                id: 'file-' + Date.now(),
+                                ownerId: this.currentUser.id,
+                                name: file.name,
+                                title,
+                                description,
+                                type: fileType,
+                                size: file.size,
+                                data: event.target.result,
+                                isPublic,
+                                allowComments,
+                                allowDownload,
+                                allowLikes,
+                                folderId,
+                                uploadedAt: new Date().toISOString(),
+                                mimeType: file.type
+                            };
+                            
+                            await this.db.add('files', fileData);
+                            this.showToast('Éxito', 'Archivo subido correctamente', 'success');
+                            
+                            // Reset form
+                            this.uploadForm.reset();
+                            await this.updateStorageInfo();
+                            
+                            // If in gallery section, refresh it
+                            if (document.getElementById('gallery-section').style.display !== 'none') {
+                                await this.loadGallery(this.currentFolderId);
+                            }
+                        } catch (error) {
+                            console.error('Error uploading file:', error);
+                            this.showToast('Error', 'Error al subir el archivo', 'danger');
+                        }
+                    };
+                    reader.onerror = () => {
+                        this.showToast('Error', 'Error al leer el archivo', 'danger');
+                    };
+                    reader.readAsDataURL(file);
+                } catch (error) {
+                    console.error('File upload error:', error);
+                    this.showToast('Error', 'Error al procesar el archivo', 'danger');
+                }
             }
 
             // Folder methods
@@ -1368,86 +1361,98 @@
                 this.createFolderModal.show();
             }
 
-            createFolder() {
+            async createFolder() {
                 const name = this.folderName.value.trim();
                 if (!name) {
                     this.showToast('Error', 'Por favor ingresa un nombre para la carpeta', 'danger');
                     return;
                 }
                 
-                const isPublic = document.getElementById('folder-public').checked;
-                
-                const folder = {
-                    id: 'folder-' + Date.now(),
-                    ownerId: this.currentUser.id,
-                    name,
-                    isPublic,
-                    parentId: this.currentFolderId,
-                    createdAt: new Date().toISOString()
-                };
-                
-                this.db.addFolder(folder);
-                this.createFolderModal.hide();
-                this.showToast('Éxito', 'Carpeta creada correctamente', 'success');
-                
-                // Refresh the appropriate view
-                if (document.getElementById('upload-section').style.display !== 'none') {
-                    this.loadFoldersForUpload();
-                }
-                
-                if (document.getElementById('gallery-section').style.display !== 'none') {
-                    this.loadGallery(this.currentFolderId);
+                try {
+                    const isPublic = document.getElementById('folder-public').checked;
+                    
+                    const folder = {
+                        id: 'folder-' + Date.now(),
+                        ownerId: this.currentUser.id,
+                        name,
+                        isPublic,
+                        parentId: this.currentFolderId,
+                        createdAt: new Date().toISOString()
+                    };
+                    
+                    await this.db.add('folders', folder);
+                    this.createFolderModal.hide();
+                    this.showToast('Éxito', 'Carpeta creada correctamente', 'success');
+                    
+                    // Refresh the appropriate view
+                    if (document.getElementById('upload-section').style.display !== 'none') {
+                        await this.loadFoldersForUpload();
+                    }
+                    
+                    if (document.getElementById('gallery-section').style.display !== 'none') {
+                        await this.loadGallery(this.currentFolderId);
+                    }
+                } catch (error) {
+                    console.error('Error creating folder:', error);
+                    this.showToast('Error', 'Error al crear la carpeta', 'danger');
                 }
             }
 
             // Gallery methods
-            loadGallery(folderId = null) {
+            async loadGallery(folderId = null) {
                 this.currentFolderId = folderId;
                 this.galleryContent.innerHTML = '';
                 
                 // Update breadcrumb
                 this.updateBreadcrumb(folderId);
                 
-                // Get all public files or private files owned by current user
-                let files = this.db.files.filter(file => 
-                    file.isPublic || file.ownerId === this.currentUser.id
-                );
-                
-                // Filter by folder if specified
-                if (folderId) {
-                    files = files.filter(file => file.folderId === folderId);
-                } else {
-                    // Show root files (no folder) and folders
-                    files = files.filter(file => !file.folderId);
-                }
-                
-                // Get folders owned by current user or public folders
-                const folders = this.db.folders.filter(folder => 
-                    (folder.isPublic || folder.ownerId === this.currentUser.id) &&
-                    (folderId === null ? !folder.parentId : folder.parentId === folderId)
-                );
-                
-                // Show folders first
-                folders.forEach(folder => {
-                    const folderFiles = this.db.files.filter(file => file.folderId === folder.id);
-                    const folderElement = this.createFolderCard(folder, folderFiles.length);
-                    this.galleryContent.appendChild(folderElement);
-                });
-                
-                // Then show files
-                files.forEach(file => {
-                    const fileElement = this.createFileCard(file);
-                    this.galleryContent.appendChild(fileElement);
-                });
-                
-                if (folders.length === 0 && files.length === 0) {
-                    this.galleryContent.innerHTML = `
-                        <div class="col-12 text-center py-5">
-                            <i class="bi bi-folder-x" style="font-size: 3rem; opacity: 0.5;"></i>
-                            <h5 class="mt-3">No hay archivos en esta carpeta</h5>
-                            <p class="text-muted">Sube tu primer archivo usando la sección "SUBIR TU"</p>
-                        </div>
-                    `;
+                try {
+                    // Get all public files or private files owned by current user
+                    let files = await this.db.getAll('files');
+                    files = files.filter(file => 
+                        file.isPublic || file.ownerId === this.currentUser.id
+                    );
+                    
+                    // Filter by folder if specified
+                    if (folderId) {
+                        files = files.filter(file => file.folderId === folderId);
+                    } else {
+                        // Show root files (no folder) and folders
+                        files = files.filter(file => !file.folderId);
+                    }
+                    
+                    // Get folders owned by current user or public folders
+                    let folders = await this.db.getAll('folders');
+                    folders = folders.filter(folder => 
+                        (folder.isPublic || folder.ownerId === this.currentUser.id) &&
+                        (folderId === null ? !folder.parentId : folder.parentId === folderId)
+                    );
+                    
+                    // Show folders first
+                    for (const folder of folders) {
+                        const folderFiles = await this.db.getAll('files', 'folderId', folder.id);
+                        const folderElement = this.createFolderCard(folder, folderFiles.length);
+                        this.galleryContent.appendChild(folderElement);
+                    }
+                    
+                    // Then show files
+                    for (const file of files) {
+                        const fileElement = this.createFileCard(file);
+                        this.galleryContent.appendChild(fileElement);
+                    }
+                    
+                    if (folders.length === 0 && files.length === 0) {
+                        this.galleryContent.innerHTML = `
+                            <div class="col-12 text-center py-5">
+                                <i class="bi bi-folder-x" style="font-size: 3rem; opacity: 0.5;"></i>
+                                <h5 class="mt-3">No hay archivos en esta carpeta</h5>
+                                <p class="text-muted">Sube tu primer archivo usando la sección "SUBIR TU"</p>
+                            </div>
+                        `;
+                    }
+                } catch (error) {
+                    console.error('Error loading gallery:', error);
+                    this.showToast('Error', 'No se pudo cargar la galería', 'danger');
                 }
             }
 
@@ -1466,17 +1471,20 @@
                 
                 // If we're in a folder, add its name
                 if (folderId) {
-                    const folder = this.db.getFolderById(folderId);
-                    if (folder) {
-                        const separator = document.createElement('span');
-                        separator.className = 'mx-2';
-                        separator.textContent = '›';
-                        breadcrumb.appendChild(separator);
-                        
-                        const folderLink = document.createElement('span');
-                        folderLink.textContent = folder.name;
-                        breadcrumb.appendChild(folderLink);
-                    }
+                    this.db.get('folders', folderId).then(folder => {
+                        if (folder) {
+                            const separator = document.createElement('span');
+                            separator.className = 'mx-2';
+                            separator.textContent = '›';
+                            breadcrumb.appendChild(separator);
+                            
+                            const folderLink = document.createElement('span');
+                            folderLink.textContent = folder.name;
+                            breadcrumb.appendChild(folderLink);
+                        }
+                    }).catch(error => {
+                        console.error('Error getting folder:', error);
+                    });
                 }
                 
                 this.folderBreadcrumb.appendChild(breadcrumb);
@@ -1510,12 +1518,24 @@
                 });
                 
                 if (folderCard.querySelector('.delete-folder-btn')) {
-                    folderCard.querySelector('.delete-folder-btn').addEventListener('click', (e) => {
+                    folderCard.querySelector('.delete-folder-btn').addEventListener('click', async (e) => {
                         if (confirm('¿Estás seguro de que quieres eliminar esta carpeta y todo su contenido?')) {
-                            const folderId = e.target.closest('button').getAttribute('data-folder-id');
-                            this.db.deleteFolder(folderId);
-                            this.showToast('Éxito', 'Carpeta eliminada correctamente', 'success');
-                            this.loadGallery(this.currentFolderId);
+                            try {
+                                const folderId = e.target.closest('button').getAttribute('data-folder-id');
+                                await this.db.delete('folders', folderId);
+                                
+                                // Move files in this folder to root
+                                const filesInFolder = await this.db.getAll('files', 'folderId', folderId);
+                                for (const file of filesInFolder) {
+                                    await this.db.update('files', file.id, { folderId: null });
+                                }
+                                
+                                this.showToast('Éxito', 'Carpeta eliminada correctamente', 'success');
+                                await this.loadGallery(this.currentFolderId);
+                            } catch (error) {
+                                console.error('Error deleting folder:', error);
+                                this.showToast('Error', 'Error al eliminar la carpeta', 'danger');
+                            }
                         }
                     });
                 }
@@ -1523,7 +1543,7 @@
                 return folderCard;
             }
 
-            createFileCard(file) {
+            async createFileCard(file) {
                 const fileCard = document.createElement('div');
                 fileCard.className = 'col-md-3 mb-4';
                 
@@ -1550,8 +1570,8 @@
                     `;
                 }
                 
-                const likes = this.db.getLikesForFile(file.id);
-                const hasLiked = this.db.hasUserLikedFile(file.id, this.currentUser.id);
+                const likes = await this.db.getAll('likes', 'fileId', file.id);
+                const hasLiked = likes.some(like => like.userId === this.currentUser.id);
                 
                 fileCard.innerHTML = `
                     <div class="card file-card h-100">
@@ -1588,99 +1608,111 @@
                     });
                 }
                 
-                fileCard.querySelector('.like-btn').addEventListener('click', (e) => {
+                fileCard.querySelector('.like-btn').addEventListener('click', async (e) => {
                     const fileId = e.target.closest('button').getAttribute('data-file-id');
-                    this.toggleFileLike(fileId);
+                    await this.toggleFileLike(fileId);
                 });
                 
                 return fileCard;
             }
 
-            toggleFileLike(fileId) {
-                const file = this.db.getFileById(fileId);
-                if (!file) return;
-                
-                // Check if likes are allowed
-                if (!file.allowLikes && file.ownerId !== this.currentUser.id && !this.currentUser.isDeveloper) {
-                    this.showToast('Error', 'Los "me gusta" no están permitidos para este archivo', 'danger');
-                    return;
-                }
-                
-                const userId = this.currentUser.id;
-                
-                if (this.db.hasUserLikedFile(fileId, userId)) {
-                    this.db.removeLike(fileId, userId);
-                    this.showToast('Info', 'Has quitado tu "me gusta"', 'info');
-                } else {
-                    this.db.addLike({
-                        id: 'like-' + Date.now(),
-                        fileId,
-                        userId,
-                        createdAt: new Date().toISOString()
-                    });
-                    this.showToast('Éxito', 'Has dado "me gusta" a este archivo', 'success');
-                }
-                
-                // Update like count in gallery
-                const likes = this.db.getLikesForFile(fileId);
-                const hasLiked = this.db.hasUserLikedFile(fileId, userId);
-                
-                const likeBtn = document.querySelector(`.like-btn[data-file-id="${fileId}"]`);
-                if (likeBtn) {
-                    likeBtn.className = `btn btn-sm ${hasLiked ? 'btn-primary' : 'btn-outline-primary'}`;
-                    likeBtn.innerHTML = `<i class="bi bi-hand-thumbs-up"></i> ${likes.length}`;
+            async toggleFileLike(fileId) {
+                try {
+                    const file = await this.db.get('files', fileId);
+                    if (!file) return;
+                    
+                    // Check if likes are allowed
+                    if (!file.allowLikes && file.ownerId !== this.currentUser.id && !this.currentUser.isDeveloper) {
+                        this.showToast('Error', 'Los "me gusta" no están permitidos para este archivo', 'danger');
+                        return;
+                    }
+                    
+                    const userId = this.currentUser.id;
+                    const likes = await this.db.getAll('likes', 'fileId', fileId);
+                    const existingLike = likes.find(like => like.userId === userId);
+                    
+                    if (existingLike) {
+                        await this.db.delete('likes', existingLike.id);
+                        this.showToast('Info', 'Has quitado tu "me gusta"', 'info');
+                    } else {
+                        await this.db.add('likes', {
+                            id: 'like-' + Date.now(),
+                            fileId,
+                            userId,
+                            createdAt: new Date().toISOString()
+                        });
+                        this.showToast('Éxito', 'Has dado "me gusta" a este archivo', 'success');
+                    }
+                    
+                    // Update like count in gallery
+                    const updatedLikes = await this.db.getAll('likes', 'fileId', fileId);
+                    const hasLiked = updatedLikes.some(like => like.userId === userId);
+                    
+                    const likeBtn = document.querySelector(`.like-btn[data-file-id="${fileId}"]`);
+                    if (likeBtn) {
+                        likeBtn.className = `btn btn-sm ${hasLiked ? 'btn-primary' : 'btn-outline-primary'}`;
+                        likeBtn.innerHTML = `<i class="bi bi-hand-thumbs-up"></i> ${updatedLikes.length}`;
+                    }
+                } catch (error) {
+                    console.error('Error toggling like:', error);
+                    this.showToast('Error', 'Error al actualizar el "me gusta"', 'danger');
                 }
             }
 
-            previewFile(fileId) {
-                const file = this.db.getFileById(fileId);
-                if (!file) {
-                    this.showToast('Error', 'Archivo no encontrado', 'danger');
-                    return;
+            async previewFile(fileId) {
+                try {
+                    const file = await this.db.get('files', fileId);
+                    if (!file) {
+                        this.showToast('Error', 'Archivo no encontrado', 'danger');
+                        return;
+                    }
+                    
+                    this.previewFileTitle.textContent = file.title;
+                    this.previewFileContent.innerHTML = '';
+                    
+                    // Show different content based on file type
+                    if (file.type === 'image') {
+                        const img = document.createElement('img');
+                        img.src = file.data;
+                        img.className = 'img-fluid';
+                        img.alt = file.title;
+                        this.previewFileContent.appendChild(img);
+                    } else if (file.type === 'video') {
+                        const video = document.createElement('video');
+                        video.src = file.data;
+                        video.controls = true;
+                        video.className = 'w-100';
+                        this.previewFileContent.appendChild(video);
+                    } else if (file.type === 'audio') {
+                        const audio = document.createElement('audio');
+                        audio.src = file.data;
+                        audio.controls = true;
+                        audio.className = 'w-100';
+                        this.previewFileContent.appendChild(audio);
+                    } else if (file.type === 'document') {
+                        const embed = document.createElement('embed');
+                        embed.src = file.data;
+                        embed.type = file.mimeType;
+                        embed.className = 'w-100';
+                        embed.style.height = '500px';
+                        this.previewFileContent.appendChild(embed);
+                    } else {
+                        this.previewFileContent.innerHTML = '<p>Vista previa no disponible para este tipo de archivo</p>';
+                    }
+                    
+                    // Show download button if allowed
+                    if (file.allowDownload || file.ownerId === this.currentUser.id || this.currentUser.isDeveloper) {
+                        this.downloadFileBtn.style.display = 'block';
+                        this.downloadFileBtn.onclick = () => this.downloadFile(file);
+                    } else {
+                        this.downloadFileBtn.style.display = 'none';
+                    }
+                    
+                    this.filePreviewModal.show();
+                } catch (error) {
+                    console.error('Error previewing file:', error);
+                    this.showToast('Error', 'No se pudo cargar la vista previa', 'danger');
                 }
-                
-                this.previewFileTitle.textContent = file.title;
-                this.previewFileContent.innerHTML = '';
-                
-                // Show different content based on file type
-                if (file.type === 'image') {
-                    const img = document.createElement('img');
-                    img.src = file.data;
-                    img.className = 'img-fluid';
-                    img.alt = file.title;
-                    this.previewFileContent.appendChild(img);
-                } else if (file.type === 'video') {
-                    const video = document.createElement('video');
-                    video.src = file.data;
-                    video.controls = true;
-                    video.className = 'w-100';
-                    this.previewFileContent.appendChild(video);
-                } else if (file.type === 'audio') {
-                    const audio = document.createElement('audio');
-                    audio.src = file.data;
-                    audio.controls = true;
-                    audio.className = 'w-100';
-                    this.previewFileContent.appendChild(audio);
-                } else if (file.type === 'document') {
-                    const embed = document.createElement('embed');
-                    embed.src = file.data;
-                    embed.type = file.mimeType;
-                    embed.className = 'w-100';
-                    embed.style.height = '500px';
-                    this.previewFileContent.appendChild(embed);
-                } else {
-                    this.previewFileContent.innerHTML = '<p>Vista previa no disponible para este tipo de archivo</p>';
-                }
-                
-                // Show download button if allowed
-                if (file.allowDownload || file.ownerId === this.currentUser.id || this.currentUser.isDeveloper) {
-                    this.downloadFileBtn.style.display = 'block';
-                    this.downloadFileBtn.onclick = () => this.downloadFile(file);
-                } else {
-                    this.downloadFileBtn.style.display = 'none';
-                }
-                
-                this.filePreviewModal.show();
             }
 
             downloadFile(file) {
@@ -1694,38 +1726,49 @@
             }
 
             // Share methods
-            loadUsersForSharing() {
+            async loadUsersForSharing() {
                 this.shareUser.innerHTML = '<option value="" selected disabled>Selecciona un usuario</option>';
                 
-                // Get all users except current user
-                const users = this.db.users.filter(user => 
-                    user.id !== this.currentUser.id && 
-                    user.status === 'active'
-                );
-                
-                users.forEach(user => {
-                    const option = document.createElement('option');
-                    option.value = user.id;
-                    option.textContent = `${user.fullName} (${user.email})`;
-                    this.shareUser.appendChild(option);
-                });
+                try {
+                    // Get all users except current user
+                    const users = await this.db.getAll('users');
+                    const filteredUsers = users.filter(user => 
+                        user.id !== this.currentUser.id && 
+                        user.status === 'active'
+                    );
+                    
+                    filteredUsers.forEach(user => {
+                        const option = document.createElement('option');
+                        option.value = user.id;
+                        option.textContent = `${user.fullName} (${user.email})`;
+                        this.shareUser.appendChild(option);
+                    });
+                } catch (error) {
+                    console.error('Error loading users for sharing:', error);
+                    this.showToast('Error', 'No se pudieron cargar los usuarios', 'danger');
+                }
             }
 
-            loadFilesForSharing() {
+            async loadFilesForSharing() {
                 this.shareFile.innerHTML = '<option value="" selected disabled>Selecciona un archivo</option>';
                 
-                // Get files owned by current user
-                const files = this.db.getFilesByOwner(this.currentUser.id);
-                
-                files.forEach(file => {
-                    const option = document.createElement('option');
-                    option.value = file.id;
-                    option.textContent = `${file.title} (${file.type})`;
-                    this.shareFile.appendChild(option);
-                });
+                try {
+                    // Get files owned by current user
+                    const files = await this.db.getAll('files', 'ownerId', this.currentUser.id);
+                    
+                    files.forEach(file => {
+                        const option = document.createElement('option');
+                        option.value = file.id;
+                        option.textContent = `${file.title} (${file.type})`;
+                        this.shareFile.appendChild(option);
+                    });
+                } catch (error) {
+                    console.error('Error loading files for sharing:', error);
+                    this.showToast('Error', 'No se pudieron cargar los archivos', 'danger');
+                }
             }
 
-            shareFileWithUser() {
+            async shareFileWithUser() {
                 const userId = this.shareUser.value;
                 const fileId = this.shareFile.value;
                 const message = this.shareMessage.value.trim();
@@ -1735,167 +1778,208 @@
                     return;
                 }
                 
-                const file = this.db.getFileById(fileId);
-                if (!file) {
-                    this.showToast('Error', 'Archivo no encontrado', 'danger');
-                    return;
+                try {
+                    const file = await this.db.get('files', fileId);
+                    if (!file) {
+                        this.showToast('Error', 'Archivo no encontrado', 'danger');
+                        return;
+                    }
+                    
+                    // Check if already shared
+                    const shares = await this.db.getAll('shares');
+                    const alreadyShared = shares.some(share => 
+                        share.fromUserId === this.currentUser.id && 
+                        share.toUserId === userId && 
+                        share.fileId === fileId
+                    );
+                    
+                    if (alreadyShared) {
+                        this.showToast('Error', 'Ya has compartido este archivo con este usuario', 'danger');
+                        return;
+                    }
+                    
+                    const newShare = {
+                        id: 'share-' + Date.now(),
+                        fromUserId: this.currentUser.id,
+                        toUserId: userId,
+                        fileId,
+                        message,
+                        sharedAt: new Date().toISOString()
+                    };
+                    
+                    await this.db.add('shares', newShare);
+                    this.showToast('Éxito', 'Archivo compartido correctamente', 'success');
+                    
+                    // Reset form
+                    this.shareUser.value = '';
+                    this.shareFile.value = '';
+                    this.shareMessage.value = '';
+                    
+                    // Refresh shared files list
+                    await this.loadSharedFiles();
+                } catch (error) {
+                    console.error('Error sharing file:', error);
+                    this.showToast('Error', 'Error al compartir el archivo', 'danger');
                 }
-                
-                // Check if already shared
-                const alreadyShared = this.db.shares.some(share => 
-                    share.fromUserId === this.currentUser.id && 
-                    share.toUserId === userId && 
-                    share.fileId === fileId
-                );
-                
-                if (alreadyShared) {
-                    this.showToast('Error', 'Ya has compartido este archivo con este usuario', 'danger');
-                    return;
-                }
-                
-                const newShare = {
-                    id: 'share-' + Date.now(),
-                    fromUserId: this.currentUser.id,
-                    toUserId: userId,
-                    fileId,
-                    message,
-                    sharedAt: new Date().toISOString()
-                };
-                
-                this.db.addShare(newShare);
-                this.showToast('Éxito', 'Archivo compartido correctamente', 'success');
-                
-                // Reset form
-                this.shareUser.value = '';
-                this.shareFile.value = '';
-                this.shareMessage.value = '';
-                
-                // Refresh shared files list
-                this.loadSharedFiles();
             }
 
-            loadSharedFiles() {
+            async loadSharedFiles() {
                 this.sharedFilesList.innerHTML = '';
                 
-                // Get files shared with current user
-                const shares = this.db.getSharesToUser(this.currentUser.id);
-                
-                if (shares.length === 0) {
-                    this.sharedFilesList.innerHTML = `
-                        <tr>
-                            <td colspan="4" class="text-center py-3 text-muted">
-                                No tienes archivos compartidos contigo
-                            </td>
-                        </tr>
-                    `;
-                    return;
-                }
-                
-                shares.forEach(share => {
-                    const file = this.db.getFileById(share.fileId);
-                    const fromUser = this.db.getUserById(share.fromUserId);
+                try {
+                    // Get files shared with current user
+                    const shares = await this.db.getAll('shares', 'toUserId', this.currentUser.id);
                     
-                    if (file && fromUser) {
-                        const row = document.createElement('tr');
-                        row.innerHTML = `
-                            <td>
-                                <i class="bi ${this.getFileIconClass(file.type)} me-2"></i>
-                                ${file.title}
-                            </td>
-                            <td>${fromUser.fullName}</td>
-                            <td>${new Date(share.sharedAt).toLocaleString()}</td>
-                            <td>
-                                <button class="btn btn-sm btn-outline-primary preview-shared-btn" data-file-id="${file.id}">
-                                    <i class="bi bi-eye"></i> Ver
-                                </button>
-                            </td>
+                    if (shares.length === 0) {
+                        this.sharedFilesList.innerHTML = `
+                            <tr>
+                                <td colspan="4" class="text-center py-3 text-muted">
+                                    No tienes archivos compartidos contigo
+                                </td>
+                            </tr>
                         `;
-                        
-                        row.querySelector('.preview-shared-btn').addEventListener('click', (e) => {
-                            this.previewFile(e.target.closest('button').getAttribute('data-file-id'));
-                        });
-                        
-                        this.sharedFilesList.appendChild(row);
+                        return;
                     }
-                });
+                    
+                    for (const share of shares) {
+                        const file = await this.db.get('files', share.fileId);
+                        const fromUser = await this.db.get('users', share.fromUserId);
+                        
+                        if (file && fromUser) {
+                            const row = document.createElement('tr');
+                            row.innerHTML = `
+                                <td>
+                                    <i class="bi ${this.getFileIconClass(file.type)} me-2"></i>
+                                    ${file.title}
+                                </td>
+                                <td>${fromUser.fullName}</td>
+                                <td>${new Date(share.sharedAt).toLocaleString()}</td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-primary preview-shared-btn" data-file-id="${file.id}">
+                                        <i class="bi bi-eye"></i> Ver
+                                    </button>
+                                </td>
+                            `;
+                            
+                            row.querySelector('.preview-shared-btn').addEventListener('click', (e) => {
+                                this.previewFile(e.target.closest('button').getAttribute('data-file-id'));
+                            });
+                            
+                            this.sharedFilesList.appendChild(row);
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error loading shared files:', error);
+                    this.showToast('Error', 'No se pudieron cargar los archivos compartidos', 'danger');
+                }
             }
 
             // User management methods
-            loadUsersForManagement() {
+            async loadUsersForManagement() {
                 if (!this.currentUser.isDeveloper) return;
                 
                 this.usersList.innerHTML = '';
                 
-                // Get all users except developer
-                const users = this.db.users.filter(user => !user.isDeveloper);
-                
-                if (users.length === 0) {
-                    this.usersList.innerHTML = `
-                        <tr>
-                            <td colspan="6" class="text-center py-3 text-muted">
-                                No hay usuarios registrados
+                try {
+                    // Get all users except developer
+                    const users = await this.db.getAll('users');
+                    const filteredUsers = users.filter(user => !user.isDeveloper);
+                    
+                    if (filteredUsers.length === 0) {
+                        this.usersList.innerHTML = `
+                            <tr>
+                                <td colspan="6" class="text-center py-3 text-muted">
+                                    No hay usuarios registrados
+                                </td>
+                            </tr>
+                        `;
+                        return;
+                    }
+                    
+                    for (const user of filteredUsers) {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${user.fullName}</td>
+                            <td>${user.email}</td>
+                            <td>${user.gender}</td>
+                            <td>+${user.phonePrefix} ${user.phone}</td>
+                            <td>
+                                <span class="badge ${user.status === 'active' ? 'bg-success' : 'bg-danger'}">
+                                    ${user.status === 'active' ? 'Activo' : 'Bloqueado'}
+                                </span>
                             </td>
-                        </tr>
-                    `;
-                    return;
+                            <td>
+                                <button class="btn btn-sm btn-outline-primary manage-user-btn" data-user-id="${user.id}">
+                                    <i class="bi bi-gear"></i> Gestionar
+                                </button>
+                            </td>
+                        `;
+                        
+                        row.querySelector('.manage-user-btn').addEventListener('click', (e) => {
+                            this.manageUser(e.target.closest('button').getAttribute('data-user-id'));
+                        });
+                        
+                        this.usersList.appendChild(row);
+                    }
+                } catch (error) {
+                    console.error('Error loading users:', error);
+                    this.showToast('Error', 'No se pudieron cargar los usuarios', 'danger');
                 }
-                
-                users.forEach(user => {
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td>${user.fullName}</td>
-                        <td>${user.email}</td>
-                        <td>${user.gender}</td>
-                        <td>+${user.phonePrefix} ${user.phone}</td>
-                        <td>
-                            <span class="badge ${user.status === 'active' ? 'bg-success' : 'bg-danger'}">
-                                ${user.status === 'active' ? 'Activo' : 'Bloqueado'}
-                            </span>
-                        </td>
-                        <td>
-                            <button class="btn btn-sm btn-outline-primary manage-user-btn" data-user-id="${user.id}">
-                                <i class="bi bi-gear"></i> Gestionar
-                            </button>
-                        </td>
-                    `;
-                    
-                    row.querySelector('.manage-user-btn').addEventListener('click', (e) => {
-                        this.manageUser(e.target.closest('button').getAttribute('data-user-id'));
-                    });
-                    
-                    this.usersList.appendChild(row);
-                });
             }
 
-            manageUser(userId) {
-                const user = this.db.getUserById(userId);
-                if (!user) {
-                    this.showToast('Error', 'Usuario no encontrado', 'danger');
-                    return;
-                }
-                
-                const newStatus = user.status === 'active' ? 'blocked' : 'active';
-                if (confirm(`¿Estás seguro de que quieres ${newStatus === 'active' ? 'activar' : 'bloquear'} a ${user.fullName}?`)) {
-                    this.db.updateUser(userId, { status: newStatus });
-                    this.showToast('Éxito', `Usuario ${newStatus === 'active' ? 'activado' : 'bloqueado'} correctamente`, 'success');
-                    this.loadUsersForManagement();
+            async manageUser(userId) {
+                try {
+                    const user = await this.db.get('users', userId);
+                    if (!user) {
+                        this.showToast('Error', 'Usuario no encontrado', 'danger');
+                        return;
+                    }
+                    
+                    const newStatus = user.status === 'active' ? 'blocked' : 'active';
+                    if (confirm(`¿Estás seguro de que quieres ${newStatus === 'active' ? 'activar' : 'bloquear'} a ${user.fullName}?`)) {
+                        await this.db.update('users', userId, { status: newStatus });
+                        this.showToast('Éxito', `Usuario ${newStatus === 'active' ? 'activado' : 'bloqueado'} correctamente`, 'success');
+                        await this.loadUsersForManagement();
+                    }
+                } catch (error) {
+                    console.error('Error managing user:', error);
+                    this.showToast('Error', 'Error al gestionar el usuario', 'danger');
                 }
             }
 
             // Utility methods
-            updateStorageInfo() {
+            async updateStorageInfo() {
                 if (!this.currentUser) return;
                 
-                const usage = this.db.getUserStorageUsage(this.currentUser.id);
-                const limit = this.currentUser.storageLimit;
-                
-                this.storageUsed.textContent = usage.toFixed(2);
-                this.storageTotal.textContent = limit;
-                
-                // Update storage info in dropdown
-                const storageInfo = document.getElementById('storage-info');
-                if (storageInfo) {
-                    storageInfo.innerHTML = `Almacenamiento: <span id="storage-used">${usage.toFixed(2)}</span> GB / <span id="storage-total">${limit}</span> GB`;
+                try {
+                    const usage = await this.getUserStorageUsage(this.currentUser.id);
+                    const limit = this.currentUser.storageLimit;
+                    const percentage = Math.min(Math.round((usage / limit) * 100), 100);
+                    
+                    this.storageUsed.textContent = usage.toFixed(2);
+                    this.storageTotal.textContent = limit;
+                    
+                    // Update progress bar
+                    this.storageProgressBar.style.width = `${percentage}%`;
+                    this.storageProgressBar.className = `progress-bar ${percentage > 90 ? 'bg-danger' : percentage > 70 ? 'bg-warning' : 'bg-success'}`;
+                    
+                    // Update storage info in dropdown
+                    const storageInfo = document.getElementById('storage-info');
+                    if (storageInfo) {
+                        storageInfo.innerHTML = `Almacenamiento: <span id="storage-used">${usage.toFixed(2)}</span> GB / <span id="storage-total">${limit}</span> GB`;
+                    }
+                } catch (error) {
+                    console.error('Error updating storage info:', error);
+                }
+            }
+
+            async getUserStorageUsage(userId) {
+                try {
+                    const files = await this.db.getAll('files', 'ownerId', userId);
+                    return files.reduce((total, file) => total + file.size, 0) / (1024 * 1024 * 1024); // Convert to GB
+                } catch (error) {
+                    console.error('Error calculating storage usage:', error);
+                    return 0;
                 }
             }
 
