@@ -83,94 +83,117 @@
         .active-section {
             display: block;
         }
-        .auth-section {
-            display: none;
+        .auth-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
         }
-        .auth-active {
-            display: block;
+        .auth-card {
+            width: 100%;
+            max-width: 500px;
+        }
+        #app-container {
+            display: none;
         }
     </style>
 </head>
 <body class="bg-light">
-    <!-- Auth Container -->
-    <div id="auth-container" class="container d-flex justify-content-center align-items-center min-vh-100">
-        <div class="card shadow-sm" style="width: 100%; max-width: 500px;">
+    <!-- Login Container -->
+    <div id="login-container" class="auth-container">
+        <div class="card shadow-sm auth-card">
             <div class="card-body p-4">
-                <!-- Login Section -->
-                <div id="login-section" class="auth-section auth-active">
-                    <h2 class="text-center mb-4">Inicie la sesión en <span class="brand-font">mYpuB</span></h2>
-                    <form id="login-form">
-                        <div class="mb-3">
-                            <label for="login-email" class="form-label">Correo electrónico</label>
-                            <input type="email" class="form-control" id="login-email" required>
+                <h2 class="text-center mb-4">Inicie la sesión en <span class="brand-font">mYpuB</span></h2>
+                <form id="login-form">
+                    <div class="mb-3">
+                        <label for="login-email" class="form-label">Correo electrónico</label>
+                        <input type="email" class="form-control" id="login-email" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="login-password" class="form-label">Contraseña</label>
+                        <input type="password" class="form-control" id="login-password" required>
+                    </div>
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary">Iniciar sesión</button>
+                        <button type="button" id="switch-to-register" class="btn btn-link text-decoration-none">¿No tienes cuenta? Regístrate</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Register Container -->
+    <div id="register-container" class="auth-container" style="display: none;">
+        <div class="card shadow-sm auth-card">
+            <div class="card-body p-4">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h2 class="mb-0">Regístrate en <span class="brand-font">mYpuB</span></h2>
+                    <button id="register-help-button" class="btn btn-link text-primary">
+                        <i class="bi bi-question-circle" style="font-size: 1.5rem;"></i>
+                    </button>
+                    <div id="register-help-panel" class="card shadow" style="display: none; position: absolute; right: 20px; top: 80px; z-index: 1000;">
+                        <div class="card-body p-2">
+                            <button class="btn btn-link text-decoration-none w-100 text-start">
+                                <i class="bi bi-envelope me-2"></i>Ayuda por Email
+                            </button>
+                            <button class="btn btn-link text-decoration-none w-100 text-start">
+                                <i class="bi bi-whatsapp me-2"></i>Ayuda por WhatsApp
+                            </button>
                         </div>
-                        <div class="mb-3">
-                            <label for="login-password" class="form-label">Contraseña</label>
-                            <input type="password" class="form-control" id="login-password" required>
-                        </div>
-                        <div class="d-grid gap-2">
-                            <button type="submit" class="btn btn-primary">Iniciar sesión</button>
-                            <button type="button" id="switch-to-register" class="btn btn-link text-decoration-none">¿No tienes cuenta? Regístrate</button>
-                        </div>
-                    </form>
+                    </div>
                 </div>
-                
-                <!-- Register Section -->
-                <div id="register-section" class="auth-section">
-                    <h2 class="text-center mb-4">Regístrate en <span class="brand-font">mYpuB</span></h2>
-                    <form id="register-form">
-                        <div class="mb-3">
-                            <label for="full-name" class="form-label">Nombre completo</label>
-                            <input type="text" class="form-control" id="full-name" required>
+                <form id="register-form">
+                    <div class="mb-3">
+                        <label for="full-name" class="form-label">Nombre completo</label>
+                        <input type="text" class="form-control" id="full-name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Correo electrónico (Gmail)</label>
+                        <input type="email" class="form-control" id="email" required>
+                        <div class="invalid-feedback">Debe ser una dirección de Gmail válida</div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="gender" class="form-label">Género</label>
+                        <select class="form-select" id="gender" required>
+                            <option value="" selected disabled>Selecciona tu género</option>
+                            <option value="Hombre">Hombre</option>
+                            <option value="Mujer">Mujer</option>
+                            <option value="Otro">Otro</option>
+                        </select>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-3">
+                            <label for="phone-prefix" class="form-label">Prefijo</label>
+                            <input type="text" class="form-control" id="phone-prefix" value="240" required>
                         </div>
-                        <div class="mb-3">
-                            <label for="email" class="form-label">Correo electrónico (Gmail)</label>
-                            <input type="email" class="form-control" id="email" required>
-                            <div class="invalid-feedback">Debe ser una dirección de Gmail válida</div>
+                        <div class="col-9">
+                            <label for="phone" class="form-label">Teléfono</label>
+                            <input type="tel" class="form-control" id="phone" required>
                         </div>
-                        <div class="mb-3">
-                            <label for="gender" class="form-label">Género</label>
-                            <select class="form-select" id="gender" required>
-                                <option value="" selected disabled>Selecciona tu género</option>
-                                <option value="Hombre">Hombre</option>
-                                <option value="Mujer">Mujer</option>
-                                <option value="Otro">Otro</option>
-                            </select>
-                        </div>
-                        <div class="row mb-3">
-                            <div class="col-3">
-                                <label for="phone-prefix" class="form-label">Prefijo</label>
-                                <input type="text" class="form-control" id="phone-prefix" value="240" required>
-                            </div>
-                            <div class="col-9">
-                                <label for="phone" class="form-label">Teléfono</label>
-                                <input type="tel" class="form-control" id="phone" required>
-                            </div>
-                        </div>
-                        <div class="mb-3">
-                            <label for="password" class="form-label">Contraseña</label>
-                            <input type="password" class="form-control" id="password" required>
-                            <small class="form-text text-muted">Debe contener 6 letras (1 mayúscula), 4 números y 2 símbolos (@#&)</small>
-                            <div class="password-strength mt-1"></div>
-                            <div class="invalid-feedback">La contraseña no cumple con los requisitos</div>
-                        </div>
-                        <div class="mb-3">
-                            <label for="confirm-password" class="form-label">Confirmar contraseña</label>
-                            <input type="password" class="form-control" id="confirm-password" required>
-                            <div class="invalid-feedback">Las contraseñas no coinciden</div>
-                        </div>
-                        <div class="d-grid gap-2">
-                            <button type="submit" class="btn btn-primary">Registrarse</button>
-                            <button type="button" id="switch-to-login" class="btn btn-link text-decoration-none">¿Ya tienes cuenta? Inicia sesión</button>
-                        </div>
-                    </form>
-                </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Contraseña</label>
+                        <input type="password" class="form-control" id="password" required>
+                        <small class="form-text text-muted">Debe contener 6 letras (1 mayúscula), 4 números y 2 símbolos (@#&)</small>
+                        <div class="password-strength mt-1"></div>
+                        <div class="invalid-feedback">La contraseña no cumple con los requisitos</div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="confirm-password" class="form-label">Confirmar contraseña</label>
+                        <input type="password" class="form-control" id="confirm-password" required>
+                        <div class="invalid-feedback">Las contraseñas no coinciden</div>
+                    </div>
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary">Registrarse</button>
+                        <button type="button" id="switch-to-login" class="btn btn-link text-decoration-none">¿Ya tienes cuenta? Inicia sesión</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
 
     <!-- App Container -->
-    <div id="app-container" class="container-fluid p-0" style="display: none;">
+    <div id="app-container" class="container-fluid p-0">
         <!-- Navbar -->
         <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
             <div class="container">
@@ -469,204 +492,6 @@
         </div>
     </div>
 
-    <!-- Email Help Modal -->
-    <div class="modal fade" id="emailHelpModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Ayuda por Email</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label for="help-name" class="form-label">Tu nombre</label>
-                        <input type="text" class="form-control" id="help-name" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="help-email" class="form-label">Tu email</label>
-                        <input type="email" class="form-control" id="help-email" required>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="button" id="send-email-help" class="btn btn-primary">Enviar email</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- WhatsApp Help Modal -->
-    <div class="modal fade" id="whatsappHelpModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Ayuda por WhatsApp</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label for="whatsapp-name" class="form-label">Tu nombre</label>
-                        <input type="text" class="form-control" id="whatsapp-name" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="whatsapp-number" class="form-label">Tu número de teléfono</label>
-                        <input type="tel" class="form-control" id="whatsapp-number" required>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="button" id="send-whatsapp-help" class="btn btn-success">Abrir WhatsApp</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- File Preview Modal -->
-    <div class="modal fade" id="filePreviewModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="filePreviewTitle"></h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div id="filePreviewContent" class="mb-3 text-center"></div>
-                    
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <p id="filePreviewDescription"></p>
-                            <div class="d-flex gap-2 mb-2">
-                                <span id="filePreviewVisibility" class="badge"></span>
-                                <span id="filePreviewType" class="badge"></span>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <p><strong>Propietario:</strong> <span id="filePreviewOwner"></span></p>
-                            <p><strong>Fecha de subida:</strong> <span id="filePreviewDate"></span></p>
-                        </div>
-                    </div>
-                    
-                    <div class="d-flex justify-content-between mb-3">
-                        <button id="likeBtn" class="btn btn-sm btn-outline-primary">
-                            <i class="bi bi-hand-thumbs-up"></i> Me gusta (<span id="likeCount">0</span>)
-                        </button>
-                        <button id="downloadBtn" class="btn btn-sm btn-outline-success">
-                            <i class="bi bi-download"></i> Descargar
-                        </button>
-                    </div>
-                    
-                    <div id="fileOwnerActions" class="mb-3"></div>
-                    
-                    <hr>
-                    
-                    <h6>Comentarios</h6>
-                    <div id="commentsList" class="mb-3"></div>
-                    
-                    <div class="input-group mb-3">
-                        <input type="text" id="commentInput" class="form-control" placeholder="Escribe un comentario...">
-                        <button id="postCommentBtn" class="btn btn-primary">Publicar</button>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Create Folder Modal -->
-    <div class="modal fade" id="createFolderModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Crear nueva carpeta</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label for="folder-name" class="form-label">Nombre de la carpeta</label>
-                        <input type="text" class="form-control" id="folder-name" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Visibilidad</label>
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" name="folder-visibility" id="folder-public" value="public" checked>
-                            <label class="form-check-label" for="folder-public">
-                                Público (visible para todos los usuarios)
-                            </label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" name="folder-visibility" id="folder-private" value="private">
-                            <label class="form-check-label" for="folder-private">
-                                Privado (solo visible para ti)
-                            </label>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="button" id="create-folder-submit" class="btn btn-primary">Crear carpeta</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- User Management Modal -->
-    <div class="modal fade" id="userManagementModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Gestionar usuario</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label for="edit-user-name" class="form-label">Nombre completo</label>
-                        <input type="text" class="form-control" id="edit-user-name" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="edit-user-email" class="form-label">Correo electrónico</label>
-                        <input type="email" class="form-control" id="edit-user-email" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="edit-user-gender" class="form-label">Género</label>
-                        <select class="form-select" id="edit-user-gender" required>
-                            <option value="Hombre">Hombre</option>
-                            <option value="Mujer">Mujer</option>
-                            <option value="Otro">Otro</option>
-                        </select>
-                    </div>
-                    <div class="row mb-3">
-                        <div class="col-3">
-                            <label for="edit-user-phone-prefix" class="form-label">Prefijo</label>
-                            <input type="text" class="form-control" id="edit-user-phone-prefix" required>
-                        </div>
-                        <div class="col-9">
-                            <label for="edit-user-phone" class="form-label">Teléfono</label>
-                            <input type="tel" class="form-control" id="edit-user-phone" required>
-                        </div>
-                    </div>
-                    <div class="mb-3">
-                        <label for="edit-user-status" class="form-label">Estado</label>
-                        <select class="form-select" id="edit-user-status" required>
-                            <option value="active">Activo</option>
-                            <option value="blocked">Bloqueado</option>
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label for="edit-user-storage" class="form-label">Límite de almacenamiento (GB)</label>
-                        <input type="number" class="form-control" id="edit-user-storage" min="50" max="100" required>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" id="delete-user-btn" class="btn btn-danger me-auto">Eliminar usuario</button>
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="button" id="save-user-changes" class="btn btn-primary">Guardar cambios</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <!-- Toast Notification -->
     <div id="toast" class="toast">
         <div class="toast-header">
@@ -703,11 +528,13 @@
                     password: 'Enzema0097@&',
                     storageLimit: 1000, // Unlimited storage for developer
                     isDeveloper: true,
-                    status: 'active'
+                    status: 'active',
+                    registeredAt: new Date().toISOString()
                 };
                 
                 if (!this.users.some(u => u.isDeveloper)) {
                     this.users.push(developer);
+                    this.saveToLocalStorage();
                 }
             }
 
@@ -718,7 +545,8 @@
                     folders: this.folders,
                     shares: this.shares,
                     comments: this.comments,
-                    likes: this.likes
+                    likes: this.likes,
+                    version: '1.0'
                 };
                 localStorage.setItem('mYpuB_DB', JSON.stringify(dbData));
             }
@@ -737,6 +565,8 @@
                     if (!this.users.some(u => u.isDeveloper)) {
                         this.initializeDeveloper();
                     }
+                } else {
+                    this.initializeDeveloper();
                 }
             }
 
@@ -744,6 +574,7 @@
             addUser(user) {
                 this.users.push(user);
                 this.saveToLocalStorage();
+                return user;
             }
 
             getUserByEmail(email) {
@@ -957,11 +788,14 @@
 
             initElements() {
                 // Auth elements
-                this.authContainer = document.getElementById('auth-container');
+                this.loginContainer = document.getElementById('login-container');
+                this.registerContainer = document.getElementById('register-container');
                 this.loginForm = document.getElementById('login-form');
                 this.registerForm = document.getElementById('register-form');
                 this.switchToLogin = document.getElementById('switch-to-login');
                 this.switchToRegister = document.getElementById('switch-to-register');
+                this.registerHelpButton = document.getElementById('register-help-button');
+                this.registerHelpPanel = document.getElementById('register-help-panel');
                 
                 // Form fields
                 this.fullName = document.getElementById('full-name');
@@ -973,12 +807,6 @@
                 this.confirmPassword = document.getElementById('confirm-password');
                 this.loginEmail = document.getElementById('login-email');
                 this.loginPassword = document.getElementById('login-password');
-                
-                // Help elements
-                this.helpButton = document.getElementById('help-button');
-                this.helpPanel = document.getElementById('help-panel');
-                this.emailHelp = document.getElementById('email-help');
-                this.whatsappHelp = document.getElementById('whatsapp-help');
                 
                 // App elements
                 this.appContainer = document.getElementById('app-container');
@@ -1016,53 +844,11 @@
                 // Users section
                 this.usersList = document.getElementById('users-list');
                 
-                // Modals
-                this.emailHelpModal = new bootstrap.Modal(document.getElementById('emailHelpModal'));
-                this.whatsappHelpModal = new bootstrap.Modal(document.getElementById('whatsappHelpModal'));
-                this.filePreviewModal = new bootstrap.Modal(document.getElementById('filePreviewModal'));
-                this.createFolderModal = new bootstrap.Modal(document.getElementById('createFolderModal'));
-                this.userManagementModal = new bootstrap.Modal(document.getElementById('userManagementModal'));
-                
-                // File preview modal elements
-                this.filePreviewTitle = document.getElementById('filePreviewTitle');
-                this.filePreviewContent = document.getElementById('filePreviewContent');
-                this.filePreviewDescription = document.getElementById('filePreviewDescription');
-                this.filePreviewVisibility = document.getElementById('filePreviewVisibility');
-                this.filePreviewType = document.getElementById('filePreviewType');
-                this.filePreviewOwner = document.getElementById('filePreviewOwner');
-                this.filePreviewDate = document.getElementById('filePreviewDate');
-                this.likeBtn = document.getElementById('likeBtn');
-                this.likeCount = document.getElementById('likeCount');
-                this.downloadBtn = document.getElementById('downloadBtn');
-                this.fileOwnerActions = document.getElementById('fileOwnerActions');
-                this.commentsList = document.getElementById('commentsList');
-                this.commentInput = document.getElementById('commentInput');
-                this.postCommentBtn = document.getElementById('postCommentBtn');
-                
-                // Create folder modal
-                this.folderName = document.getElementById('folder-name');
-                this.createFolderSubmit = document.getElementById('create-folder-submit');
-                
-                // User management modal
-                this.editUserName = document.getElementById('edit-user-name');
-                this.editUserEmail = document.getElementById('edit-user-email');
-                this.editUserGender = document.getElementById('edit-user-gender');
-                this.editUserPhonePrefix = document.getElementById('edit-user-phone-prefix');
-                this.editUserPhone = document.getElementById('edit-user-phone');
-                this.editUserStatus = document.getElementById('edit-user-status');
-                this.editUserStorage = document.getElementById('edit-user-storage');
-                this.saveUserChanges = document.getElementById('save-user-changes');
-                this.deleteUserBtn = document.getElementById('delete-user-btn');
-                
                 // Toast
                 this.toast = new bootstrap.Toast(document.getElementById('toast'));
                 this.toastTitle = document.getElementById('toast-title');
                 this.toastMessage = document.getElementById('toast-message');
                 this.toastTime = document.getElementById('toast-time');
-                
-                // Current file for preview
-                this.currentPreviewFile = null;
-                this.currentManagedUser = null;
             }
 
             initEventListeners() {
@@ -1072,13 +858,10 @@
                 this.loginForm.addEventListener('submit', (e) => this.handleLoginSubmit(e));
                 this.registerForm.addEventListener('submit', (e) => this.handleRegisterSubmit(e));
                 this.password.addEventListener('input', () => this.checkPasswordStrength());
-                
-                // Help events
-                this.helpButton.addEventListener('click', (e) => this.toggleHelpPanel(e));
-                this.emailHelp.addEventListener('click', () => this.showEmailHelpModal());
-                this.whatsappHelp.addEventListener('click', () => this.showWhatsappHelpModal());
-                document.getElementById('send-email-help').addEventListener('click', () => this.sendEmailHelp());
-                document.getElementById('send-whatsapp-help').addEventListener('click', () => this.sendWhatsappHelp());
+                this.registerHelpButton.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    this.registerHelpPanel.style.display = this.registerHelpPanel.style.display === 'block' ? 'none' : 'block';
+                });
                 
                 // App events
                 this.logoutBtn.addEventListener('click', () => this.logout());
@@ -1093,7 +876,6 @@
                 this.uploadForm.addEventListener('submit', (e) => this.handleFileUpload(e));
                 this.createFolderBtn.addEventListener('click', () => this.showCreateFolderModal());
                 this.createFolderGalleryBtn.addEventListener('click', () => this.showCreateFolderModal());
-                this.createFolderSubmit.addEventListener('click', () => this.createFolder());
                 
                 // Gallery events
                 this.refreshGallery.addEventListener('click', () => this.loadGallery());
@@ -1101,19 +883,17 @@
                 // Share events
                 this.shareBtn.addEventListener('click', () => this.shareFileWithUser());
                 
-                // File preview events
-                this.likeBtn.addEventListener('click', () => this.toggleLike());
-                this.downloadBtn.addEventListener('click', () => this.downloadFile());
-                this.postCommentBtn.addEventListener('click', () => this.postComment());
-                
-                // User management events
-                this.saveUserChanges.addEventListener('click', () => this.saveUserChangesHandler());
-                this.deleteUserBtn.addEventListener('click', () => this.deleteUserHandler());
+                // Close help panels when clicking outside
+                document.addEventListener('click', (e) => {
+                    if (!this.registerHelpButton.contains(e.target) && !this.registerHelpPanel.contains(e.target)) {
+                        this.registerHelpPanel.style.display = 'none';
+                    }
+                });
             }
 
             // Auth methods
             checkAuthState() {
-                // Check if user is logged in (in a real app, you'd check session/token)
+                // Check if user is logged in
                 const loggedInUser = localStorage.getItem('mYpuB_currentUser');
                 if (loggedInUser) {
                     this.currentUser = JSON.parse(loggedInUser);
@@ -1124,17 +904,34 @@
                         return;
                     }
                 }
-                this.showAuth();
+                this.showLoginForm();
             }
 
-            showAuth() {
-                this.authContainer.style.display = 'block';
+            showLoginForm() {
+                this.loginContainer.style.display = 'flex';
+                this.registerContainer.style.display = 'none';
                 this.appContainer.style.display = 'none';
-                this.showRegisterForm();
+                this.loginEmail.value = '';
+                this.loginPassword.value = '';
+            }
+
+            showRegisterForm() {
+                this.registerContainer.style.display = 'flex';
+                this.loginContainer.style.display = 'none';
+                this.appContainer.style.display = 'none';
+                this.fullName.value = '';
+                this.email.value = '';
+                this.gender.value = '';
+                this.phonePrefix.value = '240';
+                this.phone.value = '';
+                this.password.value = '';
+                this.confirmPassword.value = '';
+                this.registerHelpPanel.style.display = 'none';
             }
 
             showApp() {
-                this.authContainer.style.display = 'none';
+                this.loginContainer.style.display = 'none';
+                this.registerContainer.style.display = 'none';
                 this.appContainer.style.display = 'block';
                 
                 // Show welcome message based on gender
@@ -1160,25 +957,6 @@
                 
                 // Load initial section
                 this.showSection('upload');
-            }
-
-            showLoginForm() {
-                document.getElementById('login-section').classList.add('auth-active');
-                document.getElementById('register-section').classList.remove('auth-active');
-                this.loginEmail.value = '';
-                this.loginPassword.value = '';
-            }
-
-            showRegisterForm() {
-                document.getElementById('register-section').classList.add('auth-active');
-                document.getElementById('login-section').classList.remove('auth-active');
-                this.fullName.value = '';
-                this.email.value = '';
-                this.gender.value = '';
-                this.phonePrefix.value = '240';
-                this.phone.value = '';
-                this.password.value = '';
-                this.confirmPassword.value = '';
             }
 
             checkPasswordStrength() {
@@ -1318,89 +1096,17 @@
                 this.currentUser = newUser;
                 localStorage.setItem('mYpuB_currentUser', JSON.stringify(newUser));
                 
-                // Show welcome message based on gender
-                let welcomeMsg = '';
-                if (gender === 'Hombre') {
-                    welcomeMsg = `Bienvenido a <span class="brand-font">mYpuB</span> Sr. ${fullName.split(' ')[0]}`;
-                } else if (gender === 'Mujer') {
-                    welcomeMsg = `Bienvenida a <span class="brand-font">mYpuB</span> Sra. ${fullName.split(' ')[0]}`;
-                } else {
-                    welcomeMsg = `Gracias por utilizar <span class="brand-font">mYpuB</span>`;
-                }
+                this.showToast('Éxito', 'Registro completado correctamente', 'success');
                 
-                this.showApp();
-                this.showToast('Éxito', welcomeMsg, 'success');
-                
-                // Clear register form
+                // Clear register form and show login
                 this.showLoginForm();
             }
 
             logout() {
                 this.currentUser = null;
                 localStorage.removeItem('mYpuB_currentUser');
-                this.showAuth();
+                this.showLoginForm();
                 this.showToast('Sesión cerrada', 'Has cerrado sesión correctamente', 'info');
-            }
-
-            // Help methods
-            toggleHelpPanel(e) {
-                e.stopPropagation();
-                this.helpPanel.style.display = this.helpPanel.style.display === 'block' ? 'none' : 'block';
-            }
-
-            showEmailHelpModal() {
-                this.helpPanel.style.display = 'none';
-                this.emailHelpModal.show();
-            }
-
-            showWhatsappHelpModal() {
-                this.helpPanel.style.display = 'none';
-                this.whatsappHelpModal.show();
-            }
-
-            sendEmailHelp() {
-                const name = document.getElementById('help-name').value.trim();
-                const email = document.getElementById('help-email').value.trim();
-                
-                if (!name || !email) {
-                    this.showToast('Error', 'Por favor complete todos los campos', 'danger');
-                    return;
-                }
-                
-                if (!this.validateEmail(email)) {
-                    this.showToast('Error', 'Por favor ingrese un email válido', 'danger');
-                    return;
-                }
-                
-                const subject = `Consulta de ${name} sobre mYpuB`;
-                const body = `Hola Tarciano,\n\nTengo una consulta sobre mYpuB:\n\n[Escribe tu consulta aquí]`;
-                
-                window.location.href = `mailto:enzemajr@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-                this.emailHelpModal.hide();
-                this.showToast('Email listo', 'Se ha abierto tu cliente de email para enviar la consulta', 'success');
-                
-                // Clear help form
-                document.getElementById('help-name').value = '';
-                document.getElementById('help-email').value = '';
-            }
-
-            sendWhatsappHelp() {
-                const name = document.getElementById('whatsapp-name').value.trim();
-                const number = document.getElementById('whatsapp-number').value.trim();
-                
-                if (!name || !number) {
-                    this.showToast('Error', 'Por favor complete todos los campos', 'danger');
-                    return;
-                }
-                
-                const message = `Hola Tarciano, soy ${name}. Tengo una consulta sobre mYpuB: [Escribe tu consulta aquí]`;
-                window.open(`https://wa.me/+240222084663?text=${encodeURIComponent(message)}`, '_blank');
-                this.whatsappHelpModal.hide();
-                this.showToast('WhatsApp listo', 'Se ha abierto WhatsApp para enviar tu consulta', 'success');
-                
-                // Clear help form
-                document.getElementById('whatsapp-name').value = '';
-                document.getElementById('whatsapp-number').value = '';
             }
 
             // App navigation
@@ -1690,255 +1396,6 @@
                 return fileCard;
             }
 
-            previewFile(fileId) {
-                const file = this.db.getFileById(fileId);
-                if (!file) {
-                    this.showToast('Error', 'Archivo no encontrado', 'danger');
-                    return;
-                }
-                
-                this.currentPreviewFile = file;
-                
-                // Check if current user can view this file
-                if (!file.isPublic && file.ownerId !== this.currentUser.id && !this.currentUser.isDeveloper) {
-                    this.showToast('Error', 'No tienes permiso para ver este archivo', 'danger');
-                    return;
-                }
-                
-                // Set file info
-                this.filePreviewTitle.textContent = file.title;
-                this.filePreviewDescription.textContent = file.description || 'Sin descripción';
-                this.filePreviewVisibility.textContent = file.isPublic ? 'Público' : 'Privado';
-                this.filePreviewVisibility.className = `badge ${file.isPublic ? 'bg-success' : 'bg-secondary'}`;
-                
-                // Set file type badge
-                let typeText = '';
-                let typeClass = '';
-                switch (file.type) {
-                    case 'image':
-                        typeText = 'Imagen';
-                        typeClass = 'bg-info';
-                        break;
-                    case 'video':
-                        typeText = 'Video';
-                        typeClass = 'bg-primary';
-                        break;
-                    case 'audio':
-                        typeText = 'Audio';
-                        typeClass = 'bg-warning text-dark';
-                        break;
-                    case 'document':
-                        typeText = 'PDF';
-                        typeClass = 'bg-danger';
-                        break;
-                }
-                this.filePreviewType.textContent = typeText;
-                this.filePreviewType.className = `badge ${typeClass}`;
-                
-                // Set owner and date
-                const owner = this.db.getUserById(file.ownerId);
-                this.filePreviewOwner.textContent = owner ? owner.fullName : 'Desconocido';
-                this.filePreviewDate.textContent = new Date(file.uploadedAt).toLocaleString();
-                
-                // Set file content
-                this.filePreviewContent.innerHTML = '';
-                
-                if (file.type === 'image') {
-                    const img = document.createElement('img');
-                    img.src = file.data;
-                    img.className = 'img-fluid';
-                    img.alt = file.title;
-                    this.filePreviewContent.appendChild(img);
-                } else if (file.type === 'video') {
-                    const video = document.createElement('video');
-                    video.src = file.data;
-                    video.controls = true;
-                    video.className = 'w-100';
-                    this.filePreviewContent.appendChild(video);
-                } else if (file.type === 'audio') {
-                    const audio = document.createElement('audio');
-                    audio.src = file.data;
-                    audio.controls = true;
-                    audio.className = 'w-100';
-                    this.filePreviewContent.appendChild(audio);
-                } else if (file.type === 'document') {
-                    const embed = document.createElement('embed');
-                    embed.src = file.data;
-                    embed.type = file.mimeType;
-                    embed.style.width = '100%';
-                    embed.style.height = '500px';
-                    this.filePreviewContent.appendChild(embed);
-                }
-                
-                // Set likes
-                const likes = this.db.getLikesForFile(file.id);
-                this.likeCount.textContent = likes.length;
-                
-                const hasLiked = this.db.hasUserLikedFile(file.id, this.currentUser.id);
-                this.likeBtn.className = `btn btn-sm ${hasLiked ? 'btn-primary' : 'btn-outline-primary'}`;
-                this.likeBtn.innerHTML = `<i class="bi bi-hand-thumbs-up"></i> Me gusta (${likes.length})`;
-                
-                // Set download button visibility
-                this.downloadBtn.style.display = file.allowDownload || file.ownerId === this.currentUser.id || this.currentUser.isDeveloper ? 'block' : 'none';
-                
-                // Set owner actions
-                this.fileOwnerActions.innerHTML = '';
-                if (file.ownerId === this.currentUser.id || this.currentUser.isDeveloper) {
-                    const deleteBtn = document.createElement('button');
-                    deleteBtn.className = 'btn btn-sm btn-danger';
-                    deleteBtn.innerHTML = '<i class="bi bi-trash"></i> Eliminar';
-                    deleteBtn.addEventListener('click', () => {
-                        if (confirm('¿Estás seguro de que quieres eliminar este archivo?')) {
-                            this.db.deleteFile(file.id);
-                            this.filePreviewModal.hide();
-                            this.showToast('Éxito', 'Archivo eliminado correctamente', 'success');
-                            this.loadGallery();
-                        }
-                    });
-                    this.fileOwnerActions.appendChild(deleteBtn);
-                }
-                
-                // Set comments section
-                this.commentsList.innerHTML = '';
-                const comments = this.db.getCommentsForFile(file.id);
-                
-                if (file.allowComments || file.ownerId === this.currentUser.id || this.currentUser.isDeveloper) {
-                    comments.forEach(comment => {
-                        const commentUser = this.db.getUserById(comment.userId);
-                        const commentElement = document.createElement('div');
-                        commentElement.className = 'card mb-2';
-                        commentElement.innerHTML = `
-                            <div class="card-body p-2">
-                                <div class="d-flex justify-content-between">
-                                    <strong>${commentUser ? commentUser.fullName : 'Usuario desconocido'}</strong>
-                                    <small class="text-muted">${new Date(comment.createdAt).toLocaleString()}</small>
-                                </div>
-                                <p class="mb-0">${comment.text}</p>
-                            </div>
-                        `;
-                        this.commentsList.appendChild(commentElement);
-                    });
-                    
-                    this.commentInput.style.display = 'block';
-                    this.postCommentBtn.style.display = 'block';
-                } else {
-                    this.commentInput.style.display = 'none';
-                    this.postCommentBtn.style.display = 'none';
-                    
-                    if (comments.length > 0) {
-                        comments.forEach(comment => {
-                            const commentUser = this.db.getUserById(comment.userId);
-                            const commentElement = document.createElement('div');
-                            commentElement.className = 'card mb-2';
-                            commentElement.innerHTML = `
-                                <div class="card-body p-2">
-                                    <div class="d-flex justify-content-between">
-                                        <strong>${commentUser ? commentUser.fullName : 'Usuario desconocido'}</strong>
-                                        <small class="text-muted">${new Date(comment.createdAt).toLocaleString()}</small>
-                                    </div>
-                                    <p class="mb-0">${comment.text}</p>
-                                </div>
-                            `;
-                            this.commentsList.appendChild(commentElement);
-                        });
-                    } else {
-                        this.commentsList.innerHTML = '<p class="text-muted text-center">Los comentarios están desactivados para este archivo</p>';
-                    }
-                }
-                
-                this.filePreviewModal.show();
-            }
-
-            toggleLike() {
-                if (!this.currentPreviewFile) return;
-                
-                const fileId = this.currentPreviewFile.id;
-                const userId = this.currentUser.id;
-                
-                if (this.db.hasUserLikedFile(fileId, userId)) {
-                    this.db.removeLike(fileId, userId);
-                    this.showToast('Info', 'Has quitado tu "me gusta"', 'info');
-                } else {
-                    this.db.addLike({
-                        id: 'like-' + Date.now(),
-                        fileId,
-                        userId,
-                        createdAt: new Date().toISOString()
-                    });
-                    this.showToast('Éxito', 'Has dado "me gusta" a este archivo', 'success');
-                }
-                
-                // Update like count and button
-                const likes = this.db.getLikesForFile(fileId);
-                this.likeCount.textContent = likes.length;
-                
-                const hasLiked = this.db.hasUserLikedFile(fileId, userId);
-                this.likeBtn.className = `btn btn-sm ${hasLiked ? 'btn-primary' : 'btn-outline-primary'}`;
-                this.likeBtn.innerHTML = `<i class="bi bi-hand-thumbs-up"></i> Me gusta (${likes.length})`;
-                
-                // Update like count in gallery if visible
-                const likeBtnInGallery = document.querySelector(`.like-btn[data-file-id="${fileId}"]`);
-                if (likeBtnInGallery) {
-                    likeBtnInGallery.className = `btn btn-sm ${hasLiked ? 'btn-primary' : 'btn-outline-primary'}`;
-                    likeBtnInGallery.innerHTML = `<i class="bi bi-hand-thumbs-up"></i> ${likes.length}`;
-                }
-            }
-
-            downloadFile() {
-                if (!this.currentPreviewFile) return;
-                
-                const file = this.currentPreviewFile;
-                
-                // Check if downloads are allowed
-                if (!file.allowDownload && file.ownerId !== this.currentUser.id && !this.currentUser.isDeveloper) {
-                    this.showToast('Error', 'Las descargas no están permitidas para este archivo', 'danger');
-                    return;
-                }
-                
-                const link = document.createElement('a');
-                link.href = file.data;
-                link.download = file.name;
-                link.click();
-                this.showToast('Éxito', 'Descarga iniciada', 'success');
-            }
-
-            postComment() {
-                if (!this.currentPreviewFile) return;
-                
-                const commentText = this.commentInput.value.trim();
-                if (!commentText) {
-                    this.showToast('Error', 'Por favor escribe un comentario', 'danger');
-                    return;
-                }
-                
-                const newComment = {
-                    id: 'comment-' + Date.now(),
-                    fileId: this.currentPreviewFile.id,
-                    userId: this.currentUser.id,
-                    text: commentText,
-                    createdAt: new Date().toISOString()
-                };
-                
-                this.db.addComment(newComment);
-                this.showToast('Éxito', 'Comentario publicado', 'success');
-                this.commentInput.value = '';
-                
-                // Refresh comments list
-                const commentUser = this.db.getUserById(newComment.userId);
-                const commentElement = document.createElement('div');
-                commentElement.className = 'card mb-2';
-                commentElement.innerHTML = `
-                    <div class="card-body p-2">
-                        <div class="d-flex justify-content-between">
-                            <strong>${commentUser ? commentUser.fullName : 'Usuario desconocido'}</strong>
-                            <small class="text-muted">${new Date(newComment.createdAt).toLocaleString()}</small>
-                        </div>
-                        <p class="mb-0">${newComment.text}</p>
-                    </div>
-                `;
-                this.commentsList.appendChild(commentElement);
-            }
-
             toggleFileLike(fileId) {
                 const file = this.db.getFileById(fileId);
                 if (!file) return;
@@ -1973,49 +1430,6 @@
                     likeBtn.className = `btn btn-sm ${hasLiked ? 'btn-primary' : 'btn-outline-primary'}`;
                     likeBtn.innerHTML = `<i class="bi bi-hand-thumbs-up"></i> ${likes.length}`;
                 }
-                
-                // If file is currently being previewed, update that too
-                if (this.currentPreviewFile && this.currentPreviewFile.id === fileId) {
-                    this.likeCount.textContent = likes.length;
-                    this.likeBtn.className = `btn btn-sm ${hasLiked ? 'btn-primary' : 'btn-outline-primary'}`;
-                    this.likeBtn.innerHTML = `<i class="bi bi-hand-thumbs-up"></i> Me gusta (${likes.length})`;
-                }
-            }
-
-            // Folder methods
-            showCreateFolderModal() {
-                this.folderName.value = '';
-                document.getElementById('folder-public').checked = true;
-                this.createFolderModal.show();
-            }
-
-            createFolder() {
-                const name = this.folderName.value.trim();
-                if (!name) {
-                    this.showToast('Error', 'Por favor ingresa un nombre para la carpeta', 'danger');
-                    return;
-                }
-                
-                const isPublic = document.getElementById('folder-public').checked;
-                
-                const newFolder = {
-                    id: 'folder-' + Date.now(),
-                    name,
-                    ownerId: this.currentUser.id,
-                    isPublic,
-                    createdAt: new Date().toISOString()
-                };
-                
-                this.db.addFolder(newFolder);
-                this.showToast('Éxito', 'Carpeta creada correctamente', 'success');
-                this.createFolderModal.hide();
-                
-                // Clear folder form
-                this.folderName.value = '';
-                
-                // Refresh folder lists
-                this.loadFoldersForUpload();
-                this.loadGallery();
             }
 
             // Share methods
@@ -2200,66 +1614,8 @@
                     return;
                 }
                 
-                this.currentManagedUser = user;
-                
-                // Set form values
-                this.editUserName.value = user.fullName;
-                this.editUserEmail.value = user.email;
-                this.editUserGender.value = user.gender;
-                this.editUserPhonePrefix.value = user.phonePrefix;
-                this.editUserPhone.value = user.phone;
-                this.editUserStatus.value = user.status;
-                this.editUserStorage.value = user.storageLimit;
-                
-                // Show delete button only for non-developer users
-                this.deleteUserBtn.style.display = user.isDeveloper ? 'none' : 'block';
-                
-                this.userManagementModal.show();
-            }
-
-            saveUserChangesHandler() {
-                if (!this.currentManagedUser) return;
-                
-                const updates = {
-                    fullName: this.editUserName.value.trim(),
-                    email: this.editUserEmail.value.trim(),
-                    gender: this.editUserGender.value,
-                    phonePrefix: this.editUserPhonePrefix.value.trim(),
-                    phone: this.editUserPhone.value.trim(),
-                    status: this.editUserStatus.value,
-                    storageLimit: parseInt(this.editUserStorage.value)
-                };
-                
-                // Validate storage limit (50-100GB)
-                if (updates.storageLimit < 50 || updates.storageLimit > 100) {
-                    this.showToast('Error', 'El límite de almacenamiento debe estar entre 50 y 100 GB', 'danger');
-                    return;
-                }
-                
-                this.db.updateUser(this.currentManagedUser.id, updates);
-                this.showToast('Éxito', 'Cambios guardados correctamente', 'success');
-                this.userManagementModal.hide();
-                this.loadUsersForManagement();
-                
-                // Clear management form
-                this.editUserName.value = '';
-                this.editUserEmail.value = '';
-                this.editUserGender.value = '';
-                this.editUserPhonePrefix.value = '';
-                this.editUserPhone.value = '';
-                this.editUserStatus.value = '';
-                this.editUserStorage.value = '';
-            }
-
-            deleteUserHandler() {
-                if (!this.currentManagedUser) return;
-                
-                if (confirm(`¿Estás seguro de que quieres eliminar permanentemente al usuario ${this.currentManagedUser.fullName}? Todos sus archivos también serán eliminados.`)) {
-                    this.db.deleteUser(this.currentManagedUser.id);
-                    this.showToast('Éxito', 'Usuario eliminado correctamente', 'success');
-                    this.userManagementModal.hide();
-                    this.loadUsersForManagement();
-                }
+                // Here you would implement user management functionality
+                this.showToast('Info', 'Funcionalidad de gestión de usuarios', 'info');
             }
 
             // Utility methods
@@ -2316,14 +1672,6 @@
         // Initialize the application when DOM is loaded
         document.addEventListener('DOMContentLoaded', () => {
             const app = new mYpuBApp();
-            
-            // Close help panel when clicking outside
-            document.addEventListener('click', () => {
-                const helpPanel = document.getElementById('help-panel');
-                if (helpPanel.style.display === 'block') {
-                    helpPanel.style.display = 'none';
-                }
-            });
         });
     </script>
 </body>
