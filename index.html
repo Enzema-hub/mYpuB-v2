@@ -96,6 +96,17 @@
         #app-container {
             display: none;
         }
+        .folder-breadcrumb {
+            background-color: #f8f9fa;
+            padding: 0.5rem 1rem;
+            border-radius: 0.25rem;
+            margin-bottom: 1rem;
+        }
+        .folder-breadcrumb a {
+            text-decoration: none;
+            color: #0d6efd;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body class="bg-light">
@@ -133,10 +144,10 @@
                     </button>
                     <div id="register-help-panel" class="card shadow" style="display: none; position: absolute; right: 20px; top: 80px; z-index: 1000;">
                         <div class="card-body p-2">
-                            <button class="btn btn-link text-decoration-none w-100 text-start">
+                            <button id="register-email-help" class="btn btn-link text-decoration-none w-100 text-start">
                                 <i class="bi bi-envelope me-2"></i>Ayuda por Email
                             </button>
-                            <button class="btn btn-link text-decoration-none w-100 text-start">
+                            <button id="register-whatsapp-help" class="btn btn-link text-decoration-none w-100 text-start">
                                 <i class="bi bi-whatsapp me-2"></i>Ayuda por WhatsApp
                             </button>
                         </div>
@@ -353,6 +364,9 @@
                         </div>
                     </div>
                     <div class="card-body">
+                        <div id="folder-breadcrumb" class="folder-breadcrumb mb-3">
+                            <a class="root-folder">Raíz</a>
+                        </div>
                         <div class="row" id="gallery-content">
                             <!-- Files and folders will be loaded here -->
                         </div>
@@ -487,6 +501,66 @@
                         <p><i class="bi bi-envelope me-2"></i>enzemajr@gmail.com</p>
                         <p><i class="bi bi-whatsapp me-2"></i>+240 222 084 663</p>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create Folder Modal -->
+    <div class="modal fade" id="createFolderModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Crear nueva carpeta</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="create-folder-form">
+                        <div class="mb-3">
+                            <label for="folder-name" class="form-label">Nombre de la carpeta</label>
+                            <input type="text" class="form-control" id="folder-name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Visibilidad</label>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="folder-visibility" id="folder-public" value="public" checked>
+                                <label class="form-check-label" for="folder-public">
+                                    Pública (visible para todos los usuarios)
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="folder-visibility" id="folder-private" value="private">
+                                <label class="form-check-label" for="folder-private">
+                                    Privada (solo visible para ti)
+                                </label>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="confirm-create-folder">Crear carpeta</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- File Preview Modal -->
+    <div class="modal fade" id="filePreviewModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="preview-file-title"></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="preview-file-content">
+                    <!-- File content will be loaded here -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    <button type="button" class="btn btn-primary" id="download-file-btn" style="display: none;">
+                        <i class="bi bi-download"></i> Descargar
+                    </button>
                 </div>
             </div>
         </div>
@@ -669,8 +743,11 @@
                 return this.folders.find(f => f.id === id);
             }
 
-            getFoldersByOwner(ownerId) {
-                return this.folders.filter(f => f.ownerId === ownerId);
+            getFoldersByOwner(ownerId, parentId = null) {
+                return this.folders.filter(f => 
+                    f.ownerId === ownerId && 
+                    (parentId === null || f.parentId === parentId)
+                );
             }
 
             updateFolder(id, updates) {
@@ -781,9 +858,12 @@
             constructor() {
                 this.db = new VirtualDB();
                 this.currentUser = null;
+                this.currentFolderId = null; // Track current folder for gallery
                 this.initElements();
                 this.initEventListeners();
                 this.checkAuthState();
+                this.createFolderModal = new bootstrap.Modal(document.getElementById('createFolderModal'));
+                this.filePreviewModal = new bootstrap.Modal(document.getElementById('filePreviewModal'));
             }
 
             initElements() {
@@ -796,6 +876,8 @@
                 this.switchToRegister = document.getElementById('switch-to-register');
                 this.registerHelpButton = document.getElementById('register-help-button');
                 this.registerHelpPanel = document.getElementById('register-help-panel');
+                this.registerEmailHelp = document.getElementById('register-email-help');
+                this.registerWhatsappHelp = document.getElementById('register-whatsapp-help');
                 
                 // Form fields
                 this.fullName = document.getElementById('full-name');
@@ -833,6 +915,7 @@
                 this.galleryContent = document.getElementById('gallery-content');
                 this.refreshGallery = document.getElementById('refresh-gallery');
                 this.createFolderGalleryBtn = document.getElementById('create-folder-gallery-btn');
+                this.folderBreadcrumb = document.getElementById('folder-breadcrumb');
                 
                 // Share section
                 this.shareUser = document.getElementById('share-user');
@@ -843,6 +926,21 @@
                 
                 // Users section
                 this.usersList = document.getElementById('users-list');
+                
+                // Create folder modal
+                this.folderName = document.getElementById('folder-name');
+                this.confirmCreateFolder = document.getElementById('confirm-create-folder');
+                
+                // File preview modal
+                this.previewFileTitle = document.getElementById('preview-file-title');
+                this.previewFileContent = document.getElementById('preview-file-content');
+                this.downloadFileBtn = document.getElementById('download-file-btn');
+                
+                // Help elements
+                this.helpButton = document.getElementById('help-button');
+                this.helpPanel = document.getElementById('help-panel');
+                this.emailHelp = document.getElementById('email-help');
+                this.whatsappHelp = document.getElementById('whatsapp-help');
                 
                 // Toast
                 this.toast = new bootstrap.Toast(document.getElementById('toast'));
@@ -863,6 +961,15 @@
                     this.registerHelpPanel.style.display = this.registerHelpPanel.style.display === 'block' ? 'none' : 'block';
                 });
                 
+                // Register help buttons
+                this.registerEmailHelp.addEventListener('click', () => {
+                    window.location.href = 'mailto:enzemajr@gmail.com?subject=Ayuda%20con%20registro%20en%20mYpuB';
+                });
+                
+                this.registerWhatsappHelp.addEventListener('click', () => {
+                    window.open('https://wa.me/240222084663?text=Necesito%20ayuda%20con%20el%20registro%20en%20mYpuB', '_blank');
+                });
+                
                 // App events
                 this.logoutBtn.addEventListener('click', () => this.logout());
                 this.navLinks.forEach(link => {
@@ -878,15 +985,36 @@
                 this.createFolderGalleryBtn.addEventListener('click', () => this.showCreateFolderModal());
                 
                 // Gallery events
-                this.refreshGallery.addEventListener('click', () => this.loadGallery());
+                this.refreshGallery.addEventListener('click', () => this.loadGallery(this.currentFolderId));
                 
                 // Share events
                 this.shareBtn.addEventListener('click', () => this.shareFileWithUser());
+                
+                // Create folder modal events
+                this.confirmCreateFolder.addEventListener('click', () => this.createFolder());
+                
+                // Help panel events
+                this.helpButton.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    this.helpPanel.style.display = this.helpPanel.style.display === 'block' ? 'none' : 'block';
+                });
+                
+                this.emailHelp.addEventListener('click', () => {
+                    window.location.href = 'mailto:enzemajr@gmail.com?subject=Ayuda%20con%20mYpuB';
+                });
+                
+                this.whatsappHelp.addEventListener('click', () => {
+                    window.open('https://wa.me/240222084663?text=Necesito%20ayuda%20con%20mYpuB', '_blank');
+                });
                 
                 // Close help panels when clicking outside
                 document.addEventListener('click', (e) => {
                     if (!this.registerHelpButton.contains(e.target) && !this.registerHelpPanel.contains(e.target)) {
                         this.registerHelpPanel.style.display = 'none';
+                    }
+                    
+                    if (!this.helpButton.contains(e.target) && !this.helpPanel.contains(e.target)) {
+                        this.helpPanel.style.display = 'none';
                     }
                 });
             }
@@ -1133,7 +1261,7 @@
                         this.loadFoldersForUpload();
                         break;
                     case 'gallery':
-                        this.loadGallery();
+                        this.loadGallery(this.currentFolderId);
                         break;
                     case 'share':
                         this.loadUsersForSharing();
@@ -1224,7 +1352,7 @@
                     
                     // If in gallery section, refresh it
                     if (document.getElementById('gallery-section').style.display !== 'none') {
-                        this.loadGallery();
+                        this.loadGallery(this.currentFolderId);
                     }
                 };
                 reader.onerror = () => {
@@ -1233,9 +1361,52 @@
                 reader.readAsDataURL(file);
             }
 
+            // Folder methods
+            showCreateFolderModal() {
+                this.folderName.value = '';
+                document.getElementById('folder-public').checked = true;
+                this.createFolderModal.show();
+            }
+
+            createFolder() {
+                const name = this.folderName.value.trim();
+                if (!name) {
+                    this.showToast('Error', 'Por favor ingresa un nombre para la carpeta', 'danger');
+                    return;
+                }
+                
+                const isPublic = document.getElementById('folder-public').checked;
+                
+                const folder = {
+                    id: 'folder-' + Date.now(),
+                    ownerId: this.currentUser.id,
+                    name,
+                    isPublic,
+                    parentId: this.currentFolderId,
+                    createdAt: new Date().toISOString()
+                };
+                
+                this.db.addFolder(folder);
+                this.createFolderModal.hide();
+                this.showToast('Éxito', 'Carpeta creada correctamente', 'success');
+                
+                // Refresh the appropriate view
+                if (document.getElementById('upload-section').style.display !== 'none') {
+                    this.loadFoldersForUpload();
+                }
+                
+                if (document.getElementById('gallery-section').style.display !== 'none') {
+                    this.loadGallery(this.currentFolderId);
+                }
+            }
+
             // Gallery methods
             loadGallery(folderId = null) {
+                this.currentFolderId = folderId;
                 this.galleryContent.innerHTML = '';
+                
+                // Update breadcrumb
+                this.updateBreadcrumb(folderId);
                 
                 // Get all public files or private files owned by current user
                 let files = this.db.files.filter(file => 
@@ -1252,14 +1423,12 @@
                 
                 // Get folders owned by current user or public folders
                 const folders = this.db.folders.filter(folder => 
-                    folder.isPublic || folder.ownerId === this.currentUser.id
+                    (folder.isPublic || folder.ownerId === this.currentUser.id) &&
+                    (folderId === null ? !folder.parentId : folder.parentId === folderId)
                 );
                 
                 // Show folders first
-                folders.filter(folder => 
-                    (folderId === null && !folder.parentId) || 
-                    (folder.parentId === folderId)
-                ).forEach(folder => {
+                folders.forEach(folder => {
                     const folderFiles = this.db.files.filter(file => file.folderId === folder.id);
                     const folderElement = this.createFolderCard(folder, folderFiles.length);
                     this.galleryContent.appendChild(folderElement);
@@ -1280,6 +1449,37 @@
                         </div>
                     `;
                 }
+            }
+
+            updateBreadcrumb(folderId = null) {
+                this.folderBreadcrumb.innerHTML = '';
+                
+                const breadcrumb = document.createElement('div');
+                breadcrumb.className = 'folder-breadcrumb mb-3';
+                
+                // Always add root link
+                const rootLink = document.createElement('a');
+                rootLink.className = 'root-folder';
+                rootLink.textContent = 'Raíz';
+                rootLink.addEventListener('click', () => this.loadGallery(null));
+                breadcrumb.appendChild(rootLink);
+                
+                // If we're in a folder, add its name
+                if (folderId) {
+                    const folder = this.db.getFolderById(folderId);
+                    if (folder) {
+                        const separator = document.createElement('span');
+                        separator.className = 'mx-2';
+                        separator.textContent = '›';
+                        breadcrumb.appendChild(separator);
+                        
+                        const folderLink = document.createElement('span');
+                        folderLink.textContent = folder.name;
+                        breadcrumb.appendChild(folderLink);
+                    }
+                }
+                
+                this.folderBreadcrumb.appendChild(breadcrumb);
             }
 
             createFolderCard(folder, fileCount) {
@@ -1315,7 +1515,7 @@
                             const folderId = e.target.closest('button').getAttribute('data-folder-id');
                             this.db.deleteFolder(folderId);
                             this.showToast('Éxito', 'Carpeta eliminada correctamente', 'success');
-                            this.loadGallery();
+                            this.loadGallery(this.currentFolderId);
                         }
                     });
                 }
@@ -1432,6 +1632,67 @@
                 }
             }
 
+            previewFile(fileId) {
+                const file = this.db.getFileById(fileId);
+                if (!file) {
+                    this.showToast('Error', 'Archivo no encontrado', 'danger');
+                    return;
+                }
+                
+                this.previewFileTitle.textContent = file.title;
+                this.previewFileContent.innerHTML = '';
+                
+                // Show different content based on file type
+                if (file.type === 'image') {
+                    const img = document.createElement('img');
+                    img.src = file.data;
+                    img.className = 'img-fluid';
+                    img.alt = file.title;
+                    this.previewFileContent.appendChild(img);
+                } else if (file.type === 'video') {
+                    const video = document.createElement('video');
+                    video.src = file.data;
+                    video.controls = true;
+                    video.className = 'w-100';
+                    this.previewFileContent.appendChild(video);
+                } else if (file.type === 'audio') {
+                    const audio = document.createElement('audio');
+                    audio.src = file.data;
+                    audio.controls = true;
+                    audio.className = 'w-100';
+                    this.previewFileContent.appendChild(audio);
+                } else if (file.type === 'document') {
+                    const embed = document.createElement('embed');
+                    embed.src = file.data;
+                    embed.type = file.mimeType;
+                    embed.className = 'w-100';
+                    embed.style.height = '500px';
+                    this.previewFileContent.appendChild(embed);
+                } else {
+                    this.previewFileContent.innerHTML = '<p>Vista previa no disponible para este tipo de archivo</p>';
+                }
+                
+                // Show download button if allowed
+                if (file.allowDownload || file.ownerId === this.currentUser.id || this.currentUser.isDeveloper) {
+                    this.downloadFileBtn.style.display = 'block';
+                    this.downloadFileBtn.onclick = () => this.downloadFile(file);
+                } else {
+                    this.downloadFileBtn.style.display = 'none';
+                }
+                
+                this.filePreviewModal.show();
+            }
+
+            downloadFile(file) {
+                const a = document.createElement('a');
+                a.href = file.data;
+                a.download = file.name;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                this.showToast('Éxito', 'Descarga iniciada', 'success');
+            }
+
             // Share methods
             loadUsersForSharing() {
                 this.shareUser.innerHTML = '<option value="" selected disabled>Selecciona un usuario</option>';
@@ -1439,8 +1700,7 @@
                 // Get all users except current user
                 const users = this.db.users.filter(user => 
                     user.id !== this.currentUser.id && 
-                    user.status === 'active' &&
-                    !user.isDeveloper
+                    user.status === 'active'
                 );
                 
                 users.forEach(user => {
@@ -1614,8 +1874,12 @@
                     return;
                 }
                 
-                // Here you would implement user management functionality
-                this.showToast('Info', 'Funcionalidad de gestión de usuarios', 'info');
+                const newStatus = user.status === 'active' ? 'blocked' : 'active';
+                if (confirm(`¿Estás seguro de que quieres ${newStatus === 'active' ? 'activar' : 'bloquear'} a ${user.fullName}?`)) {
+                    this.db.updateUser(userId, { status: newStatus });
+                    this.showToast('Éxito', `Usuario ${newStatus === 'active' ? 'activado' : 'bloqueado'} correctamente`, 'success');
+                    this.loadUsersForManagement();
+                }
             }
 
             // Utility methods
