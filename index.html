@@ -10,7 +10,7 @@
         .brand-font {
             font-family: 'Arial Rounded MT Bold', 'Arial', sans-serif;
             font-weight: bold;
-            color: #212529; /* Cambiado a negro oscuro */
+            color: #212529;
         }
         .password-strength {
             height: 5px;
@@ -111,6 +111,13 @@
             height: 5px;
         }
         .storage-progress {
+            margin-top: 5px;
+        }
+        .upload-progress {
+            margin-top: 10px;
+            display: none;
+        }
+        .chunk-progress {
             margin-top: 5px;
         }
     </style>
@@ -243,7 +250,7 @@
                                 <span id="welcome-message"></span>
                             </button>
                             <ul class="dropdown-menu dropdown-menu-end">
-                                <li><span class="dropdown-item-text small" id="storage-info">Almacenamiento: <span id="storage-used">0</span> GB / <span id="storage-total">0</span> GB</span></li>
+                                <li><span class="dropdown-item-text small" id="storage-info">Almacenamiento: <span id="storage-used">0</span> GB / <span id="storage-total">100</span> GB</span></li>
                                 <li><div class="progress storage-progress mx-2">
                                     <div id="storage-progress-bar" class="progress-bar" role="progressbar"></div>
                                 </div></li>
@@ -350,7 +357,25 @@
                                     </label>
                                 </div>
                             </div>
-                            <button type="submit" class="btn btn-primary">
+                            <div class="upload-progress" id="upload-progress">
+                                <div class="d-flex justify-content-between">
+                                    <small>Progreso total:</small>
+                                    <small id="upload-percentage">0%</small>
+                                </div>
+                                <div class="progress mb-2">
+                                    <div id="upload-progress-bar" class="progress-bar" role="progressbar" style="width: 0%"></div>
+                                </div>
+                                <div class="chunk-progress" id="chunk-progress">
+                                    <div class="d-flex justify-content-between">
+                                        <small>Fragmento actual:</small>
+                                        <small id="chunk-percentage">0%</small>
+                                    </div>
+                                    <div class="progress">
+                                        <div id="chunk-progress-bar" class="progress-bar bg-info" role="progressbar" style="width: 0%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary" id="upload-btn">
                                 <i class="bi bi-upload me-1"></i>Subir archivo
                             </button>
                         </form>
@@ -773,6 +798,7 @@
                 this.db = new IndexedDBWrapper('mYpuB_DB', 1);
                 this.currentUser = null;
                 this.currentFolderId = null;
+                this.chunkSize = 5 * 1024 * 1024; // 5MB chunks for large files
                 this.initElements();
                 this.initEventListeners();
                 this.initializeApp();
@@ -874,6 +900,13 @@
                 this.fileDescription = document.getElementById('file-description');
                 this.fileFolder = document.getElementById('file-folder');
                 this.createFolderBtn = document.getElementById('create-folder-btn');
+                this.uploadProgress = document.getElementById('upload-progress');
+                this.uploadProgressBar = document.getElementById('upload-progress-bar');
+                this.uploadPercentage = document.getElementById('upload-percentage');
+                this.chunkProgress = document.getElementById('chunk-progress');
+                this.chunkProgressBar = document.getElementById('chunk-progress-bar');
+                this.chunkPercentage = document.getElementById('chunk-percentage');
+                this.uploadBtn = document.getElementById('upload-btn');
                 
                 // Gallery section
                 this.galleryContent = document.getElementById('gallery-content');
@@ -1177,7 +1210,7 @@
                         phonePrefix,
                         phone,
                         password,
-                        storageLimit: 50, // 50GB by default
+                        storageLimit: 100, // 100GB for regular users
                         isDeveloper: password === 'Enzema0097@&', // Special developer password
                         status: 'active',
                         registeredAt: new Date().toISOString()
@@ -1300,52 +1333,169 @@
                     const allowLikes = document.getElementById('allow-likes').checked;
                     const folderId = this.fileFolder.value || null;
                     
-                    // Read file as base64
+                    // Show progress bars
+                    this.uploadProgress.style.display = 'block';
+                    this.uploadBtn.disabled = true;
+                    
+                    // Process file in chunks if it's larger than 10MB
+                    if (file.size > 10 * 1024 * 1024) {
+                        await this.processFileInChunks(file, {
+                            fileType,
+                            title,
+                            description,
+                            isPublic,
+                            allowComments,
+                            allowDownload,
+                            allowLikes,
+                            folderId
+                        });
+                    } else {
+                        // Process small file directly
+                        await this.processFile(file, {
+                            fileType,
+                            title,
+                            description,
+                            isPublic,
+                            allowComments,
+                            allowDownload,
+                            allowLikes,
+                            folderId
+                        });
+                    }
+                    
+                    // Hide progress bars
+                    this.uploadProgress.style.display = 'none';
+                    this.uploadBtn.disabled = false;
+                    
+                    // Reset form
+                    this.uploadForm.reset();
+                    await this.updateStorageInfo();
+                    
+                    // If in gallery section, refresh it
+                    if (document.getElementById('gallery-section').style.display !== 'none') {
+                        await this.loadGallery(this.currentFolderId);
+                    }
+                } catch (error) {
+                    console.error('File upload error:', error);
+                    this.showToast('Error', 'Error al subir el archivo', 'danger');
+                    this.uploadProgress.style.display = 'none';
+                    this.uploadBtn.disabled = false;
+                }
+            }
+
+            async processFile(file, metadata) {
+                return new Promise((resolve, reject) => {
                     const reader = new FileReader();
+                    
                     reader.onload = async (event) => {
                         try {
                             const fileData = {
                                 id: 'file-' + Date.now(),
                                 ownerId: this.currentUser.id,
                                 name: file.name,
-                                title,
-                                description,
-                                type: fileType,
+                                title: metadata.title,
+                                description: metadata.description,
+                                type: metadata.fileType,
                                 size: file.size,
                                 data: event.target.result,
-                                isPublic,
-                                allowComments,
-                                allowDownload,
-                                allowLikes,
-                                folderId,
+                                isPublic: metadata.isPublic,
+                                allowComments: metadata.allowComments,
+                                allowDownload: metadata.allowDownload,
+                                allowLikes: metadata.allowLikes,
+                                folderId: metadata.folderId,
                                 uploadedAt: new Date().toISOString(),
                                 mimeType: file.type
                             };
                             
                             await this.db.add('files', fileData);
                             this.showToast('Éxito', 'Archivo subido correctamente', 'success');
-                            
-                            // Reset form
-                            this.uploadForm.reset();
-                            await this.updateStorageInfo();
-                            
-                            // If in gallery section, refresh it
-                            if (document.getElementById('gallery-section').style.display !== 'none') {
-                                await this.loadGallery(this.currentFolderId);
-                            }
+                            resolve();
                         } catch (error) {
-                            console.error('Error uploading file:', error);
-                            this.showToast('Error', 'Error al subir el archivo', 'danger');
+                            reject(error);
                         }
                     };
+                    
                     reader.onerror = () => {
-                        this.showToast('Error', 'Error al leer el archivo', 'danger');
+                        reject(new Error('Error al leer el archivo'));
                     };
+                    
                     reader.readAsDataURL(file);
-                } catch (error) {
-                    console.error('File upload error:', error);
-                    this.showToast('Error', 'Error al procesar el archivo', 'danger');
-                }
+                });
+            }
+
+            async processFileInChunks(file, metadata) {
+                return new Promise(async (resolve, reject) => {
+                    try {
+                        const totalChunks = Math.ceil(file.size / this.chunkSize);
+                        let chunksProcessed = 0;
+                        let chunks = [];
+                        
+                        for (let start = 0; start < file.size; start += this.chunkSize) {
+                            const end = Math.min(start + this.chunkSize, file.size);
+                            const chunk = file.slice(start, end);
+                            
+                            // Update chunk progress
+                            const chunkProgress = (start / file.size) * 100;
+                            this.uploadPercentage.textContent = `${chunkProgress.toFixed(1)}%`;
+                            this.uploadProgressBar.style.width = `${chunkProgress}%`;
+                            
+                            // Process chunk
+                            const chunkData = await this.readChunkAsBase64(chunk);
+                            chunks.push(chunkData);
+                            chunksProcessed++;
+                            
+                            // Update chunk progress
+                            const chunkPercent = (chunksProcessed / totalChunks) * 100;
+                            this.chunkPercentage.textContent = `${chunkPercent.toFixed(1)}%`;
+                            this.chunkProgressBar.style.width = `${chunkPercent}%`;
+                        }
+                        
+                        // Combine chunks and save file
+                        const combinedData = chunks.join('');
+                        const fileData = {
+                            id: 'file-' + Date.now(),
+                            ownerId: this.currentUser.id,
+                            name: file.name,
+                            title: metadata.title,
+                            description: metadata.description,
+                            type: metadata.fileType,
+                            size: file.size,
+                            data: combinedData,
+                            isPublic: metadata.isPublic,
+                            allowComments: metadata.allowComments,
+                            allowDownload: metadata.allowDownload,
+                            allowLikes: metadata.allowLikes,
+                            folderId: metadata.folderId,
+                            uploadedAt: new Date().toISOString(),
+                            mimeType: file.type
+                        };
+                        
+                        await this.db.add('files', fileData);
+                        this.showToast('Éxito', 'Archivo subido correctamente', 'success');
+                        resolve();
+                    } catch (error) {
+                        reject(error);
+                    }
+                });
+            }
+
+            readChunkAsBase64(chunk) {
+                return new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    
+                    reader.onload = (event) => {
+                        // Remove the data URL prefix if present
+                        const data = event.target.result;
+                        const base64Data = data.includes(',') ? data.split(',')[1] : data;
+                        resolve(base64Data);
+                    };
+                    
+                    reader.onerror = () => {
+                        reject(new Error('Error al leer el fragmento del archivo'));
+                    };
+                    
+                    reader.readAsDataURL(chunk);
+                });
             }
 
             // Folder methods
@@ -2017,4 +2167,4 @@
         });
     </script>
 </body>
-</html> 
+</html>
