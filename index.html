@@ -57,6 +57,16 @@
             border-radius: 5px;
             margin-top: 15px;
         }
+        .folder-header {
+            cursor: pointer;
+        }
+        .folder-header:hover {
+            background-color: #f1f1f1;
+        }
+        .folder-contents {
+            padding-left: 20px;
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -209,6 +219,12 @@
                     </div>
                     <div class="mt-2">
                         <textarea class="form-control" id="fileDescription" placeholder="Descripción (opcional)" rows="2"></textarea>
+                    </div>
+                    <div class="mt-2">
+                        <select class="form-select" id="fileFolder">
+                            <option value="">Sin carpeta</option>
+                            <!-- Las carpetas se llenarán dinámicamente -->
+                        </select>
                     </div>
                     <button class="btn btn-primary mt-3" id="uploadBtn">Subir archivo</button>
                 </div>
@@ -841,7 +857,9 @@
             document.getElementById(`${panelName}Tab`).classList.add('active');
             
             // Cargar datos específicos del panel si es necesario
-            if (panelName === 'gallery') {
+            if (panelName === 'upload') {
+                loadFoldersForUpload();
+            } else if (panelName === 'gallery') {
                 loadUserFiles();
             } else if (panelName === 'share') {
                 loadUsersForSharing();
@@ -849,6 +867,29 @@
             } else if (panelName === 'users' && isDeveloper) {
                 loadAllUsers();
             }
+        }
+
+        // Cargar carpetas para el selector de subida de archivos
+        function loadFoldersForUpload() {
+            if (!currentUser) return;
+            
+            const folderSelect = document.getElementById('fileFolder');
+            folderSelect.innerHTML = '<option value="">Sin carpeta</option>';
+            
+            const transaction = db.transaction(['folders'], 'readonly');
+            const foldersStore = transaction.objectStore('folders');
+            const request = foldersStore.index('owner').getAll(currentUser.email);
+            
+            request.onsuccess = function(e) {
+                const folders = e.target.result || [];
+                
+                folders.forEach(folder => {
+                    const option = document.createElement('option');
+                    option.value = folder.id;
+                    option.textContent = folder.name;
+                    folderSelect.appendChild(option);
+                });
+            };
         }
 
         // Manejar cierre de sesión
@@ -873,6 +914,7 @@
             const visibility = document.getElementById('fileVisibility').value;
             const title = document.getElementById('fileName').value.trim() || 'Sin título';
             const description = document.getElementById('fileDescription').value.trim() || 'Sin descripción';
+            const folderId = document.getElementById('fileFolder').value || null;
             
             if (fileInput.files.length === 0) {
                 alert('Por favor seleccione al menos un archivo');
@@ -940,7 +982,7 @@
                             likes: 0,
                             dislikes: 0,
                             createdAt: new Date().toISOString(),
-                            folderId: null
+                            folderId: folderId ? parseInt(folderId) : null
                         };
                         
                         const addFileRequest = filesStore.add(newFile);
@@ -1065,23 +1107,42 @@
                         Object.keys(filesByFolder).forEach(folderId => {
                             if (folderId !== 'null' && filesByFolder[folderId].files.length > 0) {
                                 const folder = filesByFolder[folderId].folderInfo;
+                                
                                 const folderGroup = document.createElement('div');
                                 folderGroup.className = 'col-12 mb-4';
                                 
-                                const folderTitle = document.createElement('h5');
-                                folderTitle.innerHTML = `<i class="bi bi-folder"></i> ${folder.name} (${folder.visibility === 'public' ? 'Pública' : 'Privada'})`;
+                                const folderHeader = document.createElement('div');
+                                folderHeader.className = 'folder-header d-flex justify-content-between align-items-center p-2';
+                                folderHeader.innerHTML = `
+                                    <h5 class="m-0">
+                                        <i class="bi bi-folder"></i> ${folder.name} 
+                                        <small class="text-muted">(${folder.visibility === 'public' ? 'Pública' : 'Privada'})</small>
+                                    </h5>
+                                    <i class="bi bi-chevron-down"></i>
+                                `;
                                 
-                                folderGroup.appendChild(folderTitle);
-                                folderGroup.appendChild(document.createElement('hr'));
-                                
-                                const folderFiles = document.createElement('div');
-                                folderFiles.className = 'row';
+                                const folderContents = document.createElement('div');
+                                folderContents.className = 'folder-contents row mt-2';
                                 
                                 filesByFolder[folderId].files.forEach(file => {
-                                    folderFiles.appendChild(createFileCard(file));
+                                    folderContents.appendChild(createFileCard(file));
                                 });
                                 
-                                folderGroup.appendChild(folderFiles);
+                                folderHeader.addEventListener('click', () => {
+                                    const icon = folderHeader.querySelector('i.bi-chevron-down');
+                                    if (folderContents.style.display === 'none') {
+                                        folderContents.style.display = 'flex';
+                                        icon.classList.remove('bi-chevron-down');
+                                        icon.classList.add('bi-chevron-up');
+                                    } else {
+                                        folderContents.style.display = 'none';
+                                        icon.classList.remove('bi-chevron-up');
+                                        icon.classList.add('bi-chevron-down');
+                                    }
+                                });
+                                
+                                folderGroup.appendChild(folderHeader);
+                                folderGroup.appendChild(folderContents);
                                 galleryContent.appendChild(folderGroup);
                             }
                         });
@@ -1161,10 +1222,10 @@
             
             // Mostrar contenido según tipo de archivo
             if (file.type === 'image') {
-                modalContent.innerHTML = `<img src="${file.data}" class="img-fluid" alt="${file.title}">`;
+                modalContent.innerHTML = `<img src="${file.data}" class="img-fluid" alt="${file.title}" style="max-height: 70vh;">`;
             } else if (file.type === 'video') {
                 modalContent.innerHTML = `
-                    <video controls class="w-100">
+                    <video controls class="w-100" style="max-height: 70vh;">
                         <source src="${file.data}" type="video/mp4">
                         Tu navegador no soporta videos HTML5.
                     </video>
@@ -1206,16 +1267,15 @@
             // Configurar evento de descarga
             downloadBtn.onclick = function() {
                 downloadFile(file);
-                modal.hide();
             };
             
             // Configurar eventos de like/dislike
             likeBtn.onclick = function() {
-                likeFile(file.id, likeBtn, dislikeBtn, likeCount);
+                likeFile(file.id, likeBtn, dislikeBtn, likeCount, dislikeCount);
             };
             
             dislikeBtn.onclick = function() {
-                dislikeFile(file.id, likeBtn, dislikeBtn, dislikeCount);
+                dislikeFile(file.id, likeBtn, dislikeBtn, likeCount, dislikeCount);
             };
             
             // Mostrar modal
@@ -1252,7 +1312,7 @@
         }
 
         // Dar like a un archivo
-        function likeFile(fileId, likeBtn, dislikeBtn, likeCount) {
+        function likeFile(fileId, likeBtn, dislikeBtn, likeCount, dislikeCount) {
             if (!currentUser) return;
             
             const transaction = db.transaction(['files', 'likes'], 'readwrite');
@@ -1330,7 +1390,7 @@
         }
 
         // Dar dislike a un archivo
-        function dislikeFile(fileId, likeBtn, dislikeBtn, dislikeCount) {
+        function dislikeFile(fileId, likeBtn, dislikeBtn, likeCount, dislikeCount) {
             if (!currentUser) return;
             
             const transaction = db.transaction(['files', 'likes'], 'readwrite');
@@ -1433,6 +1493,7 @@
                 bootstrap.Modal.getInstance(document.getElementById('folderModal')).hide();
                 document.getElementById('folderName').value = '';
                 loadUserFiles();
+                loadFoldersForUpload();
             };
             
             request.onerror = function() {
