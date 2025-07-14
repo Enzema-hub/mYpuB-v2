@@ -1551,38 +1551,33 @@
                 this.updateBreadcrumb(folderId);
                 
                 try {
-                    // Get all public files or private files owned by current user
-                    let files = await this.db.getAll('files');
-                    files = files.filter(file => 
-                        file.isPublic || file.ownerId === this.currentUser.id
-                    );
-                    
-                    // Filter by folder if specified
-                    if (folderId) {
-                        files = files.filter(file => file.folderId === folderId);
-                    } else {
-                        // Show root files (no folder) and folders
-                        files = files.filter(file => !file.folderId);
-                    }
-                    
-                    // Get folders owned by current user or public folders
+                    // Get folders first
                     let folders = await this.db.getAll('folders');
                     folders = folders.filter(folder => 
                         (folder.isPublic || folder.ownerId === this.currentUser.id) &&
                         (folderId === null ? !folder.parentId : folder.parentId === folderId)
                     );
                     
+                    // Get files
+                    let files = await this.db.getAll('files');
+                    files = files.filter(file => 
+                        (file.isPublic || file.ownerId === this.currentUser.id) &&
+                        (folderId === null ? !file.folderId : file.folderId === folderId)
+                    );
+                    
                     // Show folders first
                     for (const folder of folders) {
-                        const folderFiles = await this.db.getAll('files', 'folderId', folder.id);
+                        const folderFiles = files.filter(file => file.folderId === folder.id);
                         const folderElement = this.createFolderCard(folder, folderFiles.length);
                         this.galleryContent.appendChild(folderElement);
                     }
                     
                     // Then show files
                     for (const file of files) {
-                        const fileElement = this.createFileCard(file);
-                        this.galleryContent.appendChild(fileElement);
+                        if (!file.folderId || file.folderId === folderId) {
+                            const fileElement = this.createFileCard(file);
+                            this.galleryContent.appendChild(fileElement);
+                        }
                     }
                     
                     if (folders.length === 0 && files.length === 0) {
