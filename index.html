@@ -10,7 +10,7 @@
         .brand-font {
             font-family: 'Arial Rounded MT Bold', 'Arial', sans-serif;
             font-weight: bold;
-            color: #0d6efd;
+            color: #212529; /* Cambiado a negro oscuro */
         }
         .password-strength {
             height: 5px;
@@ -116,31 +116,8 @@
     </style>
 </head>
 <body class="bg-light">
-    <!-- Login Container -->
-    <div id="login-container" class="auth-container">
-        <div class="card shadow-sm auth-card">
-            <div class="card-body p-4">
-                <h2 class="text-center mb-4">Inicie la sesión en <span class="brand-font">mYpuB</span></h2>
-                <form id="login-form">
-                    <div class="mb-3">
-                        <label for="login-email" class="form-label">Correo electrónico</label>
-                        <input type="email" class="form-control" id="login-email" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="login-password" class="form-label">Contraseña</label>
-                        <input type="password" class="form-control" id="login-password" required>
-                    </div>
-                    <div class="d-grid gap-2">
-                        <button type="submit" class="btn btn-primary">Iniciar sesión</button>
-                        <button type="button" id="switch-to-register" class="btn btn-link text-decoration-none">¿No tienes cuenta? Regístrate</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <!-- Register Container -->
-    <div id="register-container" class="auth-container" style="display: none;">
+    <!-- Register Container (shown first) -->
+    <div id="register-container" class="auth-container">
         <div class="card shadow-sm auth-card">
             <div class="card-body p-4">
                 <div class="d-flex justify-content-between align-items-center mb-4">
@@ -209,8 +186,31 @@
         </div>
     </div>
 
-    <!-- App Container -->
-    <div id="app-container" class="container-fluid p-0">
+    <!-- Login Container (hidden initially) -->
+    <div id="login-container" class="auth-container" style="display: none;">
+        <div class="card shadow-sm auth-card">
+            <div class="card-body p-4">
+                <h2 class="text-center mb-4">Inicie la sesión en <span class="brand-font">mYpuB</span></h2>
+                <form id="login-form">
+                    <div class="mb-3">
+                        <label for="login-email" class="form-label">Correo electrónico</label>
+                        <input type="email" class="form-control" id="login-email" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="login-password" class="form-label">Contraseña</label>
+                        <input type="password" class="form-control" id="login-password" required>
+                    </div>
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary">Iniciar sesión</button>
+                        <button type="button" id="switch-to-register" class="btn btn-link text-decoration-none">¿No tienes cuenta? Regístrate</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- App Container (hidden initially) -->
+    <div id="app-container" class="container-fluid p-0" style="display: none;">
         <!-- Navbar -->
         <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
             <div class="container">
@@ -782,7 +782,21 @@
                 try {
                     await this.db.open();
                     await this.initializeDeveloper();
-                    this.checkAuthState();
+                    
+                    // Mostrar siempre primero el formulario de registro
+                    this.showRegisterForm();
+                    
+                    // Verificar si hay un usuario logueado para mostrar directamente el login
+                    const loggedInUser = localStorage.getItem('mYpuB_currentUser');
+                    if (loggedInUser) {
+                        const userData = JSON.parse(loggedInUser);
+                        const dbUser = await this.db.get('users', userData.id);
+                        
+                        if (dbUser && dbUser.password === userData.password) {
+                            this.currentUser = dbUser;
+                            this.showLoginForm();
+                        }
+                    }
                 } catch (error) {
                     console.error('Error initializing app:', error);
                     this.showToast('Error', 'No se pudo inicializar la aplicación', 'danger');
@@ -974,26 +988,6 @@
             }
 
             // Auth methods
-            async checkAuthState() {
-                try {
-                    const loggedInUser = localStorage.getItem('mYpuB_currentUser');
-                    if (loggedInUser) {
-                        const userData = JSON.parse(loggedInUser);
-                        const dbUser = await this.db.get('users', userData.id);
-                        
-                        if (dbUser && dbUser.password === userData.password) {
-                            this.currentUser = dbUser;
-                            await this.showApp();
-                            return;
-                        }
-                    }
-                    this.showLoginForm();
-                } catch (error) {
-                    console.error('Error checking auth state:', error);
-                    this.showLoginForm();
-                }
-            }
-
             showLoginForm() {
                 this.loginContainer.style.display = 'flex';
                 this.registerContainer.style.display = 'none';
@@ -1190,13 +1184,13 @@
                     };
                     
                     await this.db.add('users', newUser);
-                    this.currentUser = newUser;
-                    localStorage.setItem('mYpuB_currentUser', JSON.stringify(newUser));
                     
-                    this.showToast('Éxito', 'Registro completado correctamente', 'success');
-                    
-                    // Clear register form and show login
+                    // Mostrar mensaje de éxito y cambiar al formulario de login
+                    this.showToast('Éxito', 'Registro completado correctamente. Por favor inicia sesión.', 'success');
                     this.showLoginForm();
+                    
+                    // Autocompletar el email en el login
+                    this.loginEmail.value = email;
                 } catch (error) {
                     console.error('Registration error:', error);
                     this.showToast('Error', 'Error al registrar el usuario', 'danger');
@@ -2023,4 +2017,4 @@
         });
     </script>
 </body>
-</html>
+</html> 
