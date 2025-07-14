@@ -57,6 +57,24 @@
             border-radius: 5px;
             margin-top: 15px;
         }
+        .storage-indicator {
+            height: 10px;
+            border-radius: 5px;
+            margin-top: 5px;
+        }
+        .storage-info {
+            font-size: 0.8rem;
+            margin-top: 5px;
+        }
+        .storage-danger {
+            background-color: #dc3545;
+        }
+        .storage-warning {
+            background-color: #ffc107;
+        }
+        .storage-success {
+            background-color: #28a745;
+        }
     </style>
 </head>
 <body>
@@ -148,7 +166,8 @@
                 <h3 class="brand">mYpuB</h3>
                 <p id="welcomeMessage" class="welcome-message"></p>
                 <p id="userEmail" class="text-muted small"></p>
-                <p id="storageInfo" class="text-muted small"></p>
+                <div id="storageIndicator" class="storage-indicator"></div>
+                <p id="storageInfo" class="storage-info"></p>
             </div>
             <ul class="nav flex-column">
                 <li class="nav-item">
@@ -802,13 +821,12 @@
         function showWelcomeMessage() {
             const welcomeMessage = document.getElementById('welcomeMessage');
             const userEmail = document.getElementById('userEmail');
+            const storageIndicator = document.getElementById('storageIndicator');
             const storageInfo = document.getElementById('storageInfo');
             
             userEmail.textContent = currentUser.email;
             
-            const usedGB = (currentUser.storageUsed / (1024 * 1024 * 1024)).toFixed(2);
-            const maxGB = (currentUser.maxStorage / (1024 * 1024 * 1024)).toFixed(0);
-            storageInfo.textContent = `Almacenamiento: ${usedGB} GB / ${maxGB} GB`;
+            updateStorageIndicator();
             
             if (currentUser.gender === 'Hombre') {
                 welcomeMessage.textContent = `Bienvenido a mYpuB Sr. ${currentUser.fullName.split(' ')[0]}`;
@@ -820,6 +838,30 @@
             
             // Resaltar mYpuB en el mensaje
             welcomeMessage.innerHTML = welcomeMessage.innerHTML.replace('mYpuB', '<span class="brand">mYpuB</span>');
+        }
+
+        // Actualizar indicador de almacenamiento
+        function updateStorageIndicator() {
+            const storageIndicator = document.getElementById('storageIndicator');
+            const storageInfo = document.getElementById('storageInfo');
+            
+            const usedGB = (currentUser.storageUsed / (1024 * 1024 * 1024)).toFixed(2);
+            const maxGB = (currentUser.maxStorage / (1024 * 1024 * 1024)).toFixed(0);
+            const percentage = (currentUser.storageUsed / currentUser.maxStorage) * 100;
+            
+            storageIndicator.style.width = '100%';
+            storageIndicator.style.width = `${percentage}%`;
+            
+            // Cambiar color según el porcentaje usado
+            if (percentage > 90) {
+                storageIndicator.className = 'storage-indicator storage-danger';
+            } else if (percentage > 70) {
+                storageIndicator.className = 'storage-indicator storage-warning';
+            } else {
+                storageIndicator.className = 'storage-indicator storage-success';
+            }
+            
+            storageInfo.textContent = `${usedGB} GB usados de ${maxGB} GB (${percentage.toFixed(1)}%)`;
         }
 
         // Mostrar panel específico
@@ -959,6 +1001,9 @@
                                     document.getElementById('fileDescription').value = '';
                                 }, 2000);
                                 
+                                // Actualizar indicador de almacenamiento
+                                updateStorageIndicator();
+                                
                                 // Recargar archivos si estamos en la galería
                                 if (document.getElementById('gallery-panel').style.display === 'block') {
                                     loadUserFiles();
@@ -1001,7 +1046,7 @@
             foldersRequest.onsuccess = function(e) {
                 const folders = e.target.result || [];
                 
-                // Obtener todos los archivos del usuario
+                // Obtener todos los archivos del usuario y públicos
                 const filesRequest = filesStore.index('owner').getAll(currentUser.email);
                 
                 filesRequest.onsuccess = function(e) {
@@ -1086,19 +1131,7 @@
                             }
                         });
                     };
-                    
-                    publicFilesRequest.onerror = function() {
-                        galleryContent.innerHTML = '<p>Error al cargar archivos públicos</p>';
-                    };
                 };
-                
-                filesRequest.onerror = function() {
-                    galleryContent.innerHTML = '<p>Error al cargar tus archivos</p>';
-                };
-            };
-            
-            foldersRequest.onerror = function() {
-                galleryContent.innerHTML = '<p>Error al cargar carpetas</p>';
             };
         }
 
@@ -1187,10 +1220,6 @@
                         <source src="${file.data}" type="audio/mpeg">
                         Tu navegador no soporta audio HTML5.
                     </audio>
-                    <div class="mt-3">
-                        <p class="mb-1">${file.title || file.name}</p>
-                        <small class="text-muted">Archivo de audio</small>
-                    </div>
                 `;
             } else {
                 // Para PDF mostramos un iframe (nota: algunos navegadores pueden no mostrarlo)
