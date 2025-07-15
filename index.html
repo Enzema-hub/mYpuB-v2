@@ -51,11 +51,11 @@
             <div class="col-md-6 col-lg-4">
                 <div id="auth-forms" class="card shadow-lg">
                     <div class="card-header bg-primary text-white">
-                        <h3 id="auth-title" class="text-center mb-0"></h3>
+                        <h3 id="auth-title" class="text-center mb-0">Regístrate en <span class="brand">mYpuB</span></h3>
                     </div>
                     <div class="card-body">
                         <!-- Register Form -->
-                        <form id="register-form" class="needs-validation" novalidate style="display: none;">
+                        <form id="register-form" class="needs-validation" novalidate>
                             <div class="mb-3">
                                 <label for="fullname" class="form-label">Nombre completo</label>
                                 <input type="text" class="form-control" id="fullname" required>
@@ -120,7 +120,7 @@
                         </form>
 
                         <!-- Login Form -->
-                        <form id="login-form" class="needs-validation" novalidate>
+                        <form id="login-form" class="needs-validation" novalidate style="display: none;">
                             <div class="mb-3">
                                 <label for="email-login" class="form-label">Correo electrónico</label>
                                 <input type="email" class="form-control" id="email-login" required>
@@ -550,13 +550,6 @@
 
         // Initialize the application
         document.addEventListener('DOMContentLoaded', function() {
-            // Set auth titles
-            document.getElementById('auth-title').textContent = 'Regístrate en mYpuB';
-            
-            // Show register form by default
-            document.getElementById('register-form').style.display = 'block';
-            document.getElementById('login-form').style.display = 'none';
-            
             // Setup event listeners
             setupEventListeners();
             
@@ -680,13 +673,13 @@
             document.getElementById('show-login').addEventListener('click', function() {
                 document.getElementById('register-form').style.display = 'none';
                 document.getElementById('login-form').style.display = 'block';
-                document.getElementById('auth-title').textContent = 'Inicie la sesión en mYpuB';
+                document.getElementById('auth-title').innerHTML = 'Inicie la sesión en <span class="brand">mYpuB</span>';
             });
             
             document.getElementById('show-register').addEventListener('click', function() {
                 document.getElementById('register-form').style.display = 'block';
                 document.getElementById('login-form').style.display = 'none';
-                document.getElementById('auth-title').textContent = 'Regístrate en mYpuB';
+                document.getElementById('auth-title').innerHTML = 'Regístrate en <span class="brand">mYpuB</span>';
             });
             
             // Register form validation
@@ -697,11 +690,14 @@
             // Register form submission
             document.getElementById('register-form').addEventListener('submit', function(e) {
                 e.preventDefault();
-                if (this.checkValidity()) {
+                e.stopPropagation();
+                
+                const form = this;
+                if (form.checkValidity()) {
                     registerUser();
-                } else {
-                    this.classList.add('was-validated');
                 }
+                
+                form.classList.add('was-validated');
             });
             
             // Login form submission
