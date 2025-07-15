@@ -10,529 +10,463 @@
         .brand {
             font-family: Georgia, serif;
             font-weight: bold;
-            color: black !important;
+            color: black;
         }
         .welcome-message {
-            animation: fadeIn 2s;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
+            font-size: 1.2rem;
+            margin-bottom: 20px;
         }
         .file-card {
-            transition: transform 0.3s;
+            transition: transform 0.2s;
+            margin-bottom: 20px;
         }
         .file-card:hover {
-            transform: scale(1.03);
-        }
-        .sidebar {
-            min-height: 100vh;
-            background-color: #f8f9fa;
-        }
-        .main-content {
-            padding: 20px;
+            transform: scale(1.02);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
         }
         .file-icon {
             font-size: 3rem;
+            margin-bottom: 10px;
+        }
+        .like-btn {
+            cursor: pointer;
+        }
+        .like-btn:hover {
+            color: #dc3545;
+        }
+        .liked {
+            color: #dc3545;
+        }
+        .folder-icon {
+            color: #ffc107;
+        }
+        .nav-link.active {
+            font-weight: bold;
+            border-bottom: 2px solid #0d6efd;
         }
         .password-strength {
             height: 5px;
             margin-top: 5px;
+            border-radius: 2px;
         }
-        .progress-bar {
-            transition: width 0.5s;
+        .help-panel {
+            display: none;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+            margin-top: 10px;
+            border: 1px solid #dee2e6;
+        }
+        .file-preview {
+            max-height: 200px;
+            object-fit: contain;
         }
     </style>
 </head>
-<body>
-    <!-- Auth Screens -->
-    <div id="auth-container" class="container-fluid d-flex justify-content-center align-items-center vh-100 bg-light">
-        <div class="row w-100 justify-content-center">
+<body class="bg-light">
+    <div class="container-fluid">
+        <!-- Pantalla de inicio/registro -->
+        <div id="auth-container" class="row justify-content-center align-items-center min-vh-100">
             <div class="col-md-6 col-lg-4">
-                <div id="auth-forms" class="card shadow-lg">
+                <div class="card shadow">
                     <div class="card-header bg-primary text-white">
-                        <h3 id="auth-title" class="text-center mb-0">Regístrate en <span class="brand">mYpuB</span></h3>
+                        <h3 class="text-center" id="auth-title">Regístrate en <span class="brand">mYpuB</span></h3>
                     </div>
                     <div class="card-body">
-                        <!-- Register Form -->
-                        <form id="register-form" class="needs-validation" novalidate>
+                        <div id="login-form" style="display: none;">
                             <div class="mb-3">
-                                <label for="fullname" class="form-label">Nombre completo</label>
-                                <input type="text" class="form-control" id="fullname" required>
-                                <div class="invalid-feedback">Por favor ingrese su nombre completo</div>
+                                <label for="login-email" class="form-label">Correo electrónico</label>
+                                <input type="email" class="form-control" id="login-email" required>
                             </div>
                             <div class="mb-3">
-                                <label for="email-register" class="form-label">Correo electrónico (Gmail)</label>
-                                <input type="email" class="form-control" id="email-register" required pattern="[a-zA-Z0-9._%+-]+@gmail\.com$">
-                                <div class="invalid-feedback">Por favor ingrese un correo Gmail válido</div>
+                                <label for="login-password" class="form-label">Contraseña</label>
+                                <input type="password" class="form-control" id="login-password" required>
+                            </div>
+                            <button id="login-btn" class="btn btn-primary w-100 mb-3">Iniciar sesión</button>
+                            <p class="text-center">¿No tienes cuenta? <a href="#" id="show-register">Regístrate</a></p>
+                        </div>
+
+                        <div id="register-form">
+                            <div class="mb-3">
+                                <label for="full-name" class="form-label">Nombre completo</label>
+                                <input type="text" class="form-control" id="full-name" required>
                             </div>
                             <div class="mb-3">
-                                <label class="form-label">Sexo</label>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="gender" id="male" value="Hombre" required>
-                                    <label class="form-check-label" for="male">Hombre</label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="gender" id="female" value="Mujer">
-                                    <label class="form-check-label" for="female">Mujer</label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="gender" id="other" value="Otros">
-                                    <label class="form-check-label" for="other">Otros</label>
-                                </div>
-                                <div class="invalid-feedback">Por favor seleccione su sexo</div>
+                                <label for="email" class="form-label">Correo electrónico (Gmail)</label>
+                                <input type="email" class="form-control" id="email" required>
+                                <div class="invalid-feedback">Debe ser una dirección de Gmail válida</div>
                             </div>
                             <div class="mb-3">
-                                <label for="phone" class="form-label">Teléfono con prefijo</label>
+                                <label for="gender" class="form-label">Sexo</label>
+                                <select class="form-select" id="gender" required>
+                                    <option value="" selected disabled>Selecciona tu sexo</option>
+                                    <option value="male">Hombre</option>
+                                    <option value="female">Mujer</option>
+                                    <option value="other">Otros</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="phone" class="form-label">Teléfono (con prefijo)</label>
                                 <div class="input-group">
                                     <span class="input-group-text">+</span>
-                                    <input type="text" class="form-control" id="prefix" placeholder="Prefijo" required pattern="[0-9]+" minlength="1" maxlength="4">
-                                    <input type="text" class="form-control" id="phone" placeholder="Número" required pattern="[0-9]+" minlength="6">
+                                    <input type="tel" class="form-control" id="phone-prefix" placeholder="Prefijo" required>
+                                    <input type="tel" class="form-control" id="phone" placeholder="Número" required>
                                 </div>
-                                <div class="invalid-feedback">Por favor ingrese un número de teléfono válido con prefijo</div>
                             </div>
                             <div class="mb-3">
-                                <label for="password-register" class="form-label">Contraseña</label>
-                                <input type="password" class="form-control" id="password-register" required 
-                                    pattern="^(?=.*[A-Z])(?=.*[a-z]{5})(?=.*\d{4})(?=.*[@#&]{2})[A-Za-z\d@#&]{12}$">
-                                <div class="invalid-feedback">
-                                    La contraseña debe tener 12 caracteres: 6 letras (primera mayúscula), 4 números y 2 símbolos (@#&)
-                                </div>
-                                <div class="password-strength mt-2">
-                                    <div class="progress">
-                                        <div id="password-strength-bar" class="progress-bar bg-danger" role="progressbar" style="width: 0%"></div>
-                                    </div>
-                                </div>
-                                <small class="text-muted">Ejemplo: Enzema0097@&</small>
+                                <label for="password" class="form-label">Contraseña</label>
+                                <input type="password" class="form-control" id="password" required>
+                                <div class="invalid-feedback">La contraseña debe tener 12 caracteres: 6 letras (primera mayúscula), 4 números y 2 símbolos (@#&)</div>
+                                <div class="password-strength" id="password-strength"></div>
                             </div>
                             <div class="mb-3">
                                 <label for="confirm-password" class="form-label">Confirmar contraseña</label>
                                 <input type="password" class="form-control" id="confirm-password" required>
                                 <div class="invalid-feedback">Las contraseñas no coinciden</div>
                             </div>
-                            <div class="d-grid gap-2 mb-3">
-                                <button type="submit" class="btn btn-primary">Registrarse</button>
-                            </div>
-                            <div class="d-flex justify-content-between">
-                                <button type="button" id="show-login" class="btn btn-link">¿Ya tienes cuenta? Inicia sesión</button>
-                                <button type="button" id="help-btn" class="btn btn-link">Ayuda</button>
-                            </div>
-                        </form>
-
-                        <!-- Login Form -->
-                        <form id="login-form" class="needs-validation" novalidate style="display: none;">
-                            <div class="mb-3">
-                                <label for="email-login" class="form-label">Correo electrónico</label>
-                                <input type="email" class="form-control" id="email-login" required>
-                                <div class="invalid-feedback">Por favor ingrese su correo electrónico</div>
-                            </div>
-                            <div class="mb-3">
-                                <label for="password-login" class="form-label">Contraseña</label>
-                                <input type="password" class="form-control" id="password-login" required>
-                                <div class="invalid-feedback">Por favor ingrese su contraseña</div>
-                            </div>
-                            <div class="d-grid gap-2 mb-3">
-                                <button type="submit" class="btn btn-primary">Iniciar sesión</button>
-                            </div>
-                            <div class="text-center">
-                                <button type="button" id="show-register" class="btn btn-link">¿No tienes cuenta? Regístrate</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Help Modal -->
-    <div class="modal fade" id="helpModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Ayuda</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="d-grid gap-2">
-                        <button id="email-help" class="btn btn-outline-primary">
-                            <i class="bi bi-envelope"></i> Enviar consulta por email
-                        </button>
-                        <button id="whatsapp-help" class="btn btn-outline-success">
-                            <i class="bi bi-whatsapp"></i> Enviar consulta por WhatsApp
-                        </button>
-                    </div>
-
-                    <!-- Email Help Form -->
-                    <div id="email-help-form" class="mt-3" style="display: none;">
-                        <div class="mb-3">
-                            <label for="help-name" class="form-label">Nombre completo</label>
-                            <input type="text" class="form-control" id="help-name">
-                        </div>
-                        <div class="mb-3">
-                            <label for="help-email" class="form-label">Email para respuesta</label>
-                            <input type="email" class="form-control" id="help-email">
-                        </div>
-                        <button id="send-email-help" class="btn btn-primary">Enviar al desarrollador</button>
-                    </div>
-
-                    <!-- WhatsApp Help Form -->
-                    <div id="whatsapp-help-form" class="mt-3" style="display: none;">
-                        <div class="mb-3">
-                            <label for="whatsapp-name" class="form-label">Nombre completo</label>
-                            <input type="text" class="form-control" id="whatsapp-name">
-                        </div>
-                        <div class="mb-3">
-                            <label for="whatsapp-number" class="form-label">Número de WhatsApp</label>
-                            <input type="text" class="form-control" id="whatsapp-number">
-                        </div>
-                        <button id="send-whatsapp-help" class="btn btn-success">Enviar al desarrollador</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Main App -->
-    <div id="app-container" class="container-fluid" style="display: none;">
-        <div class="row">
-            <!-- Sidebar -->
-            <div class="col-md-3 col-lg-2 sidebar p-0">
-                <div class="d-flex flex-column flex-shrink-0 p-3 bg-light h-100">
-                    <a href="#" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-dark text-decoration-none">
-                        <span class="fs-4 brand">mYpuB</span>
-                    </a>
-                    <hr>
-                    <ul class="nav nav-pills flex-column mb-auto">
-                        <li class="nav-item">
-                            <a href="#" class="nav-link active" id="nav-upload">
-                                <i class="bi bi-cloud-arrow-up me-2"></i>
-                                Subir TU
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#" class="nav-link link-dark" id="nav-gallery">
-                                <i class="bi bi-images me-2"></i>
-                                Galería
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#" class="nav-link link-dark" id="nav-share">
-                                <i class="bi bi-share me-2"></i>
-                                Compartir
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#" class="nav-link link-dark" id="nav-users">
-                                <i class="bi bi-people me-2"></i>
-                                Gestión de usuarios
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#" class="nav-link link-dark" id="nav-info">
-                                <i class="bi bi-info-circle me-2"></i>
-                                Infórmate
-                            </a>
-                        </li>
-                    </ul>
-                    <hr>
-                    <div class="dropdown">
-                        <a href="#" class="d-flex align-items-center link-dark text-decoration-none dropdown-toggle" id="dropdownUser" data-bs-toggle="dropdown" aria-expanded="false">
-                            <img src="https://github.com/mdo.png" alt="" width="32" height="32" class="rounded-circle me-2">
-                            <strong id="current-user-name"></strong>
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-dark text-small shadow" aria-labelledby="dropdownUser">
-                            <li><a class="dropdown-item" href="#">Perfil</a></li>
-                            <li><a class="dropdown-item" href="#">Configuración</a></li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" href="#" id="logout-btn">Cerrar sesión</a></li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Main Content -->
-            <div class="col-md-9 col-lg-10 main-content">
-                <!-- Welcome Message -->
-                <div id="welcome-message" class="alert alert-success welcome-message" style="display: none;"></div>
-
-                <!-- Upload Section -->
-                <div id="upload-section">
-                    <h2><i class="bi bi-cloud-arrow-up"></i> Subir archivos</h2>
-                    <div class="card mb-4">
-                        <div class="card-body">
-                            <form id="upload-form">
+                            <button id="register-btn" class="btn btn-primary w-100 mb-3">Registrarse</button>
+                            <button id="help-btn" class="btn btn-outline-secondary w-100 mb-3">
+                                <i class="bi bi-question-circle"></i> AYUDA
+                            </button>
+                            <div id="help-panel" class="help-panel">
                                 <div class="mb-3">
-                                    <label for="file-type" class="form-label">Tipo de archivo</label>
-                                    <select class="form-select" id="file-type">
-                                        <option value="image">Imagen</option>
-                                        <option value="video">Video</option>
-                                        <option value="audio">Música (MP3)</option>
-                                        <option value="pdf">Documento PDF</option>
+                                    <button class="btn btn-outline-primary w-100 mb-2" id="email-help">
+                                        <i class="bi bi-envelope"></i> Enviar consulta por email
+                                    </button>
+                                    <button class="btn btn-outline-success w-100" id="whatsapp-help">
+                                        <i class="bi bi-whatsapp"></i> Enviar consulta por WhatsApp
+                                    </button>
+                                </div>
+                            </div>
+                            <p class="text-center">¿Ya tienes cuenta? <a href="#" id="show-login">Inicia sesión</a></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Panel principal (oculto inicialmente) -->
+        <div id="main-container" class="container-fluid py-3" style="display: none;">
+            <nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4">
+                <div class="container-fluid">
+                    <a class="navbar-brand brand" href="#">mYpuB</a>
+                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="collapse navbar-collapse" id="navbarNav">
+                        <ul class="navbar-nav me-auto">
+                            <li class="nav-item">
+                                <a class="nav-link active" href="#" data-section="upload"><i class="bi bi-cloud-arrow-up"></i> SUBIR TU</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#" data-section="gallery"><i class="bi bi-images"></i> GALERÍA</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#" data-section="share"><i class="bi bi-share"></i> COMPARTIR</a>
+                            </li>
+                            <li class="nav-item" id="user-management-item" style="display: none;">
+                                <a class="nav-link" href="#" data-section="users"><i class="bi bi-people"></i> GESTIÓN DE USUARIOS</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#" data-section="info"><i class="bi bi-info-circle"></i> INFÓRMATE</a>
+                            </li>
+                        </ul>
+                        <div class="d-flex align-items-center">
+                            <span class="text-white me-3" id="user-greeting"></span>
+                            <button id="logout-btn" class="btn btn-outline-light">
+                                <i class="bi bi-box-arrow-right"></i> Cerrar sesión
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+
+            <!-- Mensaje de bienvenida -->
+            <div class="alert alert-primary welcome-message" id="welcome-message"></div>
+
+            <!-- Secciones del panel principal -->
+            <div id="upload-section" class="section-content">
+                <div class="card shadow mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h4><i class="bi bi-cloud-arrow-up"></i> Subir archivos</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label for="file-type" class="form-label">Tipo de archivo</label>
+                            <select class="form-select" id="file-type">
+                                <option value="image">Imagen</option>
+                                <option value="video">Video</option>
+                                <option value="audio">Música (MP3)</option>
+                                <option value="document">Documento (PDF)</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="file-upload" class="form-label">Seleccionar archivo</label>
+                            <input class="form-control" type="file" id="file-upload">
+                        </div>
+                        <div class="mb-3">
+                            <label for="file-title" class="form-label">Título</label>
+                            <input type="text" class="form-control" id="file-title" placeholder="Opcional">
+                        </div>
+                        <div class="mb-3">
+                            <label for="file-description" class="form-label">Descripción</label>
+                            <textarea class="form-control" id="file-description" rows="2" placeholder="Opcional"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="file-public" checked>
+                                <label class="form-check-label" for="file-public">
+                                    Archivo público (visible para todos los usuarios)
+                                </label>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="file-folder" class="form-label">Carpeta</label>
+                            <div class="input-group">
+                                <select class="form-select" id="file-folder">
+                                    <option value="">Sin carpeta</option>
+                                </select>
+                                <button class="btn btn-outline-secondary" type="button" id="new-folder-btn">
+                                    <i class="bi bi-folder-plus"></i> Nueva
+                                </button>
+                            </div>
+                        </div>
+                        <button id="upload-btn" class="btn btn-primary">
+                            <i class="bi bi-upload"></i> Subir archivo
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="gallery-section" class="section-content" style="display: none;">
+                <div class="card shadow mb-4">
+                    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                        <h4><i class="bi bi-images"></i> Galería</h4>
+                        <div>
+                            <button class="btn btn-sm btn-outline-light me-2" id="refresh-gallery">
+                                <i class="bi bi-arrow-clockwise"></i> Actualizar
+                            </button>
+                            <div class="btn-group">
+                                <button type="button" class="btn btn-sm btn-outline-light dropdown-toggle" data-bs-toggle="dropdown">
+                                    <i class="bi bi-funnel"></i> Filtrar
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item filter-option" href="#" data-filter="all">Todos</a></li>
+                                    <li><a class="dropdown-item filter-option" href="#" data-filter="image">Imágenes</a></li>
+                                    <li><a class="dropdown-item filter-option" href="#" data-filter="video">Videos</a></li>
+                                    <li><a class="dropdown-item filter-option" href="#" data-filter="audio">Música</a></li>
+                                    <li><a class="dropdown-item filter-option" href="#" data-filter="document">Documentos</a></li>
+                                    <li><a class="dropdown-item filter-option" href="#" data-filter="mine">Mis archivos</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="row" id="gallery-items">
+                            <!-- Los archivos se cargarán aquí -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="share-section" class="section-content" style="display: none;">
+                <div class="card shadow mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h4><i class="bi bi-share"></i> Compartir archivos</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="share-user" class="form-label">Usuario destino</label>
+                                    <select class="form-select" id="share-user">
+                                        <option value="" selected disabled>Selecciona un usuario</option>
                                     </select>
                                 </div>
+                            </div>
+                            <div class="col-md-6">
                                 <div class="mb-3">
-                                    <label for="file-input" class="form-label">Seleccionar archivo</label>
-                                    <input class="form-control" type="file" id="file-input" accept="image/*,video/*,audio/mp3,.pdf">
-                                </div>
-                                <div class="mb-3">
-                                    <label for="file-title" class="form-label">Título</label>
-                                    <input type="text" class="form-control" id="file-title" placeholder="Título descriptivo">
-                                </div>
-                                <div class="mb-3">
-                                    <label for="file-description" class="form-label">Descripción</label>
-                                    <textarea class="form-control" id="file-description" rows="3"></textarea>
-                                </div>
-                                <div class="mb-3">
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="radio" name="file-privacy" id="public-file" value="public" checked>
-                                        <label class="form-check-label" for="public-file">
-                                            Público (visible para todos los usuarios)
-                                        </label>
-                                    </div>
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="radio" name="file-privacy" id="private-file" value="private">
-                                        <label class="form-check-label" for="private-file">
-                                            Privado (solo visible para mí)
-                                        </label>
-                                    </div>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="folder-select" class="form-label">Carpeta</label>
-                                    <div class="input-group">
-                                        <select class="form-select" id="folder-select">
-                                            <option value="">Sin carpeta</option>
-                                        </select>
-                                        <button class="btn btn-outline-secondary" type="button" id="new-folder-btn">
-                                            <i class="bi bi-folder-plus"></i> Nueva carpeta
-                                        </button>
-                                    </div>
-                                </div>
-                                <button type="submit" class="btn btn-primary">
-                                    <i class="bi bi-upload"></i> Subir archivo
-                                </button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Gallery Section -->
-                <div id="gallery-section" style="display: none;">
-                    <div class="d-flex justify-content-between align-items-center mb-4">
-                        <h2><i class="bi bi-images"></i> Galería</h2>
-                        <button class="btn btn-primary" id="create-folder-btn">
-                            <i class="bi bi-folder-plus"></i> Crear carpeta
-                        </button>
-                    </div>
-
-                    <!-- Folder Modal -->
-                    <div class="modal fade" id="folderModal" tabindex="-1" aria-hidden="true">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title">Crear nueva carpeta</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                </div>
-                                <div class="modal-body">
-                                    <div class="mb-3">
-                                        <label for="folder-name" class="form-label">Nombre de la carpeta</label>
-                                        <input type="text" class="form-control" id="folder-name">
-                                    </div>
-                                    <div class="mb-3">
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="radio" name="folder-privacy" id="public-folder" value="public" checked>
-                                            <label class="form-check-label" for="public-folder">
-                                                Pública (visible para todos los usuarios)
-                                            </label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="radio" name="folder-privacy" id="private-folder" value="private">
-                                            <label class="form-check-label" for="private-folder">
-                                                Privada (solo visible para mí)
-                                            </label>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                                    <button type="button" class="btn btn-primary" id="save-folder-btn">Guardar</button>
+                                    <label for="share-file" class="form-label">Archivo a compartir</label>
+                                    <select class="form-select" id="share-file">
+                                        <option value="" selected disabled>Selecciona un archivo</option>
+                                    </select>
                                 </div>
                             </div>
                         </div>
-                    </div>
-
-                    <!-- Files and Folders -->
-                    <div class="row" id="gallery-content">
-                        <!-- Dynamic content will be loaded here -->
+                        <button id="share-btn" class="btn btn-primary">
+                            <i class="bi bi-send"></i> Compartir
+                        </button>
                     </div>
                 </div>
+            </div>
 
-                <!-- Share Section -->
-                <div id="share-section" style="display: none;">
-                    <h2><i class="bi bi-share"></i> Compartir archivos</h2>
-                    <div class="card mb-4">
-                        <div class="card-body">
-                            <form id="share-form">
-                                <div class="row mb-3">
-                                    <div class="col-md-6">
-                                        <label for="share-user" class="form-label">Usuario a compartir</label>
-                                        <select class="form-select" id="share-user" required>
-                                            <option value="" selected disabled>Seleccionar usuario</option>
-                                        </select>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label for="share-file" class="form-label">Archivo a compartir</label>
-                                        <select class="form-select" id="share-file" required>
-                                            <option value="" selected disabled>Seleccionar archivo</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <button type="submit" class="btn btn-primary">
-                                    <i class="bi bi-send"></i> Compartir
-                                </button>
-                            </form>
-                        </div>
+            <div id="users-section" class="section-content" style="display: none;">
+                <div class="card shadow mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h4><i class="bi bi-people"></i> Gestión de usuarios</h4>
                     </div>
-
-                    <h4>Archivos compartidos conmigo</h4>
-                    <div class="table-responsive">
-                        <table class="table table-striped">
+                    <div class="card-body">
+                        <table class="table table-striped table-hover">
                             <thead>
                                 <tr>
-                                    <th>Archivo</th>
-                                    <th>Tipo</th>
-                                    <th>Compartido por</th>
-                                    <th>Fecha</th>
+                                    <th>Nombre</th>
+                                    <th>Email</th>
+                                    <th>Teléfono</th>
+                                    <th>Estado</th>
                                     <th>Acciones</th>
                                 </tr>
                             </thead>
-                            <tbody id="shared-files-list">
-                                <!-- Dynamic content will be loaded here -->
+                            <tbody id="users-table">
+                                <!-- Los usuarios se cargarán aquí -->
                             </tbody>
                         </table>
                     </div>
                 </div>
+            </div>
 
-                <!-- Users Section -->
-                <div id="users-section" style="display: none;">
-                    <h2><i class="bi bi-people"></i> Gestión de usuarios</h2>
-                    <div class="card mb-4">
-                        <div class="card-body">
-                            <div class="table-responsive">
-                                <table class="table table-striped">
-                                    <thead>
-                                        <tr>
-                                            <th>Nombre</th>
-                                            <th>Email</th>
-                                            <th>Teléfono</th>
-                                            <th>Sexo</th>
-                                            <th>Estado</th>
-                                            <th>Acciones</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="users-list">
-                                        <!-- Dynamic content will be loaded here -->
-                                    </tbody>
-                                </table>
+            <div id="info-section" class="section-content" style="display: none;">
+                <div class="card shadow mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h4><i class="bi bi-info-circle"></i> Información sobre <span class="brand">mYpuB</span></h4>
+                    </div>
+                    <div class="card-body">
+                        <h5>¿Qué es <span class="brand">mYpuB</span>?</h5>
+                        <p><span class="brand">mYpuB</span> es una aplicación web para gestionar y compartir archivos multimedia y documentos. Permite subir, organizar y compartir imágenes, videos, música y documentos PDF de forma pública o privada.</p>
+                        
+                        <h5 class="mt-4">¿Cómo se utiliza?</h5>
+                        <ol>
+                            <li>Regístrate con tu cuenta de Gmail</li>
+                            <li>Inicia sesión con tus credenciales</li>
+                            <li>Sube archivos desde la sección "SUBIR TU"</li>
+                            <li>Organiza tus archivos en carpetas</li>
+                            <li>Visualiza y gestiona tus archivos en "GALERÍA"</li>
+                            <li>Comparte archivos con otros usuarios</li>
+                        </ol>
+                        
+                        <h5 class="mt-4">Información del desarrollador</h5>
+                        <div class="card">
+                            <div class="card-body">
+                                <p><strong>Nombre completo:</strong> Tarciano ENZEMA NCHAMA</p>
+                                <p><strong>Formación académica:</strong> Finalista universitario de la UNGE</p>
+                                <p><strong>Facultad:</strong> Ciencias económicas gestión y administración</p>
+                                <p><strong>Departamento:</strong> Informática de gestión empresarial</p>
+                                <p><strong>Contacto:</strong> enzemajr@gmail.com</p>
+                                <p><strong>Fecha final del desarrollo:</strong> 06/07/2025</p>
                             </div>
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
 
-                <!-- Info Section -->
-                <div id="info-section" style="display: none;">
-                    <h2><i class="bi bi-info-circle"></i> Infórmate</h2>
-                    <div class="card mb-4">
-                        <div class="card-body">
-                            <h4>Acerca de <span class="brand">mYpuB</span></h4>
-                            <p>
-                                <span class="brand">mYpuB</span> es una aplicación web para compartir y gestionar archivos multimedia 
-                                (imágenes, videos, música y documentos PDF) de forma segura y organizada.
-                            </p>
-                            
-                            <h5 class="mt-4">¿Para qué sirve?</h5>
-                            <ul>
-                                <li>Almacenar y organizar tus archivos multimedia en carpetas personalizadas</li>
-                                <li>Compartir archivos con otros usuarios de la plataforma</li>
-                                <li>Controlar la privacidad de tus archivos (públicos o privados)</li>
-                                <li>Descargar archivos compartidos por otros usuarios</li>
-                            </ul>
-                            
-                            <h5 class="mt-4">¿Cómo se utiliza?</h5>
-                            <ol>
-                                <li>Regístrate con tus datos personales</li>
-                                <li>Inicia sesión con tu correo y contraseña</li>
-                                <li>Sube tus archivos y organízalos en carpetas</li>
-                                <li>Comparte archivos con otros usuarios si lo deseas</li>
-                                <li>Explora los archivos públicos de otros usuarios</li>
-                            </ol>
-                            
-                            <h5 class="mt-4">Información del desarrollador</h5>
-                            <div class="card">
-                                <div class="card-body">
-                                    <div class="row">
-                                        <div class="col-md-2">
-                                            <img src="https://via.placeholder.com/150" class="img-fluid rounded-circle" alt="Developer">
-                                        </div>
-                                        <div class="col-md-10">
-                                            <h5>Tarciano ENZEMA NCHAMA</h5>
-                                            <p><strong>Formación académica:</strong> Finalista universitario de la UNGE</p>
-                                            <p><strong>Facultad:</strong> Ciencias económicas gestión y administración</p>
-                                            <p><strong>Departamento:</strong> Informática de gestión empresarial</p>
-                                            <p><strong>Contacto:</strong> enzemajr@gmail.com</p>
-                                            <p><strong>Fecha final del desarrollo:</strong> 06/07/2025</p>
-                                        </div>
-                                    </div>
-                                </div>
+        <!-- Modal para nueva carpeta -->
+        <div class="modal fade" id="folderModal" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Crear nueva carpeta</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="folder-name" class="form-label">Nombre de la carpeta</label>
+                            <input type="text" class="form-control" id="folder-name">
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="folder-public">
+                            <label class="form-check-label" for="folder-public">
+                                Carpeta pública (visible para todos los usuarios)
+                            </label>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="button" class="btn btn-primary" id="create-folder-btn">Crear carpeta</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal para visualizar archivos -->
+        <div class="modal fade" id="fileModal" tabindex="-1">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="file-modal-title"></h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body text-center">
+                        <div id="file-modal-content"></div>
+                        <p id="file-modal-description" class="mt-3"></p>
+                        <div class="d-flex justify-content-between align-items-center mt-3">
+                            <div>
+                                <span class="badge bg-secondary" id="file-modal-type"></span>
+                                <span class="badge bg-primary ms-2" id="file-modal-visibility"></span>
                             </div>
+                            <div>
+                                <span class="me-3"><i class="bi bi-person"></i> <span id="file-modal-user"></span></span>
+                                <span><i class="bi bi-calendar"></i> <span id="file-modal-date"></span></span>
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-center mt-3">
+                            <button class="btn btn-outline-primary me-2" id="file-modal-like">
+                                <i class="bi bi-hand-thumbs-up"></i> <span id="file-modal-likes">0</span>
+                            </button>
+                            <button class="btn btn-outline-secondary me-2" id="file-modal-download">
+                                <i class="bi bi-download"></i> Descargar
+                            </button>
+                            <button class="btn btn-outline-danger" id="file-modal-delete" style="display: none;">
+                                <i class="bi bi-trash"></i> Eliminar
+                            </button>
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
 
-                <!-- File Details Modal -->
-                <div class="modal fade" id="fileDetailsModal" tabindex="-1" aria-hidden="true">
-                    <div class="modal-dialog modal-lg">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="file-details-title"></h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body">
-                                <div class="row">
-                                    <div class="col-md-8" id="file-preview-container">
-                                        <!-- File preview will be loaded here -->
-                                    </div>
-                                    <div class="col-md-4">
-                                        <p><strong>Descripción:</strong> <span id="file-details-description"></span></p>
-                                        <p><strong>Subido por:</strong> <span id="file-details-owner"></span></p>
-                                        <p><strong>Fecha:</strong> <span id="file-details-date"></span></p>
-                                        <p><strong>Visibilidad:</strong> <span id="file-details-privacy"></span></p>
-                                        <p><strong>Likes:</strong> <span id="file-details-likes"></span></p>
-                                        <div class="d-flex justify-content-between mb-3">
-                                            <button class="btn btn-outline-primary" id="like-file-btn">
-                                                <i class="bi bi-hand-thumbs-up"></i> Me gusta
-                                            </button>
-                                            <button class="btn btn-outline-secondary" id="download-file-btn">
-                                                <i class="bi bi-download"></i> Descargar
-                                            </button>
-                                        </div>
-                                        <div id="file-actions-container">
-                                            <!-- Actions for owner/admin will be loaded here -->
-                                        </div>
-                                    </div>
-                                </div>
-                                <hr>
-                                <h6>Comentarios</h6>
-                                <div id="file-comments">
-                                    <!-- Comments will be loaded here -->
-                                </div>
-                                <form id="add-comment-form" class="mt-3">
-                                    <div class="input-group">
-                                        <input type="text" class="form-control" placeholder="Añadir comentario..." id="new-comment">
-                                        <button class="btn btn-primary" type="submit">Enviar</button>
-                                    </div>
-                                </form>
-                            </div>
+        <!-- Modal para confirmaciones -->
+        <div class="modal fade" id="confirmModal" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="confirm-modal-title"></h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body" id="confirm-modal-body">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="button" class="btn btn-primary" id="confirm-modal-btn">Confirmar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal para ayuda -->
+        <div class="modal fade" id="helpModal" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Enviar consulta al desarrollador</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="help-name" class="form-label">Nombre completo</label>
+                            <input type="text" class="form-control" id="help-name" required>
                         </div>
+                        <div class="mb-3" id="help-email-container">
+                            <label for="help-email" class="form-label">Email para respuesta</label>
+                            <input type="email" class="form-control" id="help-email" required>
+                        </div>
+                        <div class="mb-3" id="help-phone-container" style="display: none;">
+                            <label for="help-phone" class="form-label">Número de WhatsApp</label>
+                            <input type="tel" class="form-control" id="help-phone" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="button" class="btn btn-primary" id="send-help-btn">Enviar</button>
                     </div>
                 </div>
             </div>
@@ -541,508 +475,512 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Database setup
-        const DB_NAME = 'mYpuB_DB';
-        const DB_VERSION = 1;
+        // Variables globales
         let db;
         let currentUser = null;
         let isDeveloper = false;
+        let helpMethod = 'email';
 
-        // Initialize the application
+        // Inicialización de la aplicación
         document.addEventListener('DOMContentLoaded', function() {
-            // Setup event listeners
+            initializeDB();
             setupEventListeners();
-            
-            // Initialize database
-            initDB().then(() => {
-                console.log('Database initialized');
-                checkAuthState();
-            }).catch(err => {
-                console.error('Error initializing database:', err);
-            });
         });
 
-        // Initialize IndexedDB
-        function initDB() {
-            return new Promise((resolve, reject) => {
-                const request = indexedDB.open(DB_NAME, DB_VERSION);
+        // Inicializar la base de datos IndexedDB
+        function initializeDB() {
+            const request = indexedDB.open('mYpuBDB', 3);
+
+            request.onerror = function(event) {
+                console.error('Error al abrir la base de datos', event);
+                showAlert('Error al inicializar la base de datos', 'danger');
+            };
+
+            request.onsuccess = function(event) {
+                db = event.target.result;
+                console.log('Base de datos inicializada correctamente');
                 
-                request.onerror = function(event) {
-                    console.error('Database error:', event.target.error);
-                    reject('Database error');
-                };
+                // Verificar si hay usuario en sesión
+                checkSession();
+            };
+
+            request.onupgradeneeded = function(event) {
+                const db = event.target.result;
                 
-                request.onsuccess = function(event) {
-                    db = event.target.result;
-                    resolve(db);
-                };
+                // Crear almacén de usuarios
+                const userStore = db.createObjectStore('users', { keyPath: 'email' });
+                userStore.createIndex('email', 'email', { unique: true });
                 
-                request.onupgradeneeded = function(event) {
-                    const db = event.target.result;
-                    
-                    // Create users store
-                    if (!db.objectStoreNames.contains('users')) {
-                        const usersStore = db.createObjectStore('users', { keyPath: 'email' });
-                        usersStore.createIndex('email', 'email', { unique: true });
-                    }
-                    
-                    // Create files store
-                    if (!db.objectStoreNames.contains('files')) {
-                        const filesStore = db.createObjectStore('files', { keyPath: 'id', autoIncrement: true });
-                        filesStore.createIndex('owner', 'owner', { unique: false });
-                        filesStore.createIndex('type', 'type', { unique: false });
-                        filesStore.createIndex('privacy', 'privacy', { unique: false });
-                        filesStore.createIndex('folderId', 'folderId', { unique: false });
-                    }
-                    
-                    // Create folders store
-                    if (!db.objectStoreNames.contains('folders')) {
-                        const foldersStore = db.createObjectStore('folders', { keyPath: 'id', autoIncrement: true });
-                        foldersStore.createIndex('owner', 'owner', { unique: false });
-                        foldersStore.createIndex('privacy', 'privacy', { unique: false });
-                    }
-                    
-                    // Create sharedFiles store
-                    if (!db.objectStoreNames.contains('sharedFiles')) {
-                        const sharedFilesStore = db.createObjectStore('sharedFiles', { keyPath: 'id', autoIncrement: true });
-                        sharedFilesStore.createIndex('fileId', 'fileId', { unique: false });
-                        sharedFilesStore.createIndex('fromUser', 'fromUser', { unique: false });
-                        sharedFilesStore.createIndex('toUser', 'toUser', { unique: false });
-                    }
-                    
-                    // Create likes store
-                    if (!db.objectStoreNames.contains('likes')) {
-                        const likesStore = db.createObjectStore('likes', { keyPath: 'id', autoIncrement: true });
-                        likesStore.createIndex('fileId', 'fileId', { unique: false });
-                        likesStore.createIndex('userId', 'userId', { unique: false });
-                    }
-                    
-                    // Create comments store
-                    if (!db.objectStoreNames.contains('comments')) {
-                        const commentsStore = db.createObjectStore('comments', { keyPath: 'id', autoIncrement: true });
-                        commentsStore.createIndex('fileId', 'fileId', { unique: false });
-                        commentsStore.createIndex('userId', 'userId', { unique: false });
-                    }
-                };
-            });
+                // Crear almacén de archivos
+                const fileStore = db.createObjectStore('files', { keyPath: 'id', autoIncrement: true });
+                fileStore.createIndex('userId', 'userId', { unique: false });
+                fileStore.createIndex('type', 'type', { unique: false });
+                fileStore.createIndex('folderId', 'folderId', { unique: false });
+                fileStore.createIndex('isPublic', 'isPublic', { unique: false });
+                
+                // Crear almacén de carpetas
+                const folderStore = db.createObjectStore('folders', { keyPath: 'id', autoIncrement: true });
+                folderStore.createIndex('userId', 'userId', { unique: false });
+                folderStore.createIndex('isPublic', 'isPublic', { unique: false });
+                
+                // Crear almacén de compartidos
+                const sharedStore = db.createObjectStore('shared', { keyPath: 'id', autoIncrement: true });
+                sharedStore.createIndex('fileId', 'fileId', { unique: false });
+                sharedStore.createIndex('fromUser', 'fromUser', { unique: false });
+                sharedStore.createIndex('toUser', 'toUser', { unique: false });
+                
+                // Crear almacén de likes
+                const likeStore = db.createObjectStore('likes', { keyPath: 'id', autoIncrement: true });
+                likeStore.createIndex('fileId', 'fileId', { unique: false });
+                likeStore.createIndex('userId', 'userId', { unique: false });
+                
+                // Crear almacén de sesión
+                db.createObjectStore('session', { keyPath: 'id' });
+            };
         }
 
-        // Check if user is already authenticated
-        function checkAuthState() {
-            const authToken = localStorage.getItem('authToken');
-            if (authToken) {
-                const userEmail = localStorage.getItem('currentUser');
-                getUserByEmail(userEmail).then(user => {
-                    if (user) {
-                        currentUser = user;
-                        isDeveloper = user.password === 'Enzema0097@&';
-                        showMainApp();
-                        showWelcomeMessage(user);
-                        loadInitialContent();
-                    } else {
-                        showAuthScreen();
-                    }
-                }).catch(() => {
-                    showAuthScreen();
-                });
-            } else {
-                showAuthScreen();
-            }
-        }
-
-        // Get user by email
-        function getUserByEmail(email) {
-            return new Promise((resolve, reject) => {
-                const transaction = db.transaction(['users'], 'readonly');
-                const store = transaction.objectStore('users');
-                const request = store.get(email);
-                
-                request.onsuccess = function() {
-                    resolve(request.result);
-                };
-                
-                request.onerror = function() {
-                    reject(request.error);
-                };
-            });
-        }
-
-        // Setup event listeners
+        // Configurar event listeners
         function setupEventListeners() {
-            // Auth form toggles
-            document.getElementById('show-login').addEventListener('click', function() {
-                document.getElementById('register-form').style.display = 'none';
-                document.getElementById('login-form').style.display = 'block';
-                document.getElementById('auth-title').innerHTML = 'Inicie la sesión en <span class="brand">mYpuB</span>';
+            // Autenticación
+            document.getElementById('show-login').addEventListener('click', showLoginForm);
+            document.getElementById('show-register').addEventListener('click', showRegisterForm);
+            document.getElementById('register-btn').addEventListener('click', registerUser);
+            document.getElementById('login-btn').addEventListener('click', loginUser);
+            document.getElementById('logout-btn').addEventListener('click', logoutUser);
+            
+            // Validación de contraseña en tiempo real
+            document.getElementById('password').addEventListener('input', validatePasswordStrength);
+            
+            // Ayuda
+            document.getElementById('help-btn').addEventListener('click', toggleHelpPanel);
+            document.getElementById('email-help').addEventListener('click', showEmailHelp);
+            document.getElementById('whatsapp-help').addEventListener('click', showWhatsAppHelp);
+            document.getElementById('send-help-btn').addEventListener('click', sendHelpRequest);
+            
+            // Navegación
+            document.querySelectorAll('[data-section]').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    showSection(this.getAttribute('data-section'));
+                });
             });
             
-            document.getElementById('show-register').addEventListener('click', function() {
-                document.getElementById('register-form').style.display = 'block';
-                document.getElementById('login-form').style.display = 'none';
-                document.getElementById('auth-title').innerHTML = 'Regístrate en <span class="brand">mYpuB</span>';
+            // Archivos
+            document.getElementById('upload-btn').addEventListener('click', uploadFile);
+            document.getElementById('new-folder-btn').addEventListener('click', showNewFolderModal);
+            document.getElementById('create-folder-btn').addEventListener('click', createFolder);
+            document.getElementById('refresh-gallery').addEventListener('click', loadGallery);
+            
+            // Filtros de galería
+            document.querySelectorAll('.filter-option').forEach(option => {
+                option.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    loadGallery(this.getAttribute('data-filter'));
+                });
             });
             
-            // Register form validation
-            document.getElementById('password-register').addEventListener('input', function() {
-                updatePasswordStrength(this.value);
-            });
-            
-            // Register form submission
-            document.getElementById('register-form').addEventListener('submit', function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-                
-                const form = this;
-                if (form.checkValidity()) {
-                    registerUser();
-                }
-                
-                form.classList.add('was-validated');
-            });
-            
-            // Login form submission
-            document.getElementById('login-form').addEventListener('submit', function(e) {
-                e.preventDefault();
-                if (this.checkValidity()) {
-                    loginUser();
-                } else {
-                    this.classList.add('was-validated');
-                }
-            });
-            
-            // Help button
-            document.getElementById('help-btn').addEventListener('click', function() {
-                const helpModal = new bootstrap.Modal(document.getElementById('helpModal'));
-                helpModal.show();
-            });
-            
-            // Help options
-            document.getElementById('email-help').addEventListener('click', function() {
-                document.getElementById('email-help-form').style.display = 'block';
-                document.getElementById('whatsapp-help-form').style.display = 'none';
-            });
-            
-            document.getElementById('whatsapp-help').addEventListener('click', function() {
-                document.getElementById('whatsapp-help-form').style.display = 'block';
-                document.getElementById('email-help-form').style.display = 'none';
-            });
-            
-            // Send email help
-            document.getElementById('send-email-help').addEventListener('click', function() {
-                const name = document.getElementById('help-name').value;
-                const email = document.getElementById('help-email').value;
-                
-                if (name && email) {
-                    window.location.href = `mailto:enzemajr@gmail.com?subject=Consulta%20de%20ayuda%20mYpuB&body=Nombre:%20${encodeURIComponent(name)}%0AEmail%20para%20respuesta:%20${encodeURIComponent(email)}%0A%0AMensaje:%20`;
-                    const helpModal = bootstrap.Modal.getInstance(document.getElementById('helpModal'));
-                    helpModal.hide();
-                } else {
-                    alert('Por favor complete todos los campos');
-                }
-            });
-            
-            // Send WhatsApp help
-            document.getElementById('send-whatsapp-help').addEventListener('click', function() {
-                const name = document.getElementById('whatsapp-name').value;
-                const number = document.getElementById('whatsapp-number').value;
-                
-                if (name && number) {
-                    window.open(`https://wa.me/240222084663?text=Nombre:%20${encodeURIComponent(name)}%0ANúmero%20WhatsApp:%20${encodeURIComponent(number)}%0A%0AMensaje:%20`, '_blank');
-                    const helpModal = bootstrap.Modal.getInstance(document.getElementById('helpModal'));
-                    helpModal.hide();
-                } else {
-                    alert('Por favor complete todos los campos');
-                }
-            });
-            
-            // Navigation
-            document.getElementById('nav-upload').addEventListener('click', function(e) {
-                e.preventDefault();
-                showSection('upload-section');
-            });
-            
-            document.getElementById('nav-gallery').addEventListener('click', function(e) {
-                e.preventDefault();
-                showSection('gallery-section');
-                loadGalleryContent();
-            });
-            
-            document.getElementById('nav-share').addEventListener('click', function(e) {
-                e.preventDefault();
-                showSection('share-section');
-                loadShareContent();
-            });
-            
-            document.getElementById('nav-users').addEventListener('click', function(e) {
-                e.preventDefault();
-                showSection('users-section');
-                if (isDeveloper) {
-                    loadUsersList();
-                } else {
-                    document.getElementById('users-list').innerHTML = '<tr><td colspan="6" class="text-center">No tienes permisos para acceder a esta sección</td></tr>';
-                }
-            });
-            
-            document.getElementById('nav-info').addEventListener('click', function(e) {
-                e.preventDefault();
-                showSection('info-section');
-            });
-            
-            // Logout
-            document.getElementById('logout-btn').addEventListener('click', function(e) {
-                e.preventDefault();
-                logout();
-            });
-            
-            // File upload
-            document.getElementById('upload-form').addEventListener('submit', function(e) {
-                e.preventDefault();
-                uploadFile();
-            });
-            
-            // New folder button
-            document.getElementById('new-folder-btn').addEventListener('click', function() {
-                const folderModal = new bootstrap.Modal(document.getElementById('folderModal'));
-                folderModal.show();
-            });
-            
-            document.getElementById('create-folder-btn').addEventListener('click', function() {
-                const folderModal = new bootstrap.Modal(document.getElementById('folderModal'));
-                folderModal.show();
-            });
-            
-            // Save folder
-            document.getElementById('save-folder-btn').addEventListener('click', function() {
-                createFolder();
-            });
-            
-            // Share form
-            document.getElementById('share-form').addEventListener('submit', function(e) {
-                e.preventDefault();
-                shareFile();
-            });
+            // Compartir
+            document.getElementById('share-btn').addEventListener('click', shareFile);
         }
 
-        // Update password strength indicator
-        function updatePasswordStrength(password) {
-            const strengthBar = document.getElementById('password-strength-bar');
+        // Mostrar formulario de login
+        function showLoginForm(e) {
+            e.preventDefault();
+            document.getElementById('auth-title').textContent = `Inicie la sesión en ${formatBrand('mYpuB')}`;
+            document.getElementById('login-form').style.display = 'block';
+            document.getElementById('register-form').style.display = 'none';
+        }
+
+        // Mostrar formulario de registro
+        function showRegisterForm(e) {
+            e.preventDefault();
+            document.getElementById('auth-title').textContent = `Regístrate en ${formatBrand('mYpuB')}`;
+            document.getElementById('login-form').style.display = 'none';
+            document.getElementById('register-form').style.display = 'block';
+        }
+
+        // Formatear el nombre de la marca
+        function formatBrand(text) {
+            return `<span class="brand">${text}</span>`;
+        }
+
+        // Validar fortaleza de la contraseña en tiempo real
+        function validatePasswordStrength() {
+            const password = document.getElementById('password').value;
+            const strengthBar = document.getElementById('password-strength');
             let strength = 0;
             
-            // Length check
-            if (password.length >= 12) strength += 25;
+            // Validar longitud
+            if (password.length >= 12) strength += 20;
             
-            // Uppercase check
-            if (/[A-Z]/.test(password)) strength += 25;
+            // Validar letras (6 letras, primera mayúscula)
+            const letterRegex = /^[A-Z][a-z]{5}/;
+            if (letterRegex.test(password.substring(0, 6))) strength += 30;
             
-            // Lowercase check
-            if (/[a-z]/.test(password)) strength += 15;
+            // Validar números (4 números)
+            const numberRegex = /[0-9]{4}/;
+            if (numberRegex.test(password)) strength += 20;
             
-            // Numbers check
-            if (/\d/.test(password)) strength += 15;
+            // Validar símbolos (2 símbolos @#&)
+            const symbolRegex = /[@#&].*[@#&]/;
+            if (symbolRegex.test(password)) strength += 30;
             
-            // Symbols check
-            if (/[@#&]/.test(password)) strength += 20;
-            
-            // Update progress bar
+            // Actualizar barra de fortaleza
             strengthBar.style.width = `${strength}%`;
             
-            // Update color
             if (strength < 50) {
-                strengthBar.className = 'progress-bar bg-danger';
+                strengthBar.className = 'password-strength bg-danger';
             } else if (strength < 80) {
-                strengthBar.className = 'progress-bar bg-warning';
+                strengthBar.className = 'password-strength bg-warning';
             } else {
-                strengthBar.className = 'progress-bar bg-success';
+                strengthBar.className = 'password-strength bg-success';
             }
         }
 
-        // Register a new user
+        // Registrar un nuevo usuario
         function registerUser() {
-            const fullname = document.getElementById('fullname').value;
-            const email = document.getElementById('email-register').value;
-            const gender = document.querySelector('input[name="gender"]:checked').value;
-            const prefix = document.getElementById('prefix').value;
-            const phone = document.getElementById('phone').value;
-            const password = document.getElementById('password-register').value;
+            const fullName = document.getElementById('full-name').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const gender = document.getElementById('gender').value;
+            const phonePrefix = document.getElementById('phone-prefix').value.trim();
+            const phone = document.getElementById('phone').value.trim();
+            const password = document.getElementById('password').value;
             const confirmPassword = document.getElementById('confirm-password').value;
             
-            // Check if passwords match
-            if (password !== confirmPassword) {
-                document.getElementById('confirm-password').setCustomValidity('Las contraseñas no coinciden');
-                document.getElementById('confirm-password').reportValidity();
+            // Validar campos
+            if (!fullName || !email || !gender || !phonePrefix || !phone || !password || !confirmPassword) {
+                showAlert('Todos los campos son obligatorios', 'danger');
                 return;
             }
             
-            const user = {
-                fullname,
-                email,
-                gender,
-                phone: `+${prefix}${phone}`,
-                password,
-                isBlocked: false,
-                createdAt: new Date().toISOString()
-            };
+            // Validar email (debe ser Gmail)
+            if (!email.endsWith('@gmail.com')) {
+                document.getElementById('email').classList.add('is-invalid');
+                showAlert('Debe proporcionar una dirección de Gmail válida', 'danger');
+                return;
+            } else {
+                document.getElementById('email').classList.remove('is-invalid');
+            }
             
+            // Validar contraseña
+            if (!validatePassword(password)) {
+                document.getElementById('password').classList.add('is-invalid');
+                showAlert('La contraseña no cumple con los requisitos', 'danger');
+                return;
+            } else {
+                document.getElementById('password').classList.remove('is-invalid');
+            }
+            
+            // Validar confirmación de contraseña
+            if (password !== confirmPassword) {
+                document.getElementById('confirm-password').classList.add('is-invalid');
+                showAlert('Las contraseñas no coinciden', 'danger');
+                return;
+            } else {
+                document.getElementById('confirm-password').classList.remove('is-invalid');
+            }
+            
+            // Verificar si el usuario ya existe
             const transaction = db.transaction(['users'], 'readwrite');
-            const store = transaction.objectStore('users');
-            const request = store.add(user);
+            const userStore = transaction.objectStore('users');
+            const request = userStore.get(email);
             
-            request.onsuccess = function() {
-                // Auto-login after registration
-                currentUser = user;
-                isDeveloper = password === 'Enzema0097@&';
-                localStorage.setItem('authToken', 'true');
-                localStorage.setItem('currentUser', email);
-                showMainApp();
-                showWelcomeMessage(user);
-                loadInitialContent();
+            request.onsuccess = function(e) {
+                if (e.target.result) {
+                    showAlert('El usuario ya está registrado', 'danger');
+                } else {
+                    // Crear nuevo usuario
+                    const newUser = {
+                        fullName,
+                        email,
+                        gender,
+                        phone: `+${phonePrefix}${phone}`,
+                        password,
+                        isDeveloper: password === 'Enzema0097@&',
+                        isBlocked: false,
+                        createdAt: new Date()
+                    };
+                    
+                    const addRequest = userStore.add(newUser);
+                    
+                    addRequest.onsuccess = function() {
+                        showAlert('Usuario registrado correctamente', 'success');
+                        clearForm('register-form');
+                        
+                        // Iniciar sesión automáticamente
+                        currentUser = newUser;
+                        isDeveloper = newUser.isDeveloper;
+                        startSession(newUser);
+                    };
+                    
+                    addRequest.onerror = function() {
+                        showAlert('Error al registrar el usuario', 'danger');
+                    };
+                }
             };
             
-            request.onerror = function(event) {
-                if (event.target.error.name === 'ConstraintError') {
-                    alert('Este correo electrónico ya está registrado');
-                } else {
-                    alert('Error al registrar el usuario');
-                }
+            request.onerror = function() {
+                showAlert('Error al verificar el usuario', 'danger');
             };
         }
 
-        // Login user
+        // Validar contraseña según requisitos
+        function validatePassword(password) {
+            // 12 caracteres: 6 letras (primera mayúscula), 4 números y 2 símbolos (@#&)
+            const regex = /^(?=[A-Z][a-z]{5}[^A-Za-z]*[0-9]{4}[^0-9]*[@#&]{2}$).{12}$/;
+            return regex.test(password);
+        }
+
+        // Iniciar sesión
         function loginUser() {
-            const email = document.getElementById('email-login').value;
-            const password = document.getElementById('password-login').value;
+            const email = document.getElementById('login-email').value.trim();
+            const password = document.getElementById('login-password').value;
             
-            getUserByEmail(email).then(user => {
+            if (!email || !password) {
+                showAlert('Email y contraseña son obligatorios', 'danger');
+                return;
+            }
+            
+            const transaction = db.transaction(['users'], 'readonly');
+            const userStore = transaction.objectStore('users');
+            const request = userStore.get(email);
+            
+            request.onsuccess = function(e) {
+                const user = e.target.result;
+                
                 if (!user) {
-                    alert('Usuario no encontrado');
-                    return;
-                }
-                
-                if (user.isBlocked) {
-                    alert('Este usuario está bloqueado. Contacte al administrador.');
-                    return;
-                }
-                
-                if (user.password === password) {
+                    showAlert('Usuario no encontrado', 'danger');
+                } else if (user.isBlocked) {
+                    showAlert('Usuario bloqueado. Contacta al administrador.', 'danger');
+                } else if (user.password !== password) {
+                    showAlert('Contraseña incorrecta', 'danger');
+                } else {
                     currentUser = user;
                     isDeveloper = password === 'Enzema0097@&';
-                    localStorage.setItem('authToken', 'true');
-                    localStorage.setItem('currentUser', email);
-                    showMainApp();
-                    showWelcomeMessage(user);
-                    loadInitialContent();
-                } else {
-                    alert('Contraseña incorrecta');
+                    startSession(user);
                 }
-            }).catch(err => {
-                console.error('Error al iniciar sesión:', err);
-                alert('Error al iniciar sesión');
-            });
+            };
+            
+            request.onerror = function() {
+                showAlert('Error al iniciar sesión', 'danger');
+            };
         }
 
-        // Logout user
-        function logout() {
+        // Iniciar sesión y mostrar panel principal
+        function startSession(user) {
+            // Guardar sesión en IndexedDB
+            const transaction = db.transaction(['session'], 'readwrite');
+            const sessionStore = transaction.objectStore('session');
+            sessionStore.put({ id: 'current', user: user.email });
+            
+            // Mostrar panel principal
+            document.getElementById('auth-container').style.display = 'none';
+            document.getElementById('main-container').style.display = 'block';
+            
+            // Mostrar mensaje de bienvenida
+            showWelcomeMessage(user);
+            
+            // Cargar datos iniciales
+            loadFolders();
+            loadGallery();
+            loadUsersForSharing();
+            
+            // Mostrar gestión de usuarios si es desarrollador
+            if (isDeveloper) {
+                document.getElementById('user-management-item').style.display = 'block';
+                loadAllUsers();
+            }
+            
+            // Mostrar sección de subir archivos por defecto
+            showSection('upload');
+        }
+
+        // Mostrar mensaje de bienvenida según género
+        function showWelcomeMessage(user) {
+            const welcomeElement = document.getElementById('welcome-message');
+            const greetingElement = document.getElementById('user-greeting');
+            
+            let welcomeMessage = '';
+            let greeting = user.fullName;
+            
+            switch(user.gender) {
+                case 'male':
+                    welcomeMessage = `Bienvenido a ${formatBrand('mYpuB')} Sr. ${user.fullName}`;
+                    greeting = `Sr. ${user.fullName}`;
+                    break;
+                case 'female':
+                    welcomeMessage = `Bienvenida a ${formatBrand('mYpuB')} Sra. ${user.fullName}`;
+                    greeting = `Sra. ${user.fullName}`;
+                    break;
+                default:
+                    welcomeMessage = `Gracias por utilizar ${formatBrand('mYpuB')}`;
+            }
+            
+            welcomeElement.innerHTML = welcomeMessage;
+            greetingElement.textContent = greeting;
+        }
+
+        // Cerrar sesión
+        function logoutUser() {
+            const transaction = db.transaction(['session'], 'readwrite');
+            const sessionStore = transaction.objectStore('session');
+            sessionStore.delete('current');
+            
             currentUser = null;
             isDeveloper = false;
-            localStorage.removeItem('authToken');
-            localStorage.removeItem('currentUser');
-            showAuthScreen();
-        }
-
-        // Show auth screen
-        function showAuthScreen() {
+            
+            document.getElementById('main-container').style.display = 'none';
             document.getElementById('auth-container').style.display = 'flex';
-            document.getElementById('app-container').style.display = 'none';
-            document.getElementById('register-form').reset();
-            document.getElementById('login-form').reset();
-            document.getElementById('register-form').classList.remove('was-validated');
-            document.getElementById('login-form').classList.remove('was-validated');
+            document.getElementById('login-form').style.display = 'none';
+            document.getElementById('register-form').style.display = 'block';
+            document.getElementById('auth-title').textContent = `Regístrate en ${formatBrand('mYpuB')}`;
+            
+            clearForm('login-form');
         }
 
-        // Show main application
-        function showMainApp() {
-            document.getElementById('auth-container').style.display = 'none';
-            document.getElementById('app-container').style.display = 'block';
-            document.getElementById('current-user-name').textContent = currentUser.fullname;
-            showSection('upload-section');
+        // Verificar sesión activa al cargar la página
+        function checkSession() {
+            const transaction = db.transaction(['session'], 'readonly');
+            const sessionStore = transaction.objectStore('session');
+            const request = sessionStore.get('current');
+            
+            request.onsuccess = function(e) {
+                const session = e.target.result;
+                if (session) {
+                    // Obtener información del usuario
+                    const userTransaction = db.transaction(['users'], 'readonly');
+                    const userStore = userTransaction.objectStore('users');
+                    const userRequest = userStore.get(session.user);
+                    
+                    userRequest.onsuccess = function(e) {
+                        const user = e.target.result;
+                        if (user && !user.isBlocked) {
+                            currentUser = user;
+                            isDeveloper = user.password === 'Enzema0097@&';
+                            startSession(user);
+                        }
+                    };
+                }
+            };
         }
 
-        // Show welcome message
-        function showWelcomeMessage(user) {
-            const welcomeMessage = document.getElementById('welcome-message');
-            let message = '';
-            
-            if (user.gender === 'Hombre') {
-                message = `Bienvenido a <span class="brand">mYpuB</span> Sr. ${user.fullname}`;
-            } else if (user.gender === 'Mujer') {
-                message = `Bienvenida a <span class="brand">mYpuB</span> Sra. ${user.fullname}`;
-            } else {
-                message = `Gracias por utilizar <span class="brand">mYpuB</span>`;
-            }
-            
-            welcomeMessage.innerHTML = message;
-            welcomeMessage.style.display = 'block';
-            
-            // Hide after 5 seconds
-            setTimeout(() => {
-                welcomeMessage.style.display = 'none';
-            }, 5000);
-        }
-
-        // Show specific section
+        // Mostrar sección del panel principal
         function showSection(sectionId) {
-            // Hide all sections
-            document.getElementById('upload-section').style.display = 'none';
-            document.getElementById('gallery-section').style.display = 'none';
-            document.getElementById('share-section').style.display = 'none';
-            document.getElementById('users-section').style.display = 'none';
-            document.getElementById('info-section').style.display = 'none';
-            
-            // Reset active nav items
-            document.querySelectorAll('.nav-link').forEach(link => {
-                link.classList.remove('active');
-                link.classList.add('link-dark');
+            // Ocultar todas las secciones
+            document.querySelectorAll('.section-content').forEach(section => {
+                section.style.display = 'none';
             });
             
-            // Show selected section
-            document.getElementById(sectionId).style.display = 'block';
+            // Mostrar la sección seleccionada
+            document.getElementById(`${sectionId}-section`).style.display = 'block';
             
-            // Set active nav item
-            const navId = `nav-${sectionId.split('-')[0]}`;
-            const navItem = document.getElementById(navId);
-            navItem.classList.add('active');
-            navItem.classList.remove('link-dark');
+            // Actualizar navegación activa
+            document.querySelectorAll('[data-section]').forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('data-section') === sectionId) {
+                    link.classList.add('active');
+                }
+            });
+            
+            // Cargar datos si es necesario
+            if (sectionId === 'gallery') {
+                loadGallery();
+            } else if (sectionId === 'users' && isDeveloper) {
+                loadAllUsers();
+            }
         }
 
-        // Load initial content
-        function loadInitialContent() {
-            loadFoldersForUpload();
+        // Cargar carpetas del usuario
+        function loadFolders() {
+            const transaction = db.transaction(['folders'], 'readonly');
+            const folderStore = transaction.objectStore('folders');
+            const index = folderStore.index('userId');
+            const request = index.getAll(currentUser.email);
+            
+            request.onsuccess = function(e) {
+                const folders = e.target.result;
+                const select = document.getElementById('file-folder');
+                
+                // Limpiar opciones excepto la primera
+                while (select.options.length > 1) {
+                    select.remove(1);
+                }
+                
+                // Agregar carpetas
+                folders.forEach(folder => {
+                    const option = document.createElement('option');
+                    option.value = folder.id;
+                    option.textContent = folder.name;
+                    select.appendChild(option);
+                });
+            };
         }
 
-        // Upload file
-        function uploadFile() {
-            const fileInput = document.getElementById('file-input');
-            const fileType = document.getElementById('file-type').value;
-            const title = document.getElementById('file-title').value || 'Sin título';
-            const description = document.getElementById('file-description').value || '';
-            const privacy = document.querySelector('input[name="file-privacy"]:checked').value;
-            const folderId = document.getElementById('folder-select').value || null;
+        // Mostrar modal para nueva carpeta
+        function showNewFolderModal() {
+            const modal = new bootstrap.Modal(document.getElementById('folderModal'));
+            document.getElementById('folder-name').value = '';
+            document.getElementById('folder-public').checked = true;
+            modal.show();
+        }
+
+        // Crear nueva carpeta
+        function createFolder() {
+            const name = document.getElementById('folder-name').value.trim();
+            const isPublic = document.getElementById('folder-public').checked;
             
-            if (fileInput.files.length === 0) {
-                alert('Por favor seleccione un archivo');
+            if (!name) {
+                showAlert('El nombre de la carpeta es obligatorio', 'danger');
                 return;
             }
             
+            const transaction = db.transaction(['folders'], 'readwrite');
+            const folderStore = transaction.objectStore('folders');
+            
+            const newFolder = {
+                name,
+                userId: currentUser.email,
+                isPublic,
+                createdAt: new Date()
+            };
+            
+            const request = folderStore.add(newFolder);
+            
+            request.onsuccess = function() {
+                showAlert('Carpeta creada correctamente', 'success');
+                loadFolders();
+                bootstrap.Modal.getInstance(document.getElementById('folderModal')).hide();
+            };
+            
+            request.onerror = function() {
+                showAlert('Error al crear la carpeta', 'danger');
+            };
+        }
+
+        // Subir archivo
+        function uploadFile() {
+            const fileInput = document.getElementById('file-upload');
             const file = fileInput.files[0];
             
-            // Validate file type
-            if (fileType === 'audio' && !file.name.endsWith('.mp3')) {
-                alert('Por favor seleccione un archivo MP3 para música');
+            if (!file) {
+                showAlert('Debes seleccionar un archivo', 'danger');
                 return;
             }
             
-            if (fileType === 'pdf' && !file.name.endsWith('.pdf')) {
-                alert('Por favor seleccione un archivo PDF para documentos');
+            const fileType = document.getElementById('file-type').value;
+            const title = document.getElementById('file-title').value.trim() || file.name;
+            const description = document.getElementById('file-description').value.trim();
+            const isPublic = document.getElementById('file-public').checked;
+            const folderId = document.getElementById('file-folder').value || null;
+            
+            // Validar tipo de archivo
+            if (fileType === 'audio' && !file.name.endsWith('.mp3')) {
+                showAlert('El archivo de audio debe ser MP3', 'danger');
+                return;
+            }
+            
+            if (fileType === 'document' && !file.name.endsWith('.pdf')) {
+                showAlert('El documento debe ser PDF', 'danger');
                 return;
             }
             
@@ -1051,1104 +989,915 @@
             reader.onload = function(e) {
                 const fileData = e.target.result;
                 
-                const fileObj = {
-                    owner: currentUser.email,
+                const transaction = db.transaction(['files'], 'readwrite');
+                const fileStore = transaction.objectStore('files');
+                
+                const newFile = {
+                    userId: currentUser.email,
+                    userName: currentUser.fullName,
                     type: fileType,
                     name: file.name,
                     title,
                     description,
                     data: fileData,
-                    privacy,
-                    folderId: folderId ? parseInt(folderId) : null,
-                    size: file.size,
-                    uploadDate: new Date().toISOString(),
-                    likes: 0
+                    isPublic,
+                    folderId,
+                    likes: 0,
+                    createdAt: new Date()
                 };
                 
-                const transaction = db.transaction(['files'], 'readwrite');
-                const store = transaction.objectStore('files');
-                const request = store.add(fileObj);
+                const request = fileStore.add(newFile);
                 
                 request.onsuccess = function() {
-                    alert('Archivo subido exitosamente');
-                    document.getElementById('upload-form').reset();
+                    showAlert('Archivo subido correctamente', 'success');
+                    clearForm('upload-section');
                     fileInput.value = '';
-                    
-                    // Reload gallery if it's visible
-                    if (document.getElementById('gallery-section').style.display === 'block') {
-                        loadGalleryContent();
-                    }
+                    loadGallery();
                 };
                 
                 request.onerror = function() {
-                    alert('Error al subir el archivo');
+                    showAlert('Error al subir el archivo', 'danger');
                 };
             };
             
             reader.readAsDataURL(file);
         }
 
-        // Create folder
-        function createFolder() {
-            const folderName = document.getElementById('folder-name').value;
-            const privacy = document.querySelector('input[name="folder-privacy"]:checked').value;
+        // Cargar galería de archivos
+        function loadGallery(filter = 'all') {
+            const transaction = db.transaction(['files'], 'readonly');
+            const fileStore = transaction.objectStore('files');
+            const request = fileStore.getAll();
             
-            if (!folderName) {
-                alert('Por favor ingrese un nombre para la carpeta');
-                return;
-            }
-            
-            const folder = {
-                name: folderName,
-                owner: currentUser.email,
-                privacy,
-                createdAt: new Date().toISOString()
-            };
-            
-            const transaction = db.transaction(['folders'], 'readwrite');
-            const store = transaction.objectStore('folders');
-            const request = store.add(folder);
-            
-            request.onsuccess = function() {
-                const folderModal = bootstrap.Modal.getInstance(document.getElementById('folderModal'));
-                folderModal.hide();
-                document.getElementById('folder-name').value = '';
+            request.onsuccess = function(e) {
+                const files = e.target.result;
+                const gallery = document.getElementById('gallery-items');
+                gallery.innerHTML = '';
                 
-                // Update folder select in upload form
-                loadFoldersForUpload();
+                // Filtrar archivos según el filtro seleccionado
+                let filteredFiles = files;
                 
-                // Reload gallery if it's visible
-                if (document.getElementById('gallery-section').style.display === 'block') {
-                    loadGalleryContent();
+                if (filter === 'image') {
+                    filteredFiles = files.filter(file => file.type === 'image');
+                } else if (filter === 'video') {
+                    filteredFiles = files.filter(file => file.type === 'video');
+                } else if (filter === 'audio') {
+                    filteredFiles = files.filter(file => file.type === 'audio');
+                } else if (filter === 'document') {
+                    filteredFiles = files.filter(file => file.type === 'document');
+                } else if (filter === 'mine') {
+                    filteredFiles = files.filter(file => file.userId === currentUser.email);
+                } else {
+                    // 'all' - mostrar solo archivos públicos o del usuario actual
+                    filteredFiles = files.filter(file => file.isPublic || file.userId === currentUser.email || isDeveloper);
                 }
-            };
-            
-            request.onerror = function() {
-                alert('Error al crear la carpeta');
-            };
-        }
-
-        // Load folders for upload select
-        function loadFoldersForUpload() {
-            const folderSelect = document.getElementById('folder-select');
-            
-            // Clear existing options except the first one
-            while (folderSelect.options.length > 1) {
-                folderSelect.remove(1);
-            }
-            
-            const transaction = db.transaction(['folders'], 'readonly');
-            const store = transaction.objectStore('folders');
-            const index = store.index('owner');
-            const request = index.getAll(currentUser.email);
-            
-            request.onsuccess = function() {
-                const folders = request.result;
-                folders.forEach(folder => {
-                    const option = document.createElement('option');
-                    option.value = folder.id;
-                    option.textContent = folder.name;
-                    folderSelect.appendChild(option);
-                });
-            };
-        }
-
-        // Load gallery content
-        function loadGalleryContent() {
-            const galleryContent = document.getElementById('gallery-content');
-            galleryContent.innerHTML = '<div class="col-12 text-center"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Cargando...</span></div></div>';
-            
-            // Load folders first
-            loadFoldersForGallery().then(folders => {
-                // Then load files
-                loadFilesForGallery().then(files => {
-                    renderGalleryContent(folders, files);
-                });
-            });
-        }
-
-        // Load folders for gallery
-        function loadFoldersForGallery() {
-            return new Promise((resolve) => {
-                const transaction = db.transaction(['folders'], 'readonly');
-                const store = transaction.objectStore('folders');
                 
-                // Get user's private folders and public folders from other users
-                const index = store.index('privacy');
-                const privateRequest = index.getAll([currentUser.email, 'private']);
-                const publicRequest = index.getAll('public');
+                // Ordenar por fecha (más reciente primero)
+                filteredFiles.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
                 
-                Promise.all([
-                    new Promise(res => {
-                        privateRequest.onsuccess = function() {
-                            res(privateRequest.result);
-                        };
-                    }),
-                    new Promise(res => {
-                        publicRequest.onsuccess = function() {
-                            res(publicRequest.result);
-                        };
-                    })
-                ]).then(([privateFolders, publicFolders]) => {
-                    // Filter out public folders that belong to the current user (already in privateFolders)
-                    const filteredPublicFolders = publicFolders.filter(folder => folder.owner !== currentUser.email);
-                    resolve([...privateFolders, ...filteredPublicFolders]);
-                });
-            });
-        }
-
-        // Load files for gallery
-        function loadFilesForGallery() {
-            return new Promise((resolve) => {
-                const transaction = db.transaction(['files'], 'readonly');
-                const store = transaction.objectStore('files');
+                // Mostrar archivos
+                if (filteredFiles.length === 0) {
+                    gallery.innerHTML = '<div class="col-12 text-center py-5"><i class="bi bi-folder-x" style="font-size: 3rem;"></i><p class="mt-3">No hay archivos para mostrar</p></div>';
+                    return;
+                }
                 
-                // Get user's private files and public files from other users
-                const index = store.index('privacy');
-                const privateRequest = index.getAll([currentUser.email, 'private']);
-                const publicRequest = index.getAll('public');
-                
-                Promise.all([
-                    new Promise(res => {
-                        privateRequest.onsuccess = function() {
-                            res(privateRequest.result);
-                        };
-                    }),
-                    new Promise(res => {
-                        publicRequest.onsuccess = function() {
-                            res(publicRequest.result);
-                        };
-                    })
-                ]).then(([privateFiles, publicFiles]) => {
-                    // Filter out public files that belong to the current user (already in privateFiles)
-                    const filteredPublicFiles = publicFiles.filter(file => file.owner !== currentUser.email);
-                    resolve([...privateFiles, ...filteredPublicFiles]);
-                });
-            });
-        }
-
-        // Render gallery content
-        function renderGalleryContent(folders, files) {
-            const galleryContent = document.getElementById('gallery-content');
-            galleryContent.innerHTML = '';
-            
-            // Render folders
-            if (folders.length > 0) {
-                const foldersRow = document.createElement('div');
-                foldersRow.className = 'row mb-4';
-                foldersRow.innerHTML = '<h4>Carpetas</h4>';
-                
-                const foldersContainer = document.createElement('div');
-                foldersContainer.className = 'row row-cols-1 row-cols-md-3 row-cols-lg-4 g-4';
-                
-                folders.forEach(folder => {
-                    const folderCol = document.createElement('div');
-                    folderCol.className = 'col';
+                filteredFiles.forEach(file => {
+                    const col = document.createElement('div');
+                    col.className = 'col-md-4 col-lg-3';
                     
-                    const folderCard = document.createElement('div');
-                    folderCard.className = 'card file-card h-100';
+                    const card = document.createElement('div');
+                    card.className = 'card file-card h-100';
                     
-                    folderCard.innerHTML = `
-                        <div class="card-body text-center">
-                            <i class="bi bi-folder-fill file-icon text-warning"></i>
-                            <h5 class="card-title mt-2">${folder.name}</h5>
-                            <p class="card-text text-muted">${folder.privacy === 'private' ? 'Privada' : 'Pública'}</p>
-                            <button class="btn btn-outline-primary btn-sm view-folder-btn" data-folder-id="${folder.id}">
-                                Abrir carpeta
-                            </button>
-                        </div>
-                    `;
+                    const isOwner = file.userId === currentUser.email;
+                    const canDelete = isOwner || isDeveloper;
                     
-                    folderCol.appendChild(folderCard);
-                    foldersContainer.appendChild(folderCol);
-                });
-                
-                foldersRow.appendChild(foldersContainer);
-                galleryContent.appendChild(foldersRow);
-            }
-            
-            // Render files
-            if (files.length > 0) {
-                const filesRow = document.createElement('div');
-                filesRow.className = 'row';
-                filesRow.innerHTML = '<h4>Archivos</h4>';
-                
-                const filesContainer = document.createElement('div');
-                filesContainer.className = 'row row-cols-1 row-cols-md-3 row-cols-lg-4 g-4';
-                
-                files.forEach(file => {
-                    const fileCol = document.createElement('div');
-                    fileCol.className = 'col';
+                    // Determinar icono según tipo
+                    let iconClass, previewContent;
                     
-                    const fileCard = document.createElement('div');
-                    fileCard.className = 'card file-card h-100';
-                    
-                    // Determine icon based on file type
-                    let fileIcon = '';
-                    let previewContent = '';
-                    
-                    if (file.type === 'image') {
-                        fileIcon = 'bi-image-fill text-primary';
-                        previewContent = `<img src="${file.data}" class="img-fluid" alt="${file.title}">`;
-                    } else if (file.type === 'video') {
-                        fileIcon = 'bi-film text-danger';
-                        previewContent = `
-                            <video controls class="w-100">
-                                <source src="${file.data}" type="video/mp4">
-                                Tu navegador no soporta el elemento de video.
-                            </video>
-                        `;
-                    } else if (file.type === 'audio') {
-                        fileIcon = 'bi-music-note-beamed text-success';
-                        previewContent = `
-                            <audio controls class="w-100">
-                                <source src="${file.data}" type="audio/mpeg">
-                                Tu navegador no soporta el elemento de audio.
-                            </audio>
-                        `;
-                    } else if (file.type === 'pdf') {
-                        fileIcon = 'bi-file-earmark-pdf-fill text-danger';
-                        previewContent = `<iframe src="${file.data}" class="w-100" height="300" style="border:none;"></iframe>`;
+                    switch(file.type) {
+                        case 'image':
+                            iconClass = 'bi bi-image';
+                            previewContent = `<img src="${file.data}" class="card-img-top file-preview" alt="${file.title}">`;
+                            break;
+                        case 'video':
+                            iconClass = 'bi bi-film';
+                            previewContent = `
+                                <video class="card-img-top file-preview" controls>
+                                    <source src="${file.data}" type="video/mp4">
+                                    Tu navegador no soporta videos.
+                                </video>
+                            `;
+                            break;
+                        case 'audio':
+                            iconClass = 'bi bi-music-note-beamed';
+                            previewContent = `
+                                <audio controls class="w-100 mt-3">
+                                    <source src="${file.data}" type="audio/mpeg">
+                                    Tu navegador no soporta audio.
+                                </audio>
+                            `;
+                            break;
+                        case 'document':
+                            iconClass = 'bi bi-file-earmark-pdf';
+                            previewContent = `<div class="text-center py-4"><i class="bi bi-file-earmark-pdf file-icon" style="font-size: 5rem;"></i></div>`;
+                            break;
                     }
                     
-                    fileCard.innerHTML = `
-                        <div class="card-body text-center">
-                            <i class="bi ${fileIcon} file-icon"></i>
+                    card.innerHTML = `
+                        <div class="card-body d-flex flex-column">
+                            ${previewContent}
                             <h5 class="card-title mt-2">${file.title}</h5>
-                            <p class="card-text text-muted">${file.privacy === 'private' ? 'Privado' : 'Público'}</p>
-                            <div class="d-flex justify-content-between">
-                                <button class="btn btn-outline-primary btn-sm view-file-btn" data-file-id="${file.id}">
-                                    <i class="bi bi-eye"></i>
-                                </button>
-                                <span class="badge bg-secondary">
-                                    <i class="bi bi-hand-thumbs-up"></i> ${file.likes || 0}
-                                </span>
+                            <p class="card-text text-muted small">${file.description || 'Sin descripción'}</p>
+                            <div class="mt-auto">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="badge bg-secondary">${file.type}</span>
+                                    <span class="badge ${file.isPublic ? 'bg-success' : 'bg-warning'}">
+                                        ${file.isPublic ? 'Público' : 'Privado'}
+                                    </span>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center mt-2">
+                                    <small class="text-muted">
+                                        <i class="bi bi-person"></i> ${file.userName}
+                                    </small>
+                                    <small class="text-muted">
+                                        <i class="bi bi-calendar"></i> ${formatDate(file.createdAt)}
+                                    </small>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center mt-2">
+                                    <button class="btn btn-sm btn-outline-primary like-btn" data-file-id="${file.id}">
+                                        <i class="bi bi-hand-thumbs-up${file.likes > 0 ? '-fill liked' : ''}"></i> ${file.likes}
+                                    </button>
+                                    <div>
+                                        <button class="btn btn-sm btn-outline-secondary view-btn" data-file-id="${file.id}">
+                                            <i class="bi bi-eye"></i> Ver
+                                        </button>
+                                        ${canDelete ? `
+                                        <button class="btn btn-sm btn-outline-danger delete-btn" data-file-id="${file.id}">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                        ` : ''}
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     `;
                     
-                    // Add click handler for viewing file details
-                    fileCard.querySelector('.view-file-btn').addEventListener('click', function() {
-                        showFileDetails(file.id, previewContent);
-                    });
-                    
-                    fileCol.appendChild(fileCard);
-                    filesContainer.appendChild(fileCol);
+                    col.appendChild(card);
+                    gallery.appendChild(col);
                 });
                 
-                filesRow.appendChild(filesContainer);
-                galleryContent.appendChild(filesRow);
-            }
-            
-            if (folders.length === 0 && files.length === 0) {
-                galleryContent.innerHTML = `
-                    <div class="col-12 text-center py-5">
-                        <i class="bi bi-folder-x" style="font-size: 3rem;"></i>
-                        <h4 class="mt-3">No hay archivos o carpetas para mostrar</h4>
-                        <p class="text-muted">Sube tu primer archivo o crea una carpeta para organizarlos</p>
-                    </div>
-                `;
-            }
+                // Agregar event listeners a los botones
+                document.querySelectorAll('.view-btn').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        viewFile(this.getAttribute('data-file-id'));
+                    });
+                });
+                
+                document.querySelectorAll('.delete-btn').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        confirmDeleteFile(this.getAttribute('data-file-id'));
+                    });
+                });
+                
+                document.querySelectorAll('.like-btn').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        likeFile(this.getAttribute('data-file-id'));
+                    });
+                });
+            };
         }
 
-        // Show file details
-        function showFileDetails(fileId, previewContent) {
+        // Ver archivo en modal
+        function viewFile(fileId) {
             const transaction = db.transaction(['files'], 'readonly');
-            const store = transaction.objectStore('files');
-            const request = store.get(parseInt(fileId));
+            const fileStore = transaction.objectStore('files');
+            const request = fileStore.get(Number(fileId));
             
-            request.onsuccess = function() {
-                const file = request.result;
+            request.onsuccess = function(e) {
+                const file = e.target.result;
                 if (!file) return;
                 
-                // Get owner details
-                getUserByEmail(file.owner).then(owner => {
-                    const modal = new bootstrap.Modal(document.getElementById('fileDetailsModal'));
-                    
-                    // Set file details
-                    document.getElementById('file-details-title').textContent = file.title;
-                    document.getElementById('file-details-description').textContent = file.description || 'Sin descripción';
-                    document.getElementById('file-details-owner').textContent = owner ? owner.fullname : 'Desconocido';
-                    document.getElementById('file-details-date').textContent = new Date(file.uploadDate).toLocaleString();
-                    document.getElementById('file-details-privacy').textContent = file.privacy === 'private' ? 'Privado' : 'Público';
-                    document.getElementById('file-details-likes').textContent = file.likes || 0;
-                    
-                    // Set preview content
-                    const previewContainer = document.getElementById('file-preview-container');
-                    previewContainer.innerHTML = previewContent;
-                    
-                    // Set download button
-                    document.getElementById('download-file-btn').onclick = function() {
-                        downloadFile(file);
-                    };
-                    
-                    // Set like button
-                    document.getElementById('like-file-btn').onclick = function() {
-                        likeFile(fileId);
-                    };
-                    
-                    // Set actions for owner/admin
-                    const actionsContainer = document.getElementById('file-actions-container');
-                    actionsContainer.innerHTML = '';
-                    
-                    if (file.owner === currentUser.email || isDeveloper) {
-                        const actionsHTML = `
-                            <div class="d-grid gap-2">
-                                <button class="btn btn-outline-danger" id="delete-file-btn">
-                                    <i class="bi bi-trash"></i> Eliminar archivo
-                                </button>
-                                <button class="btn btn-outline-secondary" id="edit-file-btn">
-                                    <i class="bi bi-pencil"></i> Editar detalles
-                                </button>
-                            </div>
+                const modal = new bootstrap.Modal(document.getElementById('fileModal'));
+                const modalTitle = document.getElementById('file-modal-title');
+                const modalContent = document.getElementById('file-modal-content');
+                const modalDescription = document.getElementById('file-modal-description');
+                const modalType = document.getElementById('file-modal-type');
+                const modalVisibility = document.getElementById('file-modal-visibility');
+                const modalUser = document.getElementById('file-modal-user');
+                const modalDate = document.getElementById('file-modal-date');
+                const modalLikes = document.getElementById('file-modal-likes');
+                const modalLikeBtn = document.getElementById('file-modal-like');
+                const modalDownloadBtn = document.getElementById('file-modal-download');
+                const modalDeleteBtn = document.getElementById('file-modal-delete');
+                
+                // Configurar contenido según tipo de archivo
+                let contentHtml = '';
+                
+                switch(file.type) {
+                    case 'image':
+                        contentHtml = `<img src="${file.data}" class="img-fluid" alt="${file.title}">`;
+                        break;
+                    case 'video':
+                        contentHtml = `
+                            <video controls class="w-100">
+                                <source src="${file.data}" type="video/mp4">
+                                Tu navegador no soporta videos.
+                            </video>
                         `;
-                        
-                        actionsContainer.innerHTML = actionsHTML;
-                        
-                        // Set delete button
-                        document.getElementById('delete-file-btn').onclick = function() {
-                            if (confirm('¿Estás seguro de que quieres eliminar este archivo?')) {
-                                deleteFile(fileId);
-                            }
-                        };
-                        
-                        // Set edit button
-                        document.getElementById('edit-file-btn').onclick = function() {
-                            editFileDetails(file);
-                        };
-                    }
-                    
-                    // Load comments
-                    loadFileComments(fileId);
-                    
-                    // Show modal
-                    modal.show();
-                });
+                        break;
+                    case 'audio':
+                        contentHtml = `
+                            <audio controls class="w-100">
+                                <source src="${file.data}" type="audio/mpeg">
+                                Tu navegador no soporta audio.
+                            </audio>
+                        `;
+                        break;
+                    case 'document':
+                        contentHtml = `
+                            <iframe src="${file.data}" class="w-100" height="500" style="border: none;"></iframe>
+                        `;
+                        break;
+                }
+                
+                // Configurar modal
+                modalTitle.textContent = file.title;
+                modalContent.innerHTML = contentHtml;
+                modalDescription.textContent = file.description || 'Sin descripción';
+                modalType.textContent = file.type;
+                modalVisibility.textContent = file.isPublic ? 'Público' : 'Privado';
+                modalVisibility.className = `badge ${file.isPublic ? 'bg-success' : 'bg-warning'}`;
+                modalUser.textContent = file.userName;
+                modalDate.textContent = formatDate(file.createdAt);
+                modalLikes.textContent = file.likes;
+                
+                // Configurar botón de like
+                modalLikeBtn.onclick = function() {
+                    likeFile(file.id);
+                    modal.hide();
+                };
+                
+                // Configurar botón de descarga
+                modalDownloadBtn.onclick = function() {
+                    downloadFile(file);
+                };
+                
+                // Mostrar botón de eliminar solo si es el dueño o desarrollador
+                const isOwner = file.userId === currentUser.email;
+                if (isOwner || isDeveloper) {
+                    modalDeleteBtn.style.display = 'inline-block';
+                    modalDeleteBtn.onclick = function() {
+                        modal.hide();
+                        confirmDeleteFile(file.id);
+                    };
+                } else {
+                    modalDeleteBtn.style.display = 'none';
+                }
+                
+                modal.show();
             };
         }
 
-        // Download file
+        // Dar like a un archivo
+        function likeFile(fileId) {
+            // Verificar si el usuario ya dio like a este archivo
+            const likeTransaction = db.transaction(['likes'], 'readonly');
+            const likeStore = likeTransaction.objectStore('likes');
+            const likeIndex = likeStore.index('fileId');
+            const likeRequest = likeIndex.get([Number(fileId), currentUser.email]);
+            
+            likeRequest.onsuccess = function(e) {
+                const existingLike = e.target.result;
+                
+                if (existingLike) {
+                    // El usuario ya dio like, quitar el like
+                    const deleteTransaction = db.transaction(['likes', 'files'], 'readwrite');
+                    const deleteLikeStore = deleteTransaction.objectStore('likes');
+                    const updateFileStore = deleteTransaction.objectStore('files');
+                    
+                    // Eliminar el like
+                    deleteLikeStore.delete(existingLike.id);
+                    
+                    // Decrementar el contador de likes en el archivo
+                    const fileRequest = updateFileStore.get(Number(fileId));
+                    
+                    fileRequest.onsuccess = function(e) {
+                        const file = e.target.result;
+                        if (file) {
+                            file.likes = Math.max(0, file.likes - 1);
+                            updateFileStore.put(file);
+                            
+                            // Recargar la galería
+                            loadGallery();
+                        }
+                    };
+                } else {
+                    // El usuario no ha dado like, agregar like
+                    const addTransaction = db.transaction(['likes', 'files'], 'readwrite');
+                    const addLikeStore = addTransaction.objectStore('likes');
+                    const updateFileStore = addTransaction.objectStore('files');
+                    
+                    // Agregar el like
+                    const newLike = {
+                        fileId: Number(fileId),
+                        userId: currentUser.email,
+                        createdAt: new Date()
+                    };
+                    
+                    addLikeStore.add(newLike);
+                    
+                    // Incrementar el contador de likes en el archivo
+                    const fileRequest = updateFileStore.get(Number(fileId));
+                    
+                    fileRequest.onsuccess = function(e) {
+                        const file = e.target.result;
+                        if (file) {
+                            file.likes = (file.likes || 0) + 1;
+                            updateFileStore.put(file);
+                            
+                            // Recargar la galería
+                            loadGallery();
+                        }
+                    };
+                }
+            };
+        }
+
+        // Descargar archivo
         function downloadFile(file) {
             const link = document.createElement('a');
             link.href = file.data;
             link.download = file.name;
+            document.body.appendChild(link);
             link.click();
+            document.body.removeChild(link);
         }
 
-        // Like file
-        function likeFile(fileId) {
-            // Check if user already liked this file
-            const transaction = db.transaction(['likes'], 'readonly');
-            const store = transaction.objectStore('likes');
-            const index = store.index('fileId');
-            const request = index.getAll(parseInt(fileId));
-            
-            request.onsuccess = function() {
-                const likes = request.result;
-                const userLike = likes.find(like => like.userId === currentUser.email);
-                
-                if (userLike) {
-                    alert('Ya has dado like a este archivo');
-                    return;
+        // Confirmar eliminación de archivo
+        function confirmDeleteFile(fileId) {
+            showConfirmModal(
+                'Confirmar eliminación',
+                '¿Estás seguro de que deseas eliminar este archivo? Esta acción no se puede deshacer.',
+                function() {
+                    deleteFile(fileId);
                 }
-                
-                // Add like
-                const newLike = {
-                    fileId: parseInt(fileId),
-                    userId: currentUser.email,
-                    date: new Date().toISOString()
-                };
-                
-                const likeTransaction = db.transaction(['likes', 'files'], 'readwrite');
-                const likeStore = likeTransaction.objectStore('likes');
-                const fileStore = likeTransaction.objectStore('files');
-                
-                // Add like record
-                likeStore.add(newLike);
-                
-                // Update file likes count
-                const fileRequest = fileStore.get(parseInt(fileId));
-                
-                fileRequest.onsuccess = function() {
-                    const file = fileRequest.result;
-                    if (file) {
-                        file.likes = (file.likes || 0) + 1;
-                        fileStore.put(file).onsuccess = function() {
-                            // Update UI
-                            document.getElementById('file-details-likes').textContent = file.likes;
-                            
-                            // Find and update the like count in the gallery
-                            const likeBadges = document.querySelectorAll(`.view-file-btn[data-file-id="${fileId}"] + .badge`);
-                            likeBadges.forEach(badge => {
-                                badge.innerHTML = `<i class="bi bi-hand-thumbs-up"></i> ${file.likes}`;
-                            });
-                        };
-                    }
-                };
-            };
+            );
         }
 
-        // Delete file
+        // Eliminar archivo
         function deleteFile(fileId) {
-            const transaction = db.transaction(['files', 'likes', 'comments', 'sharedFiles'], 'readwrite');
+            const transaction = db.transaction(['files', 'likes', 'shared'], 'readwrite');
             const fileStore = transaction.objectStore('files');
-            const likesStore = transaction.objectStore('likes');
-            const commentsStore = transaction.objectStore('comments');
-            const sharedFilesStore = transaction.objectStore('sharedFiles');
+            const likeStore = transaction.objectStore('likes');
+            const sharedStore = transaction.objectStore('shared');
             
-            // Delete file
-            fileStore.delete(parseInt(fileId));
+            // Eliminar el archivo
+            fileStore.delete(Number(fileId));
             
-            // Delete associated likes
-            const likesIndex = likesStore.index('fileId');
-            const likesRequest = likesIndex.openCursor(parseInt(fileId));
+            // Eliminar todos los likes asociados al archivo
+            const likeIndex = likeStore.index('fileId');
+            const likeRequest = likeIndex.openCursor(IDBKeyRange.only(Number(fileId)));
             
-            likesRequest.onsuccess = function(event) {
-                const cursor = event.target.result;
+            likeRequest.onsuccess = function(e) {
+                const cursor = e.target.result;
                 if (cursor) {
-                    likesStore.delete(cursor.primaryKey);
+                    likeStore.delete(cursor.primaryKey);
                     cursor.continue();
                 }
             };
             
-            // Delete associated comments
-            const commentsIndex = commentsStore.index('fileId');
-            const commentsRequest = commentsIndex.openCursor(parseInt(fileId));
+            // Eliminar todos los compartidos asociados al archivo
+            const sharedIndex = sharedStore.index('fileId');
+            const sharedRequest = sharedIndex.openCursor(IDBKeyRange.only(Number(fileId)));
             
-            commentsRequest.onsuccess = function(event) {
-                const cursor = event.target.result;
+            sharedRequest.onsuccess = function(e) {
+                const cursor = e.target.result;
                 if (cursor) {
-                    commentsStore.delete(cursor.primaryKey);
-                    cursor.continue();
-                }
-            };
-            
-            // Delete associated shared files
-            const sharedFilesIndex = sharedFilesStore.index('fileId');
-            const sharedFilesRequest = sharedFilesIndex.openCursor(parseInt(fileId));
-            
-            sharedFilesRequest.onsuccess = function(event) {
-                const cursor = event.target.result;
-                if (cursor) {
-                    sharedFilesStore.delete(cursor.primaryKey);
+                    sharedStore.delete(cursor.primaryKey);
                     cursor.continue();
                 }
             };
             
             transaction.oncomplete = function() {
-                const modal = bootstrap.Modal.getInstance(document.getElementById('fileDetailsModal'));
-                modal.hide();
-                loadGalleryContent();
+                showAlert('Archivo eliminado correctamente', 'success');
+                loadGallery();
+            };
+            
+            transaction.onerror = function() {
+                showAlert('Error al eliminar el archivo', 'danger');
             };
         }
 
-        // Edit file details
-        function editFileDetails(file) {
-            const newTitle = prompt('Nuevo título:', file.title);
-            if (newTitle === null) return;
-            
-            const newDescription = prompt('Nueva descripción:', file.description || '');
-            if (newDescription === null) return;
-            
-            const newPrivacy = confirm('¿Hacer este archivo público? (Cancelar para mantenerlo privado)') ? 'public' : 'private';
-            
-            const transaction = db.transaction(['files'], 'readwrite');
-            const store = transaction.objectStore('files');
-            
-            file.title = newTitle;
-            file.description = newDescription;
-            file.privacy = newPrivacy;
-            
-            store.put(file).onsuccess = function() {
-                const modal = bootstrap.Modal.getInstance(document.getElementById('fileDetailsModal'));
-                modal.hide();
-                loadGalleryContent();
-            };
-        }
-
-        // Load file comments
-        function loadFileComments(fileId) {
-            const commentsContainer = document.getElementById('file-comments');
-            commentsContainer.innerHTML = '<div class="text-center"><div class="spinner-border spinner-border-sm" role="status"><span class="visually-hidden">Cargando...</span></div></div>';
-            
-            const transaction = db.transaction(['comments'], 'readonly');
-            const store = transaction.objectStore('comments');
-            const index = store.index('fileId');
-            const request = index.getAll(parseInt(fileId));
-            
-            request.onsuccess = function() {
-                const comments = request.result;
-                commentsContainer.innerHTML = '';
-                
-                if (comments.length === 0) {
-                    commentsContainer.innerHTML = '<p class="text-muted">No hay comentarios aún</p>';
-                    return;
-                }
-                
-                // Get all user details for comments
-                const userIds = [...new Set(comments.map(comment => comment.userId))];
-                const usersRequest = db.transaction(['users'], 'readonly').objectStore('users');
-                
-                Promise.all(userIds.map(userId => {
-                    return new Promise(resolve => {
-                        const req = usersRequest.get(userId);
-                        req.onsuccess = function() {
-                            resolve(req.result);
-                        };
-                        req.onerror = function() {
-                            resolve(null);
-                        };
-                    });
-                })).then(users => {
-                    const usersMap = users.reduce((map, user) => {
-                        if (user) map[user.email] = user;
-                        return map;
-                    }, {});
-                    
-                    comments.forEach(comment => {
-                        const user = usersMap[comment.userId] || { fullname: 'Usuario desconocido' };
-                        
-                        const commentElement = document.createElement('div');
-                        commentElement.className = 'mb-3 p-2 border-bottom';
-                        commentElement.innerHTML = `
-                            <div class="d-flex justify-content-between">
-                                <strong>${user.fullname}</strong>
-                                <small class="text-muted">${new Date(comment.date).toLocaleString()}</small>
-                            </div>
-                            <p class="mb-0">${comment.text}</p>
-                            ${comment.userId === currentUser.email || isDeveloper ? 
-                                `<button class="btn btn-sm btn-outline-danger delete-comment-btn" data-comment-id="${comment.id}">
-                                    <i class="bi bi-trash"></i>
-                                </button>` : ''}
-                        `;
-                        
-                        commentsContainer.appendChild(commentElement);
-                        
-                        // Add delete handler if applicable
-                        if (comment.userId === currentUser.email || isDeveloper) {
-                            commentElement.querySelector('.delete-comment-btn').addEventListener('click', function() {
-                                deleteComment(comment.id);
-                            });
-                        }
-                    });
-                });
-            };
-        }
-
-        // Delete comment
-        function deleteComment(commentId) {
-            const transaction = db.transaction(['comments'], 'readwrite');
-            const store = transaction.objectStore('comments');
-            store.delete(parseInt(commentId));
-            
-            transaction.oncomplete = function() {
-                // Reload comments
-                const fileId = document.querySelector('#fileDetailsModal .view-file-btn')?.dataset.fileId;
-                if (fileId) {
-                    loadFileComments(fileId);
-                }
-            };
-        }
-
-        // Add comment
-        document.getElementById('add-comment-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const fileId = document.querySelector('#fileDetailsModal .view-file-btn')?.dataset.fileId;
-            const commentText = document.getElementById('new-comment').value;
-            
-            if (!fileId || !commentText) return;
-            
-            const comment = {
-                fileId: parseInt(fileId),
-                userId: currentUser.email,
-                text: commentText,
-                date: new Date().toISOString()
-            };
-            
-            const transaction = db.transaction(['comments'], 'readwrite');
-            const store = transaction.objectStore('comments');
-            store.add(comment);
-            
-            transaction.oncomplete = function() {
-                document.getElementById('new-comment').value = '';
-                loadFileComments(fileId);
-            };
-        });
-
-        // Load share content
-        function loadShareContent() {
-            // Load users for sharing
-            loadUsersForSharing();
-            
-            // Load files for sharing
-            loadUserFilesForSharing();
-            
-            // Load shared files
-            loadSharedFiles();
-        }
-
-        // Load users for sharing
+        // Cargar usuarios para compartir
         function loadUsersForSharing() {
-            const shareUserSelect = document.getElementById('share-user');
-            
-            // Clear existing options except the first one
-            while (shareUserSelect.options.length > 1) {
-                shareUserSelect.remove(1);
-            }
-            
             const transaction = db.transaction(['users'], 'readonly');
-            const store = transaction.objectStore('users');
-            const request = store.getAll();
+            const userStore = transaction.objectStore('users');
+            const request = userStore.getAll();
             
-            request.onsuccess = function() {
-                const users = request.result;
+            request.onsuccess = function(e) {
+                const users = e.target.result;
+                const select = document.getElementById('share-user');
+                
+                // Limpiar opciones excepto la primera
+                while (select.options.length > 1) {
+                    select.remove(1);
+                }
+                
+                // Agregar usuarios (excluyendo al usuario actual y usuarios bloqueados)
                 users.forEach(user => {
-                    // Don't show current user or blocked users
                     if (user.email !== currentUser.email && !user.isBlocked) {
                         const option = document.createElement('option');
                         option.value = user.email;
-                        option.textContent = user.fullname;
-                        shareUserSelect.appendChild(option);
+                        option.textContent = `${user.fullName} (${user.email})`;
+                        select.appendChild(option);
                     }
                 });
+                
+                // Cargar archivos que se pueden compartir (solo los del usuario actual)
+                loadUserFilesForSharing();
             };
         }
 
-        // Load user files for sharing
+        // Cargar archivos del usuario para compartir
         function loadUserFilesForSharing() {
-            const shareFileSelect = document.getElementById('share-file');
-            
-            // Clear existing options except the first one
-            while (shareFileSelect.options.length > 1) {
-                shareFileSelect.remove(1);
-            }
-            
             const transaction = db.transaction(['files'], 'readonly');
-            const store = transaction.objectStore('files');
-            const index = store.index('owner');
+            const fileStore = transaction.objectStore('files');
+            const index = fileStore.index('userId');
             const request = index.getAll(currentUser.email);
             
-            request.onsuccess = function() {
-                const files = request.result;
+            request.onsuccess = function(e) {
+                const files = e.target.result;
+                const select = document.getElementById('share-file');
+                
+                // Limpiar opciones excepto la primera
+                while (select.options.length > 1) {
+                    select.remove(1);
+                }
+                
+                // Agregar archivos
                 files.forEach(file => {
                     const option = document.createElement('option');
                     option.value = file.id;
                     option.textContent = `${file.title} (${file.type})`;
-                    shareFileSelect.appendChild(option);
+                    select.appendChild(option);
                 });
             };
         }
 
-        // Share file
+        // Compartir archivo con otro usuario
         function shareFile() {
             const userEmail = document.getElementById('share-user').value;
             const fileId = document.getElementById('share-file').value;
             
             if (!userEmail || !fileId) {
-                alert('Por favor seleccione un usuario y un archivo');
+                showAlert('Debes seleccionar un usuario y un archivo', 'danger');
                 return;
             }
             
-            const sharedFile = {
-                fileId: parseInt(fileId),
+            const transaction = db.transaction(['shared'], 'readwrite');
+            const sharedStore = transaction.objectStore('shared');
+            
+            const newShare = {
+                fileId: Number(fileId),
                 fromUser: currentUser.email,
                 toUser: userEmail,
-                date: new Date().toISOString()
+                createdAt: new Date()
             };
             
-            const transaction = db.transaction(['sharedFiles'], 'readwrite');
-            const store = transaction.objectStore('sharedFiles');
-            const request = store.add(sharedFile);
+            const request = sharedStore.add(newShare);
             
             request.onsuccess = function() {
-                alert('Archivo compartido exitosamente');
-                document.getElementById('share-form').reset();
-                loadSharedFiles();
+                showAlert('Archivo compartido correctamente', 'success');
+                document.getElementById('share-user').value = '';
+                document.getElementById('share-file').value = '';
             };
             
             request.onerror = function() {
-                alert('Error al compartir el archivo');
+                showAlert('Error al compartir el archivo', 'danger');
             };
         }
 
-        // Load shared files
-        function loadSharedFiles() {
-            const sharedFilesList = document.getElementById('shared-files-list');
-            sharedFilesList.innerHTML = '<tr><td colspan="5" class="text-center"><div class="spinner-border spinner-border-sm" role="status"><span class="visually-hidden">Cargando...</span></div></td></tr>';
-            
-            const transaction = db.transaction(['sharedFiles'], 'readonly');
-            const store = transaction.objectStore('sharedFiles');
-            const index = store.index('toUser');
-            const request = index.getAll(currentUser.email);
-            
-            request.onsuccess = function() {
-                const sharedFiles = request.result;
-                sharedFilesList.innerHTML = '';
-                
-                if (sharedFiles.length === 0) {
-                    sharedFilesList.innerHTML = '<tr><td colspan="5" class="text-center">No tienes archivos compartidos contigo</td></tr>';
-                    return;
-                }
-                
-                // Get all files and users
-                const fileIds = [...new Set(sharedFiles.map(sf => sf.fileId))];
-                const userIds = [...new Set(sharedFiles.map(sf => sf.fromUser))];
-                
-                Promise.all([
-                    new Promise(resolve => {
-                        const filesRequest = db.transaction(['files'], 'readonly').objectStore('files');
-                        Promise.all(fileIds.map(id => {
-                            return new Promise(res => {
-                                const req = filesRequest.get(parseInt(id));
-                                req.onsuccess = function() {
-                                    res(req.result);
-                                };
-                                req.onerror = function() {
-                                    res(null);
-                                };
-                            });
-                        })).then(files => {
-                            resolve(files.reduce((map, file) => {
-                                if (file) map[file.id] = file;
-                                return map;
-                            }, {}));
-                        });
-                    }),
-                    new Promise(resolve => {
-                        const usersRequest = db.transaction(['users'], 'readonly').objectStore('users');
-                        Promise.all(userIds.map(id => {
-                            return new Promise(res => {
-                                const req = usersRequest.get(id);
-                                req.onsuccess = function() {
-                                    res(req.result);
-                                };
-                                req.onerror = function() {
-                                    res(null);
-                                };
-                            });
-                        })).then(users => {
-                            resolve(users.reduce((map, user) => {
-                                if (user) map[user.email] = user;
-                                return map;
-                            }, {}));
-                        });
-                    })
-                ]).then(([filesMap, usersMap]) => {
-                    sharedFiles.forEach(sharedFile => {
-                        const file = filesMap[sharedFile.fileId];
-                        const user = usersMap[sharedFile.fromUser];
-                        
-                        if (!file || !user) return;
-                        
-                        const row = document.createElement('tr');
-                        row.innerHTML = `
-                            <td>${file.title}</td>
-                            <td>${file.type}</td>
-                            <td>${user.fullname}</td>
-                            <td>${new Date(sharedFile.date).toLocaleString()}</td>
-                            <td>
-                                <button class="btn btn-sm btn-outline-primary view-shared-file-btn" data-file-id="${file.id}">
-                                    <i class="bi bi-eye"></i> Ver
-                                </button>
-                            </td>
-                        `;
-                        
-                        row.querySelector('.view-shared-file-btn').addEventListener('click', function() {
-                            // Determine preview content based on file type
-                            let previewContent = '';
-                            
-                            if (file.type === 'image') {
-                                previewContent = `<img src="${file.data}" class="img-fluid" alt="${file.title}">`;
-                            } else if (file.type === 'video') {
-                                previewContent = `
-                                    <video controls class="w-100">
-                                        <source src="${file.data}" type="video/mp4">
-                                        Tu navegador no soporta el elemento de video.
-                                    </video>
-                                `;
-                            } else if (file.type === 'audio') {
-                                previewContent = `
-                                    <audio controls class="w-100">
-                                        <source src="${file.data}" type="audio/mpeg">
-                                        Tu navegador no soporta el elemento de audio.
-                                    </audio>
-                                `;
-                            } else if (file.type === 'pdf') {
-                                previewContent = `<iframe src="${file.data}" class="w-100" height="300" style="border:none;"></iframe>`;
-                            }
-                            
-                            showFileDetails(file.id, previewContent);
-                        });
-                        
-                        sharedFilesList.appendChild(row);
-                    });
-                });
-            };
-        }
-
-        // Load users list (admin only)
-        function loadUsersList() {
-            const usersList = document.getElementById('users-list');
-            usersList.innerHTML = '<tr><td colspan="6" class="text-center"><div class="spinner-border spinner-border-sm" role="status"><span class="visually-hidden">Cargando...</span></div></td></tr>';
+        // Cargar todos los usuarios (solo para desarrollador)
+        function loadAllUsers() {
+            if (!isDeveloper) return;
             
             const transaction = db.transaction(['users'], 'readonly');
-            const store = transaction.objectStore('users');
-            const request = store.getAll();
+            const userStore = transaction.objectStore('users');
+            const request = userStore.getAll();
             
-            request.onsuccess = function() {
-                const users = request.result;
-                usersList.innerHTML = '';
+            request.onsuccess = function(e) {
+                const users = e.target.result;
+                const table = document.getElementById('users-table');
+                table.innerHTML = '';
                 
                 users.forEach(user => {
                     const row = document.createElement('tr');
+                    
+                    // Resaltar al desarrollador
+                    const isDev = user.password === 'Enzema0097@&';
+                    if (isDev) {
+                        row.classList.add('table-warning');
+                    }
+                    
                     row.innerHTML = `
-                        <td>${user.fullname}</td>
+                        <td>${user.fullName} ${isDev ? '<span class="badge bg-dark">Desarrollador</span>' : ''}</td>
                         <td>${user.email}</td>
                         <td>${user.phone}</td>
-                        <td>${user.gender}</td>
                         <td>
                             <span class="badge ${user.isBlocked ? 'bg-danger' : 'bg-success'}">
                                 ${user.isBlocked ? 'Bloqueado' : 'Activo'}
                             </span>
                         </td>
                         <td>
-                            <div class="dropdown">
-                                <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                                    Acciones
+                            <div class="btn-group btn-group-sm">
+                                <button class="btn btn-outline-primary edit-user-btn" data-user-email="${user.email}">
+                                    <i class="bi bi-pencil"></i>
                                 </button>
-                                <ul class="dropdown-menu">
-                                    <li>
-                                        <button class="dropdown-item toggle-block-btn" data-user-email="${user.email}" data-action="${user.isBlocked ? 'unblock' : 'block'}">
-                                            ${user.isBlocked ? 'Desbloquear' : 'Bloquear'}
-                                        </button>
-                                    </li>
-                                    <li>
-                                        <button class="dropdown-item edit-user-btn" data-user-email="${user.email}">
-                                            Editar
-                                        </button>
-                                    </li>
-                                    <li>
-                                        <button class="dropdown-item delete-user-btn" data-user-email="${user.email}">
-                                            Eliminar
-                                        </button>
-                                    </li>
-                                </ul>
+                                <button class="btn ${user.isBlocked ? 'btn-outline-success' : 'btn-outline-warning'} block-user-btn" data-user-email="${user.email}">
+                                    <i class="bi ${user.isBlocked ? 'bi-unlock' : 'bi-lock'}"></i>
+                                </button>
+                                ${!isDev ? `
+                                <button class="btn btn-outline-danger delete-user-btn" data-user-email="${user.email}">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                                ` : ''}
                             </div>
                         </td>
                     `;
                     
-                    usersList.appendChild(row);
+                    table.appendChild(row);
                 });
                 
-                // Add event listeners for actions
-                document.querySelectorAll('.toggle-block-btn').forEach(btn => {
+                // Agregar event listeners a los botones
+                document.querySelectorAll('.edit-user-btn').forEach(btn => {
                     btn.addEventListener('click', function() {
-                        toggleUserBlock(this.dataset.userEmail, this.dataset.action === 'block');
+                        editUser(this.getAttribute('data-user-email'));
                     });
                 });
                 
-                document.querySelectorAll('.edit-user-btn').forEach(btn => {
+                document.querySelectorAll('.block-user-btn').forEach(btn => {
                     btn.addEventListener('click', function() {
-                        editUser(this.dataset.userEmail);
+                        toggleBlockUser(this.getAttribute('data-user-email'));
                     });
                 });
                 
                 document.querySelectorAll('.delete-user-btn').forEach(btn => {
                     btn.addEventListener('click', function() {
-                        deleteUser(this.dataset.userEmail);
+                        confirmDeleteUser(this.getAttribute('data-user-email'));
                     });
                 });
             };
         }
 
-        // Toggle user block
-        function toggleUserBlock(userEmail, block) {
-            if (!confirm(`¿Estás seguro de que quieres ${block ? 'bloquear' : 'desbloquear'} a este usuario?`)) {
-                return;
-            }
+        // Editar usuario
+        function editUser(email) {
+            const transaction = db.transaction(['users'], 'readonly');
+            const userStore = transaction.objectStore('users');
+            const request = userStore.get(email);
             
-            const transaction = db.transaction(['users'], 'readwrite');
-            const store = transaction.objectStore('users');
-            const request = store.get(userEmail);
-            
-            request.onsuccess = function() {
-                const user = request.result;
-                if (user) {
-                    user.isBlocked = block;
-                    store.put(user).onsuccess = function() {
-                        loadUsersList();
-                    };
-                }
+            request.onsuccess = function(e) {
+                const user = e.target.result;
+                if (!user) return;
+                
+                showConfirmModal(
+                    'Editar usuario',
+                    `
+                    <form id="edit-user-form">
+                        <div class="mb-3">
+                            <label for="edit-full-name" class="form-label">Nombre completo</label>
+                            <input type="text" class="form-control" id="edit-full-name" value="${user.fullName}" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="edit-email" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="edit-email" value="${user.email}" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="edit-phone" class="form-label">Teléfono</label>
+                            <input type="tel" class="form-control" id="edit-phone" value="${user.phone}" required>
+                        </div>
+                    </form>
+                    `,
+                    function() {
+                        const newName = document.getElementById('edit-full-name').value.trim();
+                        const newEmail = document.getElementById('edit-email').value.trim();
+                        const newPhone = document.getElementById('edit-phone').value.trim();
+                        
+                        if (!newName || !newEmail || !newPhone) {
+                            showAlert('Todos los campos son obligatorios', 'danger');
+                            return;
+                        }
+                        
+                        // Actualizar usuario
+                        const updateTransaction = db.transaction(['users'], 'readwrite');
+                        const updateStore = updateTransaction.objectStore('users');
+                        
+                        // Primero eliminar el usuario antiguo
+                        updateStore.delete(user.email);
+                        
+                        // Luego agregar el usuario actualizado
+                        user.fullName = newName;
+                        user.email = newEmail;
+                        user.phone = newPhone;
+                        
+                        updateStore.add(user);
+                        
+                        updateTransaction.oncomplete = function() {
+                            showAlert('Usuario actualizado correctamente', 'success');
+                            loadAllUsers();
+                            
+                            // Si es el usuario actual, actualizar la sesión
+                            if (user.email === currentUser.email) {
+                                currentUser = user;
+                                showWelcomeMessage(user);
+                            }
+                        };
+                        
+                        updateTransaction.onerror = function() {
+                            showAlert('Error al actualizar el usuario', 'danger');
+                        };
+                    },
+                    'Guardar'
+                );
             };
         }
 
-        // Edit user
-        function editUser(userEmail) {
-            getUserByEmail(userEmail).then(user => {
+        // Bloquear/Desbloquear usuario
+        function toggleBlockUser(email) {
+            const transaction = db.transaction(['users'], 'readwrite');
+            const userStore = transaction.objectStore('users');
+            const request = userStore.get(email);
+            
+            request.onsuccess = function(e) {
+                const user = e.target.result;
                 if (!user) return;
                 
-                const newFullname = prompt('Nuevo nombre completo:', user.fullname);
-                if (newFullname === null) return;
+                const action = user.isBlocked ? 'desbloquear' : 'bloquear';
                 
-                const newGender = prompt('Nuevo sexo (Hombre, Mujer, Otros):', user.gender);
-                if (newGender === null) return;
-                
-                const newPhone = prompt('Nuevo teléfono (con prefijo):', user.phone);
-                if (newPhone === null) return;
-                
-                const transaction = db.transaction(['users'], 'readwrite');
-                const store = transaction.objectStore('users');
-                
-                user.fullname = newFullname;
-                user.gender = newGender;
-                user.phone = newPhone;
-                
-                store.put(user).onsuccess = function() {
-                    loadUsersList();
-                };
-            });
+                showConfirmModal(
+                    'Confirmar acción',
+                    `¿Estás seguro de que deseas ${action} al usuario ${user.fullName} (${user.email})?`,
+                    function() {
+                        user.isBlocked = !user.isBlocked;
+                        userStore.put(user);
+                        
+                        showAlert(`Usuario ${action}do correctamente`, 'success');
+                        loadAllUsers();
+                    }
+                );
+            };
         }
 
-        // Delete user
-        function deleteUser(userEmail) {
-            if (!confirm('¿Estás seguro de que quieres eliminar este usuario? Esta acción no se puede deshacer.')) {
-                return;
-            }
+        // Confirmar eliminación de usuario
+        function confirmDeleteUser(email) {
+            const transaction = db.transaction(['users'], 'readonly');
+            const userStore = transaction.objectStore('users');
+            const request = userStore.get(email);
             
-            if (userEmail === currentUser.email) {
-                alert('No puedes eliminarte a ti mismo');
-                return;
-            }
+            request.onsuccess = function(e) {
+                const user = e.target.result;
+                if (!user) return;
+                
+                showConfirmModal(
+                    'Confirmar eliminación',
+                    `¿Estás seguro de que deseas eliminar al usuario ${user.fullName} (${user.email})? Esta acción no se puede deshacer.`,
+                    function() {
+                        deleteUser(email);
+                    }
+                );
+            };
+        }
+
+        // Eliminar usuario
+        function deleteUser(email) {
+            const transaction = db.transaction(['users', 'files', 'likes', 'shared', 'folders'], 'readwrite');
+            const userStore = transaction.objectStore('users');
+            const fileStore = transaction.objectStore('files');
+            const likeStore = transaction.objectStore('likes');
+            const sharedStore = transaction.objectStore('shared');
+            const folderStore = transaction.objectStore('folders');
             
-            // First, delete all user files, folders, likes, comments, and shared files
-            const transaction = db.transaction(
-                ['users', 'files', 'folders', 'likes', 'comments', 'sharedFiles'], 
-                'readwrite'
-            );
+            // Eliminar el usuario
+            userStore.delete(email);
             
-            const usersStore = transaction.objectStore('users');
-            const filesStore = transaction.objectStore('files');
-            const foldersStore = transaction.objectStore('folders');
-            const likesStore = transaction.objectStore('likes');
-            const commentsStore = transaction.objectStore('comments');
-            const sharedFilesStore = transaction.objectStore('sharedFiles');
+            // Eliminar todos los archivos del usuario
+            const fileIndex = fileStore.index('userId');
+            const fileRequest = fileIndex.openCursor(IDBKeyRange.only(email));
             
-            // Delete user
-            usersStore.delete(userEmail);
-            
-            // Delete user's files
-            const filesIndex = filesStore.index('owner');
-            const filesRequest = filesIndex.openCursor(userEmail);
-            
-            filesRequest.onsuccess = function(event) {
-                const cursor = event.target.result;
+            fileRequest.onsuccess = function(e) {
+                const cursor = e.target.result;
                 if (cursor) {
-                    // Delete file likes
-                    const likesIndex = likesStore.index('fileId');
-                    const likesRequest = likesIndex.openCursor(cursor.primaryKey);
+                    // Eliminar likes asociados a este archivo
+                    const likeIndex = likeStore.index('fileId');
+                    const likeRequest = likeIndex.openCursor(IDBKeyRange.only(cursor.value.id));
                     
-                    likesRequest.onsuccess = function(e) {
+                    likeRequest.onsuccess = function(e) {
                         const likeCursor = e.target.result;
                         if (likeCursor) {
-                            likesStore.delete(likeCursor.primaryKey);
+                            likeStore.delete(likeCursor.primaryKey);
                             likeCursor.continue();
                         }
                     };
                     
-                    // Delete file comments
-                    const commentsIndex = commentsStore.index('fileId');
-                    const commentsRequest = commentsIndex.openCursor(cursor.primaryKey);
+                    // Eliminar compartidos asociados a este archivo
+                    const sharedIndex = sharedStore.index('fileId');
+                    const sharedRequest = sharedIndex.openCursor(IDBKeyRange.only(cursor.value.id));
                     
-                    commentsRequest.onsuccess = function(e) {
-                        const commentCursor = e.target.result;
-                        if (commentCursor) {
-                            commentsStore.delete(commentCursor.primaryKey);
-                            commentCursor.continue();
-                        }
-                    };
-                    
-                    // Delete shared files
-                    const sharedFilesIndex = sharedFilesStore.index('fileId');
-                    const sharedFilesRequest = sharedFilesIndex.openCursor(cursor.primaryKey);
-                    
-                    sharedFilesRequest.onsuccess = function(e) {
+                    sharedRequest.onsuccess = function(e) {
                         const sharedCursor = e.target.result;
                         if (sharedCursor) {
-                            sharedFilesStore.delete(sharedCursor.primaryKey);
+                            sharedStore.delete(sharedCursor.primaryKey);
                             sharedCursor.continue();
                         }
                     };
                     
-                    // Delete the file
-                    filesStore.delete(cursor.primaryKey);
+                    // Finalmente eliminar el archivo
+                    fileStore.delete(cursor.primaryKey);
                     cursor.continue();
                 }
             };
             
-            // Delete user's folders
-            const foldersIndex = foldersStore.index('owner');
-            const foldersRequest = foldersIndex.openCursor(userEmail);
+            // Eliminar todos los likes del usuario
+            const userLikeIndex = likeStore.index('userId');
+            const userLikeRequest = userLikeIndex.openCursor(IDBKeyRange.only(email));
             
-            foldersRequest.onsuccess = function(event) {
-                const cursor = event.target.result;
+            userLikeRequest.onsuccess = function(e) {
+                const cursor = e.target.result;
                 if (cursor) {
-                    foldersStore.delete(cursor.primaryKey);
+                    likeStore.delete(cursor.primaryKey);
                     cursor.continue();
                 }
             };
             
-            // Delete user's likes
-            const userLikesIndex = likesStore.index('userId');
-            const userLikesRequest = userLikesIndex.openCursor(userEmail);
+            // Eliminar todos los compartidos del usuario
+            const fromSharedIndex = sharedStore.index('fromUser');
+            const fromSharedRequest = fromSharedIndex.openCursor(IDBKeyRange.only(email));
             
-            userLikesRequest.onsuccess = function(event) {
-                const cursor = event.target.result;
+            fromSharedRequest.onsuccess = function(e) {
+                const cursor = e.target.result;
                 if (cursor) {
-                    likesStore.delete(cursor.primaryKey);
+                    sharedStore.delete(cursor.primaryKey);
                     cursor.continue();
                 }
             };
             
-            // Delete user's comments
-            const userCommentsIndex = commentsStore.index('userId');
-            const userCommentsRequest = userCommentsIndex.openCursor(userEmail);
+            const toSharedIndex = sharedStore.index('toUser');
+            const toSharedRequest = toSharedIndex.openCursor(IDBKeyRange.only(email));
             
-            userCommentsRequest.onsuccess = function(event) {
-                const cursor = event.target.result;
+            toSharedRequest.onsuccess = function(e) {
+                const cursor = e.target.result;
                 if (cursor) {
-                    commentsStore.delete(cursor.primaryKey);
+                    sharedStore.delete(cursor.primaryKey);
                     cursor.continue();
                 }
             };
             
-            // Delete shared files where user is the recipient
-            const sharedToIndex = sharedFilesStore.index('toUser');
-            const sharedToRequest = sharedToIndex.openCursor(userEmail);
+            // Eliminar todas las carpetas del usuario
+            const folderIndex = folderStore.index('userId');
+            const folderRequest = folderIndex.openCursor(IDBKeyRange.only(email));
             
-            sharedToRequest.onsuccess = function(event) {
-                const cursor = event.target.result;
+            folderRequest.onsuccess = function(e) {
+                const cursor = e.target.result;
                 if (cursor) {
-                    sharedFilesStore.delete(cursor.primaryKey);
-                    cursor.continue();
-                }
-            };
-            
-            // Delete shared files where user is the sender
-            const sharedFromIndex = sharedFilesStore.index('fromUser');
-            const sharedFromRequest = sharedFromIndex.openCursor(userEmail);
-            
-            sharedFromRequest.onsuccess = function(event) {
-                const cursor = event.target.result;
-                if (cursor) {
-                    sharedFilesStore.delete(cursor.primaryKey);
+                    folderStore.delete(cursor.primaryKey);
                     cursor.continue();
                 }
             };
             
             transaction.oncomplete = function() {
-                loadUsersList();
+                showAlert('Usuario eliminado correctamente', 'success');
+                loadAllUsers();
             };
+            
+            transaction.onerror = function() {
+                showAlert('Error al eliminar el usuario', 'danger');
+            };
+        }
+
+        // Mostrar/ocultar panel de ayuda
+        function toggleHelpPanel() {
+            const panel = document.getElementById('help-panel');
+            if (panel.style.display === 'block') {
+                panel.style.display = 'none';
+            } else {
+                panel.style.display = 'block';
+            }
+        }
+
+        // Mostrar ayuda por email
+        function showEmailHelp() {
+            helpMethod = 'email';
+            document.getElementById('help-email-container').style.display = 'block';
+            document.getElementById('help-phone-container').style.display = 'none';
+            
+            const modal = new bootstrap.Modal(document.getElementById('helpModal'));
+            modal.show();
+        }
+
+        // Mostrar ayuda por WhatsApp
+        function showWhatsAppHelp() {
+            helpMethod = 'whatsapp';
+            document.getElementById('help-email-container').style.display = 'none';
+            document.getElementById('help-phone-container').style.display = 'block';
+            
+            const modal = new bootstrap.Modal(document.getElementById('helpModal'));
+            modal.show();
+        }
+
+        // Enviar solicitud de ayuda
+        function sendHelpRequest() {
+            const name = document.getElementById('help-name').value.trim();
+            const contact = helpMethod === 'email' 
+                ? document.getElementById('help-email').value.trim()
+                : document.getElementById('help-phone').value.trim();
+            
+            if (!name || !contact) {
+                showAlert('Todos los campos son obligatorios', 'danger');
+                return;
+            }
+            
+            if (helpMethod === 'email') {
+                if (!contact.includes('@')) {
+                    showAlert('Debe proporcionar un email válido', 'danger');
+                    return;
+                }
+                
+                const subject = `Consulta de ${name} sobre mYpuB`;
+                const body = `Hola desarrollador,\n\nTengo una consulta sobre la aplicación mYpuB:\n\n[Describe tu consulta aquí]\n\nMis datos para respuesta:\nNombre: ${name}\nEmail: ${contact}\n\nGracias.`;
+                
+                window.location.href = `mailto:enzemajr@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+            } else {
+                if (!/^[0-9]+$/.test(contact)) {
+                    showAlert('Debe proporcionar un número de teléfono válido', 'danger');
+                    return;
+                }
+                
+                const message = `Hola desarrollador, tengo una consulta sobre la aplicación mYpuB. Mi nombre es ${name} y mi número es ${contact}.`;
+                window.location.href = `https://wa.me/+240222084663?text=${encodeURIComponent(message)}`;
+            }
+            
+            bootstrap.Modal.getInstance(document.getElementById('helpModal')).hide();
+            showAlert('Redirigiendo para enviar tu consulta...', 'info');
+        }
+
+        // Mostrar modal de confirmación
+        function showConfirmModal(title, message, callback, btnText = 'Confirmar') {
+            const modal = new bootstrap.Modal(document.getElementById('confirmModal'));
+            
+            document.getElementById('confirm-modal-title').textContent = title;
+            document.getElementById('confirm-modal-body').innerHTML = message;
+            document.getElementById('confirm-modal-btn').textContent = btnText;
+            
+            // Limpiar event listeners anteriores
+            const confirmBtn = document.getElementById('confirm-modal-btn');
+            const newConfirmBtn = confirmBtn.cloneNode(true);
+            confirmBtn.parentNode.replaceChild(newConfirmBtn, confirmBtn);
+            
+            newConfirmBtn.addEventListener('click', function() {
+                if (typeof callback === 'function') {
+                    callback();
+                }
+                modal.hide();
+            });
+            
+            modal.show();
+        }
+
+        // Mostrar alerta
+        function showAlert(message, type) {
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type} alert-dismissible fade show`;
+            alert.role = 'alert';
+            alert.innerHTML = `
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            
+            // Insertar al principio del body
+            document.body.insertBefore(alert, document.body.firstChild);
+            
+            // Eliminar después de 5 segundos
+            setTimeout(() => {
+                alert.classList.remove('show');
+                setTimeout(() => alert.remove(), 150);
+            }, 5000);
+        }
+
+        // Limpiar formulario
+        function clearForm(formId) {
+            const form = document.getElementById(formId);
+            if (form) {
+                form.querySelectorAll('input, textarea, select').forEach(element => {
+                    if (element.type !== 'button' && element.type !== 'submit') {
+                        element.value = '';
+                    }
+                });
+            }
+        }
+
+        // Formatear fecha
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
         }
     </script>
 </body>
