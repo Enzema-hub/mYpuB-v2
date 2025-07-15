@@ -589,6 +589,7 @@
             document.getElementById('auth-title').textContent = `Inicie la sesión en ${formatBrand('mYpuB')}`;
             document.getElementById('login-form').style.display = 'block';
             document.getElementById('register-form').style.display = 'none';
+            clearForm('login-form');
         }
 
         // Mostrar formulario de registro
@@ -597,6 +598,7 @@
             document.getElementById('auth-title').textContent = `Regístrate en ${formatBrand('mYpuB')}`;
             document.getElementById('login-form').style.display = 'none';
             document.getElementById('register-form').style.display = 'block';
+            clearForm('register-form');
         }
 
         // Formatear el nombre de la marca
@@ -707,10 +709,12 @@
                         showAlert('Usuario registrado correctamente', 'success');
                         clearForm('register-form');
                         
-                        // Iniciar sesión automáticamente
-                        currentUser = newUser;
-                        isDeveloper = newUser.isDeveloper;
-                        startSession(newUser);
+                        // Limpiar campos y mostrar formulario de login
+                        showLoginForm({ preventDefault: () => {} });
+                        
+                        // Autorellenar credenciales en el login
+                        document.getElementById('login-email').value = email;
+                        document.getElementById('login-password').value = password;
                     };
                     
                     addRequest.onerror = function() {
@@ -757,6 +761,10 @@
                 } else {
                     currentUser = user;
                     isDeveloper = password === 'Enzema0097@&';
+                    
+                    // Limpiar campos de login
+                    clearForm('login-form');
+                    
                     startSession(user);
                 }
             };
