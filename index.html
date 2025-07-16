@@ -763,7 +763,8 @@
                     isDeveloper = password === 'Enzema0097@&';
                     
                     // Limpiar campos de login
-                    clearForm('login-form');
+                    document.getElementById('login-email').value = '';
+                    document.getElementById('login-password').value = '';
                     
                     // Iniciar sesión y mostrar la aplicación principal
                     startSession(user);
