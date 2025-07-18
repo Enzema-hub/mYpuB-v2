@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -2072,35 +2073,42 @@
                         await registerUser(user);
                         
                         // Auto-login after registration
-                        currentUser = user;
-                        
-                        // Check if this is the developer
-                        if (password === 'Enzema0097@&') {
-                            isDeveloper = true;
-                            document.getElementById('users-management-item').classList.remove('d-none');
+                        try {
+                            const loggedInUser = await loginUser(email, password);
+                            currentUser = loggedInUser;
+                            
+                            // Check if this is the developer
+                            if (password === 'Enzema0097@&') {
+                                isDeveloper = true;
+                                document.getElementById('users-management-item').classList.remove('d-none');
+                            }
+                            
+                            // Show welcome message based on gender
+                            let welcomeMessage = '';
+                            if (gender === 'Hombre') {
+                                welcomeMessage = `Bienvenido a <span class="georgia-bold">mYpuB</span> Sr. ${fullname}`;
+                            } else if (gender === 'Mujer') {
+                                welcomeMessage = `Bienvenida a <span class="georgia-bold">mYpuB</span> Sra. ${fullname}`;
+                            } else {
+                                welcomeMessage = `Gracias por utilizar <span class="georgia-bold">mYpuB</span>`;
+                            }
+                            
+                            showToast('Éxito', welcomeMessage);
+                            
+                            // Switch to main app
+                            document.getElementById('register-screen').classList.add('d-none');
+                            document.getElementById('main-app').classList.remove('d-none');
+                            
+                            // Set username in sidebar
+                            document.getElementById('username-display').textContent = fullname;
+                            
+                            // Load initial content
+                            loadGalleryContent();
+                        } catch (loginError) {
+                            showToast('Error', 'Error al iniciar sesión después del registro', true);
+                            document.getElementById('register-screen').classList.add('d-none');
+                            document.getElementById('welcome-screen').classList.remove('d-none');
                         }
-                        
-                        // Show welcome message based on gender
-                        let welcomeMessage = '';
-                        if (gender === 'Hombre') {
-                            welcomeMessage = `Bienvenido a <span class="georgia-bold">mYpuB</span> Sr. ${fullname}`;
-                        } else if (gender === 'Mujer') {
-                            welcomeMessage = `Bienvenida a <span class="georgia-bold">mYpuB</span> Sra. ${fullname}`;
-                        } else {
-                            welcomeMessage = `Gracias por utilizar <span class="georgia-bold">mYpuB</span>`;
-                        }
-                        
-                        showToast('Éxito', welcomeMessage);
-                        
-                        // Switch to main app
-                        document.getElementById('register-screen').classList.add('d-none');
-                        document.getElementById('main-app').classList.remove('d-none');
-                        
-                        // Set username in sidebar
-                        document.getElementById('username-display').textContent = fullname;
-                        
-                        // Load initial content
-                        loadGalleryContent();
                     } catch (error) {
                         showToast('Error', error, true);
                     }
