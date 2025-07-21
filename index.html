@@ -99,6 +99,7 @@
             align-items: center;
             justify-content: center;
             margin-bottom: 20px;
+            cursor: pointer;
         }
         
         .media-container img, .media-container video {
@@ -208,6 +209,30 @@
             0% { transform: scale(1); }
             50% { transform: scale(1.05); }
             100% { transform: scale(1); }
+        }
+        
+        /* Nuevos estilos para reproducción de video */
+        .video-thumbnail {
+            position: relative;
+            cursor: pointer;
+            height: 200px;
+            overflow: hidden;
+        }
+        
+        .video-thumbnail .play-icon {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 4rem;
+            color: white;
+            opacity: 0.8;
+            transition: all 0.3s;
+        }
+        
+        .video-thumbnail:hover .play-icon {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1.1);
         }
     </style>
 </head>
@@ -410,7 +435,7 @@
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center mb-2">
                         <span>Almacenamiento utilizado</span>
-                        <span><strong id="storage-used">0</strong> MB de 100 MB</span>
+                        <span><strong id="storage-used">0</strong> MB de 15,000 MB</span>
                     </div>
                     <div class="storage-indicator">
                         <div class="storage-progress" id="storage-progress"></div>
@@ -763,6 +788,9 @@
         let selectedFiles = [];
         let selectedUser = null;
         let currentFile = null;
+        
+        // Límite de almacenamiento: 15 GB (15,000 MB)
+        const STORAGE_LIMIT_MB = 15000;
         
         // Inicializar la aplicación
         document.addEventListener('DOMContentLoaded', initApp);
@@ -1341,8 +1369,9 @@
                             <div class="position-relative">
                                 ${file.type === 'image' ? 
                                     `<img src="${file.data}" class="card-img-top" alt="${file.title}" style="height: 200px; object-fit: cover;">` :
-                                    `<div class="bg-dark text-white d-flex align-items-center justify-content-center" style="height: 200px;">
-                                        <i class="bi bi-play-btn fs-1"></i>
+                                    `<div class="video-thumbnail bg-dark" style="height: 200px;" data-id="${file.id}">
+                                        <video class="d-none" id="video-${file.id}" src="${file.data}"></video>
+                                        <i class="bi bi-play-circle-fill play-icon"></i>
                                     </div>`
                                 }
                                 <span class="badge status-badge ${file.public ? 'bg-primary' : 'bg-secondary'}">
@@ -1386,6 +1415,27 @@
                         openFileModal(fileId);
                     });
                 });
+                
+                // Agregar event listeners para reproducción de video
+                document.querySelectorAll('.video-thumbnail').forEach(thumbnail => {
+                    thumbnail.addEventListener('click', (e) => {
+                        const fileId = thumbnail.getAttribute('data-id');
+                        const video = document.getElementById(`video-${fileId}`);
+                        
+                        if (video.classList.contains('d-none')) {
+                            // Mostrar y reproducir el video
+                            video.classList.remove('d-none');
+                            video.style.height = '200px';
+                            video.style.width = '100%';
+                            video.style.objectFit = 'cover';
+                            video.controls = true;
+                            video.play();
+                            
+                            // Ocultar el icono de reproducción
+                            thumbnail.querySelector('.play-icon').classList.add('d-none');
+                        }
+                    });
+                });
             };
         }
         
@@ -1423,6 +1473,15 @@
                     video.controls = true;
                     video.className = 'img-fluid';
                     preview.appendChild(video);
+                    
+                    // Agregar evento de clic para reproducir el video
+                    video.addEventListener('click', function() {
+                        if (video.paused) {
+                            video.play();
+                        } else {
+                            video.pause();
+                        }
+                    });
                 }
                 
                 // Configurar botón de like
@@ -1604,6 +1663,7 @@
                     const fileItem = document.createElement('a');
                     fileItem.href = '#';
                     fileItem.className = 'list-group-item list-group-item-action';
+                    fileItem.setAttribute('data-id', file.id);
                     fileItem.innerHTML = `
                         <div class="d-flex align-items-center">
                             <i class="bi ${file.type === 'image' ? 'bi-image' : 'bi-film'} me-3 fs-5"></i>
@@ -1717,7 +1777,10 @@
                 const sizeInMB = (totalSize / (1024 * 1024)).toFixed(2);
                 
                 document.getElementById('storage-used').textContent = sizeInMB;
-                document.getElementById('storage-progress').style.width = `${(sizeInMB / 100) * 100}%`;
+                
+                // Actualizar el porcentaje de almacenamiento usado (15,000 MB = 15 GB)
+                const percentage = (sizeInMB / STORAGE_LIMIT_MB) * 100;
+                document.getElementById('storage-progress').style.width = `${percentage}%`;
             };
         }
         
