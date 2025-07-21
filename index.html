@@ -1,175 +1,344 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>mYpuB - Plataforma de compartir archivos</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title>mYpuB - Gestión Multimedia</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
     <style>
-        .my-pub-font {
-            font-family: Georgia, serif;
+        body {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .app-title {
+            font-family: 'Georgia', serif;
             font-weight: bold;
-            color: #000000 !important;
+            color: #000;
         }
-        .navbar-brand {
-            font-family: Georgia, serif;
+        
+        .card {
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+            overflow: hidden;
+            border: none;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .card-header {
+            background: linear-gradient(to right, #4e54c8, #8f94fb);
+            color: white;
             font-weight: bold;
-            color: #000000 !important;
         }
-        .welcome-message {
-            font-size: 1.5rem;
-            margin-bottom: 30px;
+        
+        .btn-primary {
+            background: linear-gradient(to right, #4e54c8, #8f94fb);
+            border: none;
+            font-weight: 600;
         }
-        .media-card {
-            transition: transform 0.2s;
+        
+        .btn-primary:hover {
+            background: linear-gradient(to right, #3a40b5, #7a7ff5);
         }
-        .media-card:hover {
-            transform: scale(1.03);
+        
+        .btn-danger {
+            background: linear-gradient(to right, #ff416c, #ff4b2b);
+            border: none;
         }
+        
+        .btn-success {
+            background: linear-gradient(to right, #0f9b0f, #3ddb3d);
+            border: none;
+        }
+        
         .file-icon {
-            font-size: 3rem;
+            font-size: 4rem;
+            color: #4e54c8;
+            margin-bottom: 15px;
         }
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(to right, #4e54c8, #8f94fb);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+        
+        .nav-link {
+            color: #495057;
+            font-weight: 500;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+        
+        .nav-link:hover, .nav-link.active {
+            background: linear-gradient(to right, #4e54c8, #8f94fb);
+            color: white !important;
+        }
+        
+        .media-container {
+            position: relative;
+            overflow: hidden;
+            border-radius: 12px;
+            background-color: #f8f9fa;
+            min-height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        
+        .media-container img, .media-container video {
+            max-width: 100%;
+            max-height: 300px;
+            object-fit: contain;
+        }
+        
         .like-btn {
-            cursor: pointer;
+            transition: all 0.2s;
         }
+        
         .like-btn:hover {
-            color: #dc3545 !important;
+            transform: scale(1.2);
         }
-        .liked {
-            color: #dc3545 !important;
+        
+        .like-btn.liked {
+            color: #ff416c;
         }
-        .private-badge {
+        
+        .folder-icon {
+            color: #ff9800;
+            font-size: 2rem;
+        }
+        
+        .folder-card {
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .folder-card:hover {
+            background-color: rgba(78, 84, 200, 0.1);
+        }
+        
+        .progress-bar {
+            background: linear-gradient(to right, #4e54c8, #8f94fb);
+        }
+        
+        .developer-badge {
+            background: linear-gradient(to right, #ff9800, #ff5722);
+            color: white;
+            padding: 3px 8px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+        
+        .welcome-message {
+            background: linear-gradient(to right, rgba(78, 84, 200, 0.1), rgba(143, 148, 251, 0.1));
+            border-left: 4px solid #4e54c8;
+            padding: 15px;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .upload-area {
+            border: 2px dashed #4e54c8;
+            border-radius: 12px;
+            padding: 30px;
+            text-align: center;
+            background-color: rgba(78, 84, 200, 0.05);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .upload-area:hover {
+            background-color: rgba(78, 84, 200, 0.1);
+        }
+        
+        .file-item {
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+            transition: all 0.3s;
+        }
+        
+        .file-item:hover {
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+        }
+        
+        .storage-indicator {
+            height: 8px;
+            border-radius: 4px;
+            overflow: hidden;
+            background-color: #e9ecef;
+        }
+        
+        .storage-progress {
+            height: 100%;
+            background: linear-gradient(to right, #4e54c8, #8f94fb);
+            width: 35%;
+        }
+        
+        .status-badge {
             position: absolute;
             top: 10px;
             right: 10px;
             z-index: 10;
         }
+        
+        .popular-badge {
+            background: linear-gradient(to right, #ff9800, #ff5722);
+            color: white;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
     </style>
 </head>
-<body class="bg-light">
-    <!-- Cabecera -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <div class="container">
-            <a class="navbar-brand" href="#" id="app-title">mYpuB</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto" id="nav-items">
-                    <li class="nav-item">
-                        <a class="nav-link" href="#" id="logout-btn" style="display:none;"><i class="bi bi-box-arrow-right"></i> Cerrar sesión</a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </nav>
-
+<body>
     <!-- Contenedor principal -->
-    <div class="container my-5">
-        <!-- Sección de registro -->
-        <div id="register-section" class="row justify-content-center">
-            <div class="col-md-8 col-lg-6">
-                <div class="card shadow">
-                    <div class="card-header bg-primary text-white">
-                        <h2 class="text-center my-pub-font">Regístrate en mYpuB</h2>
+    <div class="container py-4" id="app-container">
+        <!-- Vista de registro -->
+        <div class="row justify-content-center" id="register-view">
+            <div class="col-lg-6">
+                <div class="card shadow-lg">
+                    <div class="card-header text-center py-3">
+                        <h2 class="app-title">Regístrate en <span class="app-title">mYpuB</span></h2>
                     </div>
-                    <div class="card-body">
+                    <div class="card-body p-4">
                         <form id="register-form">
                             <div class="mb-3">
-                                <label for="fullname" class="form-label">Nombre completo</label>
-                                <input type="text" class="form-control" id="fullname" required>
+                                <label for="fullName" class="form-label">Nombre completo</label>
+                                <input type="text" class="form-control" id="fullName" required>
                             </div>
                             <div class="mb-3">
                                 <label for="email" class="form-label">Correo electrónico (Gmail)</label>
-                                <div class="input-group">
-                                    <input type="email" class="form-control" id="email" required>
-                                    <span class="input-group-text">@gmail.com</span>
-                                </div>
+                                <input type="email" class="form-control" id="email" required>
+                                <div class="form-text">Debe ser una cuenta de Gmail</div>
                             </div>
                             <div class="mb-3">
-                                <label for="gender" class="form-label">Sexo</label>
-                                <select class="form-select" id="gender" required>
-                                    <option value="">Selecciona tu sexo</option>
-                                    <option value="Hombre">Hombre</option>
-                                    <option value="Mujer">Mujer</option>
-                                    <option value="Otro">Otros</option>
-                                </select>
+                                <label class="form-label">Sexo</label>
+                                <div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="gender" id="male" value="male" checked>
+                                        <label class="form-check-label" for="male">Hombre</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="gender" id="female" value="female">
+                                        <label class="form-check-label" for="female">Mujer</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="gender" id="other" value="other">
+                                        <label class="form-check-label" for="other">Otros</label>
+                                    </div>
+                                </div>
                             </div>
                             <div class="mb-3">
                                 <label for="phone" class="form-label">Teléfono (con prefijo)</label>
                                 <div class="input-group">
                                     <span class="input-group-text">+</span>
-                                    <input type="tel" class="form-control" id="phone" required>
+                                    <input type="text" class="form-control" id="prefix" placeholder="Prefijo" required>
+                                    <input type="tel" class="form-control" id="phone" placeholder="Número" required>
                                 </div>
                             </div>
                             <div class="mb-3">
                                 <label for="password" class="form-label">Contraseña</label>
                                 <input type="password" class="form-control" id="password" required>
-                                <small class="form-text text-muted">Debe tener 12 caracteres: 6 letras (primera mayúscula), 4 números y 2 símbolos (@#&)</small>
+                                <div class="form-text">6 letras (primera mayúscula), 4 números, 2 símbolos (@#&)</div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="confirmPassword" class="form-label">Confirmar contraseña</label>
+                                <input type="password" class="form-control" id="confirmPassword" required>
                             </div>
                             <div class="d-grid gap-2 mb-3">
-                                <button type="submit" class="btn btn-primary">Registrarse</button>
+                                <button type="submit" class="btn btn-primary btn-lg">Registrarse</button>
                             </div>
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div id="register-message" class="text-danger"></div>
-                                <button type="button" class="btn btn-sm btn-outline-secondary" id="show-help-btn">AYUDA</button>
+                            <div class="text-center">
+                                <p>¿Ya tienes cuenta? <a href="#" id="login-link">Inicia sesión</a></p>
                             </div>
                         </form>
-
-                        <!-- Panel de ayuda -->
-                        <div id="help-panel" class="mt-3 border p-3" style="display:none;">
-                            <h5 class="mb-3">Envíanos tus consultas</h5>
-                            <div class="mb-3">
-                                <button class="btn btn-outline-primary me-2" id="email-help-btn"><i class="bi bi-envelope"></i> Email</button>
-                                <button class="btn btn-outline-success" id="whatsapp-help-btn"><i class="bi bi-whatsapp"></i> WhatsApp</button>
-                            </div>
-                            
-                            <!-- Formulario email -->
-                            <div id="email-help-form" style="display:none;">
-                                <div class="mb-3">
-                                    <label for="help-name-email" class="form-label">Nombre completo</label>
-                                    <input type="text" class="form-control" id="help-name-email">
-                                </div>
-                                <div class="mb-3">
-                                    <label for="help-email" class="form-label">Correo para respuesta</label>
-                                    <input type="email" class="form-control" id="help-email">
-                                </div>
-                                <button class="btn btn-primary" id="send-email-btn">Enviar al desarrollador</button>
-                            </div>
-                            
-                            <!-- Formulario WhatsApp -->
-                            <div id="whatsapp-help-form" style="display:none;">
-                                <div class="mb-3">
-                                    <label for="help-name-whatsapp" class="form-label">Nombre completo</label>
-                                    <input type="text" class="form-control" id="help-name-whatsapp">
-                                </div>
-                                <div class="mb-3">
-                                    <label for="help-whatsapp" class="form-label">Tu número de WhatsApp</label>
-                                    <input type="tel" class="form-control" id="help-whatsapp">
-                                </div>
-                                <button class="btn btn-success" id="send-whatsapp-btn">Enviar al desarrollador</button>
-                            </div>
+                        
+                        <div class="text-center mt-4">
+                            <button class="btn btn-outline-secondary" id="help-btn">
+                                <i class="bi bi-question-circle me-2"></i>AYUDA
+                            </button>
                         </div>
-
-                        <!-- Enlace a login -->
-                        <div class="text-center mt-3">
-                            <button class="btn btn-link" id="show-login-btn">¿Ya tienes cuenta? Inicia sesión</button>
+                        
+                        <!-- Panel de Ayuda -->
+                        <div class="card mt-4 collapse" id="help-panel">
+                            <div class="card-header bg-info text-white">
+                                <h5 class="mb-0">Soporte y Ayuda</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="d-grid gap-2">
+                                    <button class="btn btn-outline-primary" id="email-help-btn">
+                                        <i class="bi bi-envelope me-2"></i>Enviar consulta por Email
+                                    </button>
+                                    <button class="btn btn-outline-success" id="whatsapp-help-btn">
+                                        <i class="bi bi-whatsapp me-2"></i>Enviar consulta por WhatsApp
+                                    </button>
+                                </div>
+                                
+                                <!-- Formulario de Email -->
+                                <div class="mt-3 collapse" id="email-help-form">
+                                    <div class="mb-3">
+                                        <label for="help-name" class="form-label">Nombre completo</label>
+                                        <input type="text" class="form-control" id="help-name" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="help-email" class="form-label">Email para respuesta</label>
+                                        <input type="email" class="form-control" id="help-email" required>
+                                    </div>
+                                    <button class="btn btn-primary w-100" id="send-email-btn">
+                                        Enviar al desarrollador
+                                    </button>
+                                </div>
+                                
+                                <!-- Formulario de WhatsApp -->
+                                <div class="mt-3 collapse" id="whatsapp-help-form">
+                                    <div class="mb-3">
+                                        <label for="whatsapp-name" class="form-label">Nombre completo</label>
+                                        <input type="text" class="form-control" id="whatsapp-name" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="whatsapp-number" class="form-label">Número de WhatsApp</label>
+                                        <input type="tel" class="form-control" id="whatsapp-number" required>
+                                    </div>
+                                    <button class="btn btn-success w-100" id="send-whatsapp-btn">
+                                        Enviar al desarrollador
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-
-        <!-- Sección de login -->
-        <div id="login-section" class="row justify-content-center" style="display:none;">
-            <div class="col-md-8 col-lg-6">
-                <div class="card shadow">
-                    <div class="card-header bg-primary text-white">
-                        <h2 class="text-center my-pub-font">Inicie la sesión en mYpuB</h2>
+        
+        <!-- Vista de inicio de sesión (oculta inicialmente) -->
+        <div class="row justify-content-center d-none" id="login-view">
+            <div class="col-lg-6">
+                <div class="card shadow-lg">
+                    <div class="card-header text-center py-3">
+                        <h2 class="app-title">Inicie la sesión en <span class="app-title">mYpuB</span></h2>
                     </div>
-                    <div class="card-body">
+                    <div class="card-body p-4">
                         <form id="login-form">
                             <div class="mb-3">
                                 <label for="login-email" class="form-label">Correo electrónico</label>
@@ -180,142 +349,226 @@
                                 <input type="password" class="form-control" id="login-password" required>
                             </div>
                             <div class="d-grid gap-2 mb-3">
-                                <button type="submit" class="btn btn-primary">Iniciar sesión</button>
+                                <button type="submit" class="btn btn-primary btn-lg">Iniciar sesión</button>
                             </div>
-                            <div id="login-message" class="text-danger"></div>
+                            <div class="text-center">
+                                <p>¿No tienes cuenta? <a href="#" id="register-link">Regístrate</a></p>
+                            </div>
                         </form>
-                        <div class="text-center mt-3">
-                            <button class="btn btn-link" id="show-register-btn">¿No tienes cuenta? Regístrate</button>
-                        </div>
                     </div>
                 </div>
             </div>
         </div>
-
-        <!-- Panel principal -->
-        <div id="main-panel" style="display:none;">
-            <div class="row mb-4">
-                <div class="col">
-                    <h3 id="welcome-message" class="my-pub-font welcome-message"></h3>
+        
+        <!-- Vista principal (oculta inicialmente) -->
+        <div class="d-none" id="main-app-view">
+            <!-- Barra de navegación -->
+            <nav class="navbar navbar-expand-lg navbar-dark mb-4" style="background: linear-gradient(to right, #4e54c8, #8f94fb);">
+                <div class="container-fluid">
+                    <a class="navbar-brand app-title" href="#">
+                        <i class="bi bi-cloud-arrow-up-fill me-2"></i>mYpuB
+                    </a>
+                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="collapse navbar-collapse" id="navbarNav">
+                        <ul class="navbar-nav me-auto">
+                            <li class="nav-item">
+                                <a class="nav-link" href="#" data-view="upload"><i class="bi bi-cloud-arrow-up me-1"></i> SUBIR TU</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#" data-view="gallery"><i class="bi bi-images me-1"></i> GALERÍA</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#" data-view="share"><i class="bi bi-share me-1"></i> COMPARTIR</a>
+                            </li>
+                            <li class="nav-item d-none" id="user-management-nav">
+                                <a class="nav-link" href="#" data-view="users"><i class="bi bi-people me-1"></i> GESTIÓN DE USUARIOS</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#" data-view="info"><i class="bi bi-info-circle me-1"></i> INFÓRMATE</a>
+                            </li>
+                        </ul>
+                        <div class="d-flex align-items-center">
+                            <div class="user-avatar me-2" id="user-avatar">U</div>
+                            <div class="text-white me-3" id="user-name">Usuario</div>
+                            <button class="btn btn-outline-light btn-sm" id="logout-btn">
+                                <i class="bi bi-box-arrow-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+            
+            <!-- Mensaje de bienvenida -->
+            <div class="alert welcome-message mb-4">
+                <h4 class="alert-heading" id="welcome-message">Bienvenido a <span class="app-title">mYpuB</span></h4>
+            </div>
+            
+            <!-- Indicador de almacenamiento -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span>Almacenamiento utilizado</span>
+                        <span><strong id="storage-used">0</strong> MB de 100 MB</span>
+                    </div>
+                    <div class="storage-indicator">
+                        <div class="storage-progress" id="storage-progress"></div>
+                    </div>
                 </div>
             </div>
             
-            <!-- Navegación -->
-            <ul class="nav nav-tabs mb-4" id="main-tabs">
-                <li class="nav-item">
-                    <a class="nav-link active" href="#" data-tab="upload"><i class="bi bi-upload"></i> SUBIR TU</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#" data-tab="gallery"><i class="bi bi-images"></i> GALERÍA</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#" data-tab="share"><i class="bi bi-share"></i> COMPARTIR</a>
-                </li>
-                <li class="nav-item" id="admin-tab" style="display:none;">
-                    <a class="nav-link" href="#" data-tab="users"><i class="bi bi-people"></i> GESTIÓN DE USUARIOS</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#" data-tab="info"><i class="bi bi-info-circle"></i> INFÓRMATE</a>
-                </li>
-            </ul>
+            <!-- Vista de SUBIR TU -->
+            <div class="view" id="upload-view">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h4 class="mb-0"><i class="bi bi-cloud-arrow-up me-2"></i>Subir archivos multimedia</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="upload-area mb-4" id="drop-area">
+                            <i class="bi bi-cloud-arrow-up file-icon"></i>
+                            <h5>Arrastra y suelta tus archivos aquí</h5>
+                            <p class="text-muted">o</p>
+                            <button class="btn btn-primary" id="browse-btn">
+                                <i class="bi bi-folder2-open me-2"></i>Seleccionar archivos
+                            </button>
+                            <input type="file" id="file-input" multiple class="d-none" accept="image/*,video/*">
+                            <div class="mt-3 text-muted">
+                                Formatos soportados: JPG, PNG, GIF, MP4, AVI, MOV
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="folder-select" class="form-label">Guardar en carpeta:</label>
+                            <div class="d-flex">
+                                <select class="form-select me-2" id="folder-select">
+                                    <option value="root">Raíz</option>
+                                </select>
+                                <button class="btn btn-outline-primary" id="new-folder-btn">
+                                    <i class="bi bi-folder-plus"></i> Nueva Carpeta
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Visibilidad:</label>
+                            <div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="visibility" id="public" value="public" checked>
+                                    <label class="form-check-label" for="public">Público</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="visibility" id="private" value="private">
+                                    <label class="form-check-label" for="private">Privado</label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="d-grid">
+                            <button class="btn btn-success" id="upload-btn" disabled>
+                                <i class="bi bi-upload me-2"></i>Subir Archivos
+                            </button>
+                        </div>
+                        
+                        <div class="progress mt-3 d-none" id="upload-progress">
+                            <div class="progress-bar" role="progressbar" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
             
-            <div id="tab-content">
-                <!-- Panel SUBIR TU -->
-                <div id="upload-content" class="tab-panel-content">
-                    <div class="card shadow">
-                        <div class="card-header bg-primary text-white">
-                            <h4><i class="bi bi-upload"></i> Subir archivos</h4>
+            <!-- Vista de GALERÍA -->
+            <div class="view d-none" id="gallery-view">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h4 class="mb-0"><i class="bi bi-images me-2"></i>Galería de archivos</h4>
+                            <div>
+                                <input type="text" class="form-control form-control-sm" id="search-files" placeholder="Buscar archivos...">
+                            </div>
                         </div>
-                        <div class="card-body">
-                            <form id="upload-form">
-                                <div class="mb-3">
-                                    <label class="form-label">Seleccionar archivos</label>
-                                    <input type="file" class="form-control" id="file-input" multiple accept="image/*,video/*,audio/mp3,.pdf">
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label">Título</label>
-                                    <input type="text" class="form-control" id="file-title" required>
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label">Descripción</label>
-                                    <textarea class="form-control" id="file-description" rows="3"></textarea>
-                                </div>
-                                <div class="mb-3">
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="radio" name="file-privacy" id="public-file" value="public" checked>
-                                        <label class="form-check-label" for="public-file">
-                                            Público (visible para todos los usuarios)
-                                        </label>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-4">
+                            <h5><i class="bi bi-folder2 me-2 folder-icon"></i>Carpetas</h5>
+                            <div class="row" id="folders-container">
+                                <!-- Las carpetas se generarán dinámicamente aquí -->
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <h5><i class="bi bi-collection me-2"></i>Archivos recientes</h5>
+                            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4" id="files-container">
+                                <!-- Los archivos se generarán dinámicamente aquí -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Vista de COMPARTIR -->
+            <div class="view d-none" id="share-view">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h4 class="mb-0"><i class="bi bi-share me-2"></i>Compartir archivos</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <div class="card h-100">
+                                    <div class="card-header bg-light">
+                                        <h5 class="mb-0">Seleccionar usuario</h5>
                                     </div>
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="radio" name="file-privacy" id="private-file" value="private">
-                                        <label class="form-check-label" for="private-file">
-                                            Privado (solo visible para ti)
-                                        </label>
+                                    <div class="card-body">
+                                        <div class="mb-3">
+                                            <label for="user-search" class="form-label">Buscar usuarios:</label>
+                                            <input type="text" class="form-control" id="user-search" placeholder="Buscar por nombre o email">
+                                        </div>
+                                        <div class="list-group" id="users-list" style="max-height: 300px; overflow-y: auto;">
+                                            <!-- Usuarios se generarán dinámicamente aquí -->
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="d-grid gap-2">
-                                    <button type="submit" class="btn btn-primary"><i class="bi bi-upload"></i> Subir archivos</button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Panel GALERÍA -->
-                <div id="gallery-content" class="tab-panel-content" style="display:none;">
-                    <div class="card shadow">
-                        <div class="card-header bg-primary text-white">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <h4><i class="bi bi-images"></i> Galería</h4>
-                                <button class="btn btn-sm btn-success" id="create-folder-btn"><i class="bi bi-folder-plus"></i> Crear carpeta</button>
                             </div>
-                        </div>
-                        <div class="card-body">
-                            <div class="row" id="gallery-grid">
-                                <!-- Los archivos se mostrarán aquí -->
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Panel COMPARTIR -->
-                <div id="share-content" class="tab-panel-content" style="display:none;">
-                    <div class="card shadow">
-                        <div class="card-header bg-primary text-white">
-                            <h4><i class="bi bi-share"></i> Compartir archivos</h4>
-                        </div>
-                        <div class="card-body">
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <label class="form-label">Seleccionar usuario</label>
-                                    <select class="form-select" id="share-user">
-                                        <option value="">Selecciona un usuario</option>
-                                    </select>
+                            <div class="col-md-6">
+                                <div class="card h-100">
+                                    <div class="card-header bg-light">
+                                        <h5 class="mb-0">Seleccionar archivos</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="mb-3">
+                                            <label for="file-search" class="form-label">Buscar archivos:</label>
+                                            <input type="text" class="form-control" id="file-search" placeholder="Buscar archivos">
+                                        </div>
+                                        <div class="list-group" id="files-list" style="max-height: 300px; overflow-y: auto;">
+                                            <!-- Archivos se generarán dinámicamente aquí -->
+                                        </div>
+                                        <div class="d-grid mt-3">
+                                            <button class="btn btn-primary" id="share-files-btn" disabled>
+                                                <i class="bi bi-send me-2"></i>Compartir archivos seleccionados
+                                            </button>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div class="col-md-6 mb-3">
-                                    <label class="form-label">Seleccionar archivo</label>
-                                    <select class="form-select" id="share-file">
-                                        <option value="">Selecciona un archivo</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="d-grid gap-2">
-                                <button class="btn btn-primary" id="share-btn"><i class="bi bi-send"></i> Compartir archivo</button>
                             </div>
                         </div>
                     </div>
                 </div>
-                
-                <!-- Panel GESTIÓN DE USUARIOS (Admin) -->
-                <div id="users-content" class="tab-panel-content" style="display:none;">
-                    <div class="card shadow">
-                        <div class="card-header bg-primary text-white">
-                            <h4><i class="bi bi-people"></i> Gestión de usuarios</h4>
+            </div>
+            
+            <!-- Vista de GESTIÓN DE USUARIOS -->
+            <div class="view d-none" id="users-view">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h4 class="mb-0"><i class="bi bi-people me-2"></i>Gestión de usuarios</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="alert alert-warning">
+                            <i class="bi bi-shield-lock me-2"></i>Esta sección solo está disponible para el desarrollador
                         </div>
-                        <div class="card-body">
-                            <table class="table table-striped table-hover">
-                                <thead>
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead class="table-light">
                                     <tr>
                                         <th>Nombre</th>
                                         <th>Email</th>
@@ -325,43 +578,67 @@
                                     </tr>
                                 </thead>
                                 <tbody id="users-table">
-                                    <!-- Los usuarios se mostrarán aquí -->
+                                    <!-- Usuarios se generarán dinámicamente aquí -->
                                 </tbody>
                             </table>
                         </div>
                     </div>
                 </div>
-                
-                <!-- Panel INFÓRMATE -->
-                <div id="info-content" class="tab-panel-content" style="display:none;">
-                    <div class="card shadow">
-                        <div class="card-header bg-primary text-white">
-                            <h4><i class="bi bi-info-circle"></i> Acerca de mYpuB</h4>
-                        </div>
-                        <div class="card-body">
-                            <h4 class="mb-3">¿Qué es mYpuB?</h4>
-                            <p class="mb-4">mYpuB es una plataforma para compartir archivos multimedia y documentos de manera segura y organizada. Puedes subir imágenes, videos, música y archivos PDF, organizarlos en carpetas y compartirlos con otros usuarios.</p>
-                            
-                            <h4 class="mb-3">¿Cómo funciona?</h4>
-                            <div class="mb-4">
-                                <h5><i class="bi bi-upload text-secondary"></i> Subir archivos</h5>
-                                <p>Selecciona los archivos de tu dispositivo, añade un título y descripción, y elige si quieres que sean públicos o privados.</p>
+            </div>
+            
+            <!-- Vista de INFÓRMATE -->
+            <div class="view d-none" id="info-view">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h4 class="mb-0"><i class="bi bi-info-circle me-2"></i>Acerca de mYpuB</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h5 class="mb-3"><i class="bi bi-question-circle me-2"></i>¿Qué es mYpuB?</h5>
+                                <p>mYpuB es una plataforma para compartir y gestionar archivos multimedia (imágenes y videos) con control de visibilidad y permisos avanzados.</p>
                                 
-                                <h5><i class="bi bi-images text-secondary"></i> Galería</h5>
-                                <p>Organiza tus archivos en carpetas y visualiza todo lo que has compartido y lo que otros usuarios han compartido contigo.</p>
-                                
-                                <h5><i class="bi bi-share text-secondary"></i> Compartir</h5>
-                                <p>Selecciona archivos específicos y compártelos con otros usuarios de la plataforma.</p>
+                                <h5 class="mt-4 mb-3"><i class="bi bi-gear me-2"></i>¿Cómo funciona?</h5>
+                                <ol>
+                                    <li>Regístrate con tu cuenta de Gmail</li>
+                                    <li>Sube tus imágenes y videos</li>
+                                    <li>Organiza en carpetas públicas o privadas</li>
+                                    <li>Comparte con otros usuarios</li>
+                                    <li>Interactúa con el contenido de otros usuarios</li>
+                                </ol>
                             </div>
-                            
-                            <h4 class="mb-3">Desarrollador</h4>
-                            <div class="mb-3">
-                                <p><strong>Nombre completo:</strong> Tarciano ENZEMA NCHAMA</p>
-                                <p><strong>Formación académica:</strong> Finalista universitario de la UNGE</p>
-                                <p><strong>Facultad:</strong> Ciencias económicas gestión y administración</p>
-                                <p><strong>Departamento:</strong> Informática de gestión empresarial</p>
-                                <p><strong>Contacto:</strong> enzemajr@gmail.com</p>
-                                <p><strong>Fecha final del desarrollo:</strong> 06/07/2025</p>
+                            <div class="col-md-6">
+                                <div class="card border-primary">
+                                    <div class="card-header bg-primary text-white">
+                                        <h5 class="mb-0"><i class="bi bi-person-badge me-2"></i>Desarrollador</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="d-flex align-items-center mb-3">
+                                            <div class="user-avatar me-3">TE</div>
+                                            <div>
+                                                <h5 class="mb-0">Tarciano ENZEMA NCHAMA</h5>
+                                                <span class="developer-badge">Desarrollador</span>
+                                            </div>
+                                        </div>
+                                        <ul class="list-group list-group-flush">
+                                            <li class="list-group-item">
+                                                <i class="bi bi-building me-2"></i>Finalista universitario de la UNGE
+                                            </li>
+                                            <li class="list-group-item">
+                                                <i class="bi bi-book me-2"></i>Facultad: Ciencias económicas gestión y administración
+                                            </li>
+                                            <li class="list-group-item">
+                                                <i class="bi bi-journal me-2"></i>Departamento: Informática de gestión empresarial
+                                            </li>
+                                            <li class="list-group-item">
+                                                <i class="bi bi-envelope me-2"></i>Contacto: enzemajr@gmail.com
+                                            </li>
+                                            <li class="list-group-item">
+                                                <i class="bi bi-calendar me-2"></i>Fecha final del desarrollo: 06/07/2025
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -370,1009 +647,1097 @@
         </div>
     </div>
 
-    <!-- Modal para visualizar detalles del archivo -->
-    <div class="modal fade" id="fileModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-lg modal-dialog-centered">
+    <!-- Modal para nueva carpeta -->
+    <div class="modal fade" id="folderModal" tabindex="-1">
+        <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="fileName"></h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <h5 class="modal-title">Crear nueva carpeta</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
-                <div class="modal-body text-center" id="filePreview">
-                    <!-- Vista previa del archivo -->
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="folder-name" class="form-label">Nombre de la carpeta</label>
+                        <input type="text" class="form-control" id="folder-name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Visibilidad:</label>
+                        <div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="folder-visibility" id="folder-public" value="public" checked>
+                                <label class="form-check-label" for="folder-public">Pública</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="folder-visibility" id="folder-private" value="private">
+                                <label class="form-check-label" for="folder-private">Privada</label>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <div class="modal-footer">
-                    <div class="me-auto" id="fileDetails">
-                        <!-- Detalles del archivo -->
-                    </div>
-                    <button type="button" class="btn btn-sm btn-outline-secondary like-btn" id="like-btn">
-                        <i class="bi bi-heart"></i> <span id="like-count">0</span>
-                    </button>
-                    <button type="button" class="btn btn-sm btn-outline-primary" id="download-btn">
-                        <i class="bi bi-download"></i> Descargar
-                    </button>
-                    <button type="button" class="btn btn-sm btn-danger" id="delete-btn" style="display:none;">
-                        <i class="bi bi-trash"></i> Eliminar
-                    </button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="create-folder-btn">Crear carpeta</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Modal para detalles de archivo -->
+    <div class="modal fade" id="fileModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="file-modal-title">Detalles del archivo</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="media-container" id="file-modal-preview">
+                                <i class="bi bi-file-earmark-image file-icon"></i>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="file-title" class="form-label">Título</label>
+                                <input type="text" class="form-control" id="file-title">
+                            </div>
+                            <div class="mb-3">
+                                <label for="file-description" class="form-label">Descripción</label>
+                                <textarea class="form-control" id="file-description" rows="3"></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Visibilidad:</label>
+                                <div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="file-visibility" id="file-public" value="public">
+                                        <label class="form-check-label" for="file-public">Público</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="file-visibility" id="file-private" value="private">
+                                        <label class="form-check-label" for="file-private">Privado</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Likes:</label>
+                                <div class="d-flex align-items-center">
+                                    <span id="file-likes-count">0</span>
+                                    <button class="btn btn-link like-btn ms-2" id="file-like-btn">
+                                        <i class="bi bi-heart"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="d-flex justify-content-between mt-4">
+                                <button class="btn btn-outline-danger" id="delete-file-btn">
+                                    <i class="bi bi-trash me-2"></i>Eliminar
+                                </button>
+                                <button class="btn btn-primary" id="save-file-btn">
+                                    <i class="bi bi-save me-2"></i>Guardar cambios
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    
     <script>
-        // Variables globales
+        // Base de datos IndexedDB
+        const DB_NAME = 'mYpuB_DB';
+        const DB_VERSION = 1;
         let db;
+        
+        // Almacenes de objetos
+        const USER_STORE = 'users';
+        const FOLDER_STORE = 'folders';
+        const FILE_STORE = 'files';
+        
+        // Estado de la aplicación
         let currentUser = null;
         let isDeveloper = false;
-        const DEVELOPER_PASSWORD = "Enzema0097@&";
+        let selectedFiles = [];
+        let selectedUser = null;
+        let currentFile = null;
         
-        // Inicialización de la aplicación
-        document.addEventListener('DOMContentLoaded', function() {
-            // Inicializar bases de datos
-            initDatabases();
-            
-            // Manejar eventos
+        // Inicializar la aplicación
+        document.addEventListener('DOMContentLoaded', initApp);
+        
+        function initApp() {
             setupEventListeners();
-            
-            // Verificar si hay sesión activa
-            checkActiveSession();
-        });
-        
-        // Inicializar bases de datos
-        function initDatabases() {
-            const request = indexedDB.open('mYpuB_DB', 3);
-            
-            request.onupgradeneeded = function(event) {
-                const db = event.target.result;
-                
-                // Crear almacén para usuarios si no existe
-                if (!db.objectStoreNames.contains('users')) {
-                    const usersStore = db.createObjectStore('users', { keyPath: 'email' });
-                    usersStore.createIndex('email', 'email', { unique: true });
-                }
-                
-                // Crear almacén para archivos si no existe
-                if (!db.objectStoreNames.contains('files')) {
-                    const filesStore = db.createObjectStore('files', { keyPath: 'id', autoIncrement: true });
-                    filesStore.createIndex('owner', 'owner', { unique: false });
-                    filesStore.createIndex('folder', 'folder', { unique: false });
-                    filesStore.createIndex('privacy', 'privacy', { unique: false });
-                }
-                
-                // Crear almacén para carpetas si no existe
-                if (!db.objectStoreNames.contains('folders')) {
-                    const foldersStore = db.createObjectStore('folders', { keyPath: 'id', autoIncrement: true });
-                    foldersStore.createIndex('owner', 'owner', { unique: false });
-                }
-            };
-            
-            request.onsuccess = function(event) {
-                db = event.target.result;
-                console.log('Base de datos inicializada');
-            };
-            
-            request.onerror = function(event) {
-                console.error('Error al abrir la base de datos:', event.target.error);
-            };
+            initDB();
+            showRegisterView();
         }
         
-        // Configurar eventos
+        // Configurar event listeners
         function setupEventListeners() {
-            // Registro
+            // Navegación entre vistas
+            document.getElementById('login-link').addEventListener('click', showLoginView);
+            document.getElementById('register-link').addEventListener('click', showRegisterView);
+            
+            // Formularios
             document.getElementById('register-form').addEventListener('submit', registerUser);
-            document.getElementById('show-login-btn').addEventListener('click', showLoginForm);
-            
-            // Login
             document.getElementById('login-form').addEventListener('submit', loginUser);
-            document.getElementById('show-register-btn').addEventListener('click', showRegisterForm);
-            
-            // Panel de ayuda
-            document.getElementById('show-help-btn').addEventListener('click', toggleHelpPanel);
-            document.getElementById('email-help-btn').addEventListener('click', showEmailForm);
-            document.getElementById('whatsapp-help-btn').addEventListener('click', showWhatsappForm);
-            document.getElementById('send-email-btn').addEventListener('click', sendEmailToDeveloper);
-            document.getElementById('send-whatsapp-btn').addEventListener('click', sendWhatsappToDeveloper);
-            
-            // Logout
             document.getElementById('logout-btn').addEventListener('click', logout);
             
-            // Pestañas principales
-            document.querySelectorAll('[data-tab]').forEach(tab => {
-                tab.addEventListener('click', switchTab);
+            // Ayuda
+            document.getElementById('help-btn').addEventListener('click', toggleHelpPanel);
+            document.getElementById('email-help-btn').addEventListener('click', showEmailHelpForm);
+            document.getElementById('whatsapp-help-btn').addEventListener('click', showWhatsAppHelpForm);
+            document.getElementById('send-email-btn').addEventListener('click', sendEmailHelp);
+            document.getElementById('send-whatsapp-btn').addEventListener('click', sendWhatsAppHelp);
+            
+            // Panel principal
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.addEventListener('click', e => {
+                    e.preventDefault();
+                    showView(e.target.getAttribute('data-view'));
+                });
             });
             
-            // Subir archivos
-            document.getElementById('upload-form').addEventListener('submit', uploadFiles);
+            // Subida de archivos
+            document.getElementById('browse-btn').addEventListener('click', () => {
+                document.getElementById('file-input').click();
+            });
             
-            // Crear carpeta
+            document.getElementById('file-input').addEventListener('change', handleFileSelect);
+            
+            const dropArea = document.getElementById('drop-area');
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                dropArea.addEventListener(eventName, preventDefaults, false);
+            });
+            
+            ['dragenter', 'dragover'].forEach(eventName => {
+                dropArea.addEventListener(eventName, highlight, false);
+            });
+            
+            ['dragleave', 'drop'].forEach(eventName => {
+                dropArea.addEventListener(eventName, unhighlight, false);
+            });
+            
+            dropArea.addEventListener('drop', handleDrop, false);
+            
+            document.getElementById('upload-btn').addEventListener('click', uploadFiles);
+            document.getElementById('new-folder-btn').addEventListener('click', showNewFolderModal);
             document.getElementById('create-folder-btn').addEventListener('click', createFolder);
             
             // Compartir archivos
-            document.getElementById('share-btn').addEventListener('click', shareFile);
+            document.getElementById('share-files-btn').addEventListener('click', shareFiles);
             
-            // Modal de archivo
-            document.getElementById('like-btn').addEventListener('click', toggleLike);
-            document.getElementById('download-btn').addEventListener('click', downloadFile);
-            document.getElementById('delete-btn').addEventListener('click', deleteFile);
+            // Detalles de archivo
+            document.getElementById('save-file-btn').addEventListener('click', saveFileDetails);
+            document.getElementById('delete-file-btn').addEventListener('click', deleteFile);
+            document.getElementById('file-like-btn').addEventListener('click', toggleFileLike);
         }
         
-        // Verificar sesión activa
-        function checkActiveSession() {
-            const lastUser = localStorage.getItem('mYpuB_currentUser');
-            const developerFlag = localStorage.getItem('mYpuB_isDeveloper');
+        // Funciones de la base de datos
+        function initDB() {
+            const request = indexedDB.open(DB_NAME, DB_VERSION);
             
-            if (lastUser) {
-                const transaction = db.transaction(['users'], 'readonly');
-                const store = transaction.objectStore('users');
-                const request = store.get(lastUser);
+            request.onerror = (event) => {
+                console.error('Error al abrir la base de datos:', event.target.error);
+            };
+            
+            request.onupgradeneeded = (event) => {
+                db = event.target.result;
                 
-                request.onsuccess = function() {
-                    if (request.result) {
-                        currentUser = request.result;
-                        isDeveloper = developerFlag === 'true';
-                        
-                        // Mostrar panel principal
-                        showMainPanel();
-                        
-                        // Mostrar mensaje de bienvenida
-                        displayWelcomeMessage();
-                        
-                        // Cargar galería inicial
-                        if (window.location.hash === '#gallery') {
-                            loadGallery();
-                            switchTab({ target: document.querySelector('[data-tab="gallery"]') });
-                        } else {
-                            switchTab({ target: document.querySelector('[data-tab="upload"]') });
-                        }
-                    }
-                };
+                // Crear almacén de usuarios
+                if (!db.objectStoreNames.contains(USER_STORE)) {
+                    const userStore = db.createObjectStore(USER_STORE, { keyPath: 'id', autoIncrement: true });
+                    userStore.createIndex('email', 'email', { unique: true });
+                }
+                
+                // Crear almacén de carpetas
+                if (!db.objectStoreNames.contains(FOLDER_STORE)) {
+                    const folderStore = db.createObjectStore(FOLDER_STORE, { keyPath: 'id', autoIncrement: true });
+                    folderStore.createIndex('userId', 'userId', { unique: false });
+                }
+                
+                // Crear almacén de archivos
+                if (!db.objectStoreNames.contains(FILE_STORE)) {
+                    const fileStore = db.createObjectStore(FILE_STORE, { keyPath: 'id', autoIncrement: true });
+                    fileStore.createIndex('userId', 'userId', { unique: false });
+                    fileStore.createIndex('folderId', 'folderId', { unique: false });
+                }
+            };
+            
+            request.onsuccess = (event) => {
+                db = event.target.result;
+                console.log('Base de datos inicializada correctamente');
+                
+                // Intentar autenticar al usuario si existe en localStorage
+                const savedUser = localStorage.getItem('currentUser');
+                if (savedUser) {
+                    const user = JSON.parse(savedUser);
+                    authenticateUser(user.email, user.password);
+                }
+            };
+        }
+        
+        // Funciones de vistas
+        function showRegisterView() {
+            document.getElementById('register-view').classList.remove('d-none');
+            document.getElementById('login-view').classList.add('d-none');
+            document.getElementById('main-app-view').classList.add('d-none');
+        }
+        
+        function showLoginView() {
+            document.getElementById('register-view').classList.add('d-none');
+            document.getElementById('login-view').classList.remove('d-none');
+            document.getElementById('main-app-view').classList.add('d-none');
+        }
+        
+        function showMainAppView() {
+            document.getElementById('register-view').classList.add('d-none');
+            document.getElementById('login-view').classList.add('d-none');
+            document.getElementById('main-app-view').classList.remove('d-none');
+            
+            // Actualizar información del usuario
+            document.getElementById('user-name').textContent = currentUser.fullName;
+            document.getElementById('user-avatar').textContent = currentUser.fullName.charAt(0);
+            
+            // Actualizar mensaje de bienvenida según el género
+            let welcomeMessage = '';
+            switch(currentUser.gender) {
+                case 'male':
+                    welcomeMessage = `Bienvenido a <span class="app-title">mYpuB</span> Sr. ${currentUser.fullName}`;
+                    break;
+                case 'female':
+                    welcomeMessage = `Bienvenida a <span class="app-title">mYpuB</span> Sra. ${currentUser.fullName}`;
+                    break;
+                default:
+                    welcomeMessage = `Gracias por utilizar <span class="app-title">mYpuB</span>`;
+            }
+            document.getElementById('welcome-message').innerHTML = welcomeMessage;
+            
+            // Mostrar gestión de usuarios solo para el desarrollador
+            document.getElementById('user-management-nav').classList.toggle('d-none', !isDeveloper);
+            
+            // Mostrar vista por defecto
+            showView('upload');
+            
+            // Cargar datos de la aplicación
+            loadFolders();
+            loadFiles();
+            loadUsers();
+            updateStorageIndicator();
+        }
+        
+        function showView(viewId) {
+            // Ocultar todas las vistas
+            document.querySelectorAll('.view').forEach(view => {
+                view.classList.add('d-none');
+            });
+            
+            // Mostrar la vista seleccionada
+            document.getElementById(`${viewId}-view`).classList.remove('d-none');
+            
+            // Actualizar navegación activa
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('data-view') === viewId) {
+                    link.classList.add('active');
+                }
+            });
+            
+            // Cargar datos específicos de la vista
+            if (viewId === 'gallery') {
+                loadFolders();
+                loadFiles();
+            } else if (viewId === 'share') {
+                loadUsersForSharing();
+                loadFilesForSharing();
+            } else if (viewId === 'users') {
+                loadUsersForManagement();
             }
         }
         
-        // Registrar nuevo usuario
+        // Funciones de autenticación
         function registerUser(e) {
             e.preventDefault();
             
-            const fullname = document.getElementById('fullname').value.trim();
-            let email = document.getElementById('email').value.trim();
-            const gender = document.getElementById('gender').value;
-            const phone = document.getElementById('phone').value.trim();
+            const fullName = document.getElementById('fullName').value;
+            const email = document.getElementById('email').value;
+            const gender = document.querySelector('input[name="gender"]:checked').value;
+            const prefix = document.getElementById('prefix').value;
+            const phone = document.getElementById('phone').value;
             const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
             
-            // Validar email (debe ser Gmail)
+            // Validaciones
             if (!email.endsWith('@gmail.com')) {
-                email += '@gmail.com';
-            }
-            
-            if (!email.match(/^[a-zA-Z0-9._%+-]+@gmail\.com$/)) {
-                displayMessage('register-message', 'Por favor ingresa un correo de Gmail válido', 'error');
+                alert('Por favor, utiliza una cuenta de Gmail válida.');
                 return;
             }
             
-            // Validar teléfono (debe tener prefijo)
-            if (!phone.match(/^\d{10,15}$/)) {
-                displayMessage('register-message', 'Por favor ingresa un número de teléfono válido con prefijo (solo números)', 'error');
+            if (password !== confirmPassword) {
+                alert('Las contraseñas no coinciden.');
                 return;
             }
             
-            // Validar contraseña
-            const passwordRegex = /^(?=.*[A-Z])(?=(?:[a-z]*[A-Z])?[a-z]{6})(?=(?:\D*\d){4})(?=.*[@#&]{2}).{12,}$/;
+            // Validar contraseña: 6 letras (primera mayúscula), 4 números, 2 símbolos (@#&)
+            const passwordRegex = /^[A-Z][a-z]{5}\d{4}[@#&]{2}$/;
             if (!passwordRegex.test(password)) {
-                displayMessage('register-message', 'La contraseña debe tener 12 caracteres: 6 letras (primera mayúscula), 4 números y 2 símbolos (@#&)', 'error');
+                alert('La contraseña debe tener 6 letras (primera mayúscula), 4 números y 2 símbolos (@#&).');
                 return;
             }
             
-            // Verificar si es el desarrollador
-            if (password === DEVELOPER_PASSWORD) {
-                isDeveloper = true;
-            }
-            
-            // Crear objeto usuario
+            // Crear objeto de usuario
             const user = {
-                fullname,
+                fullName,
                 email,
                 gender,
-                phone: `+${phone}`,
+                phone: `+${prefix}${phone}`,
                 password,
-                isDeveloper
+                storageUsed: 0,
+                createdAt: new Date()
             };
             
             // Guardar usuario en IndexedDB
-            const transaction = db.transaction(['users'], 'readwrite');
-            const store = transaction.objectStore('users');
+            const transaction = db.transaction([USER_STORE], 'readwrite');
+            const store = transaction.objectStore(USER_STORE);
+            
             const request = store.add(user);
             
-            request.onsuccess = function() {
-                // Limpiar formulario
-                document.getElementById('register-form').reset();
-                
-                // Mostrar mensaje de éxito
-                displayMessage('register-message', 'Registro exitoso! Redirigiendo...', 'success');
-                
-                // Guardar sesión y redirigir
-                currentUser = user;
-                localStorage.setItem('mYpuB_currentUser', user.email);
-                localStorage.setItem('mYpuB_isDeveloper', user.isDeveloper);
-                
-                // Mostrar panel principal después de breve espera
-                setTimeout(() => {
-                    showMainPanel();
-                    displayWelcomeMessage();
-                    switchTab({ target: document.querySelector('[data-tab="upload"]') });
-                }, 1000);
+            request.onsuccess = () => {
+                alert('Registro exitoso. Ahora puedes iniciar sesión.');
+                showLoginView();
+                clearForm('register-form');
             };
             
-            request.onerror = function(event) {
-                if (event.target.error.name === 'ConstraintError') {
-                    displayMessage('register-message', 'Este correo electrónico ya está registrado', 'error');
-                } else {
-                    displayMessage('register-message', 'Error al registrar usuario. Inténtalo de nuevo.', 'error');
-                }
+            request.onerror = (event) => {
+                console.error('Error al registrar usuario:', event.target.error);
+                alert('Error al registrar usuario. El email ya podría estar en uso.');
             };
         }
         
-        // Iniciar sesión
         function loginUser(e) {
             e.preventDefault();
             
-            const email = document.getElementById('login-email').value.trim();
+            const email = document.getElementById('login-email').value;
             const password = document.getElementById('login-password').value;
             
-            // Verificar si es el desarrollador
-            if (password === DEVELOPER_PASSWORD) {
-                isDeveloper = true;
-            }
+            authenticateUser(email, password);
+        }
+        
+        function authenticateUser(email, password) {
+            const transaction = db.transaction([USER_STORE], 'readonly');
+            const store = transaction.objectStore(USER_STORE);
+            const index = store.index('email');
             
-            // Buscar usuario en la base de datos
-            const transaction = db.transaction(['users'], 'readonly');
-            const store = transaction.objectStore('users');
-            const request = store.get(email);
+            const request = index.get(email);
             
-            request.onsuccess = function() {
-                const user = request.result;
+            request.onsuccess = (event) => {
+                const user = event.target.result;
                 
-                if (user && user.password === password) {
-                    // Inicio de sesión exitoso
-                    currentUser = user;
-                    localStorage.setItem('mYpuB_currentUser', user.email);
-                    localStorage.setItem('mYpuB_isDeveloper', isDeveloper);
-                    
-                    // Limpiar formulario
-                    document.getElementById('login-form').reset();
-                    
-                    // Mostrar mensaje de éxito
-                    displayMessage('login-message', 'Inicio de sesión exitoso!', 'success');
-                    
-                    // Mostrar panel principal después de breve espera
-                    setTimeout(() => {
-                        showMainPanel();
-                        displayWelcomeMessage();
-                        switchTab({ target: document.querySelector('[data-tab="upload"]') });
-                    }, 1000);
-                } else {
-                    // Credenciales incorrectas
-                    displayMessage('login-message', 'Correo o contraseña incorrectos', 'error');
+                if (!user) {
+                    alert('Usuario no encontrado.');
+                    return;
                 }
+                
+                if (user.password !== password) {
+                    alert('Contraseña incorrecta.');
+                    return;
+                }
+                
+                // Verificar si es el desarrollador
+                isDeveloper = (password === 'Enzema0097@&');
+                
+                // Guardar usuario en estado
+                currentUser = user;
+                
+                // Guardar en localStorage para persistencia
+                localStorage.setItem('currentUser', JSON.stringify({email, password}));
+                
+                // Mostrar la aplicación principal
+                showMainAppView();
+                
+                // Limpiar formulario
+                clearForm('login-form');
             };
             
-            request.onerror = function() {
-                displayMessage('login-message', 'Error al iniciar sesión. Inténtalo de nuevo.', 'error');
+            request.onerror = (event) => {
+                console.error('Error al autenticar usuario:', event.target.error);
+                alert('Error al autenticar usuario.');
             };
         }
         
-        // Cerrar sesión
         function logout() {
             currentUser = null;
             isDeveloper = false;
-            localStorage.removeItem('mYpuB_currentUser');
-            localStorage.removeItem('mYpuB_isDeveloper');
-            location.reload();
+            localStorage.removeItem('currentUser');
+            showLoginView();
         }
         
-        // Mostrar panel de registro
-        function showRegisterForm() {
-            document.getElementById('login-section').style.display = 'none';
-            document.getElementById('register-section').style.display = 'block';
-        }
-        
-        // Mostrar panel de login
-        function showLoginForm() {
-            document.getElementById('register-section').style.display = 'none';
-            document.getElementById('login-section').style.display = 'block';
-        }
-        
-        // Mostrar panel principal
-        function showMainPanel() {
-            document.getElementById('register-section').style.display = 'none';
-            document.getElementById('login-section').style.display = 'none';
-            document.getElementById('main-panel').style.display = 'block';
-            document.getElementById('logout-btn').style.display = 'block';
-            
-            // Mostrar pestaña de gestión de usuarios solo para el desarrollador
-            if (isDeveloper) {
-                document.getElementById('admin-tab').style.display = 'block';
-            }
-        }
-        
-        // Mostrar mensaje de bienvenida
-        function displayWelcomeMessage() {
-            const welcomeElem = document.getElementById('welcome-message');
-            
-            if (currentUser.gender === 'Hombre') {
-                welcomeElem.innerHTML = `Bienvenido a <span class="my-pub-font">mYpuB</span> Sr. ${currentUser.fullname}`;
-            } else if (currentUser.gender === 'Mujer') {
-                welcomeElem.innerHTML = `Bienvenida a <span class="my-pub-font">mYpuB</span> Sra. ${currentUser.fullname}`;
-            } else {
-                welcomeElem.innerHTML = `Gracias por utilizar <span class="my-pub-font">mYpuB</span>`;
-            }
-        }
-        
-        // Mostrar mensajes en la interfaz
-        function displayMessage(elementId, message, type) {
-            const element = document.getElementById(elementId);
-            element.textContent = message;
-            element.className = '';
-            
-            if (type === 'error') {
-                element.classList.add('text-danger');
-            } else if (type === 'success') {
-                element.classList.add('text-success');
-            }
-            
-            // Limpiar mensaje después de 5 segundos
-            if (type) {
-                setTimeout(() => {
-                    element.textContent = '';
-                }, 5000);
-            }
-        }
-        
-        // Panel de ayuda
+        // Funciones de ayuda
         function toggleHelpPanel() {
-            const panel = document.getElementById('help-panel');
-            panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+            const helpPanel = document.getElementById('help-panel');
+            const bsCollapse = new bootstrap.Collapse(helpPanel, {
+                toggle: true
+            });
         }
         
-        function showEmailForm() {
-            document.getElementById('email-help-form').style.display = 'block';
-            document.getElementById('whatsapp-help-form').style.display = 'none';
+        function showEmailHelpForm() {
+            document.getElementById('email-help-form').classList.remove('collapse');
+            document.getElementById('whatsapp-help-form').classList.add('collapse');
         }
         
-        function showWhatsappForm() {
-            document.getElementById('whatsapp-help-form').style.display = 'block';
-            document.getElementById('email-help-form').style.display = 'none';
+        function showWhatsAppHelpForm() {
+            document.getElementById('whatsapp-help-form').classList.remove('collapse');
+            document.getElementById('email-help-form').classList.add('collapse');
         }
         
-        function sendEmailToDeveloper() {
-            const name = document.getElementById('help-name-email').value.trim();
-            const email = document.getElementById('help-email').value.trim();
+        function sendEmailHelp() {
+            const name = document.getElementById('help-name').value;
+            const email = document.getElementById('help-email').value;
             
             if (!name || !email) {
-                alert('Por favor completa todos los campos');
+                alert('Por favor, completa todos los campos.');
                 return;
             }
             
             const subject = `Consulta de ${name} sobre mYpuB`;
-            const body = `Hola Tarciano,\n\nTengo una consulta sobre el funcionamiento de mYpuB:\n\n[Mensaje aquí]`;
+            const body = `Hola Tarciano,\n\nTengo una consulta sobre mYpuB:\n\n`;
             
             window.location.href = `mailto:enzemajr@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
             
-            // Limpiar formulario y ocultar panel
-            document.getElementById('help-form-email').reset();
-            document.getElementById('help-panel').style.display = 'none';
+            alert('Se abrirá tu cliente de correo. Por favor, completa tu consulta y envíala.');
+            clearForm('email-help-form');
+            document.getElementById('help-panel').classList.remove('show');
         }
         
-        function sendWhatsappToDeveloper() {
-            const name = document.getElementById('help-name-whatsapp').value.trim();
-            const phone = document.getElementById('help-whatsapp').value.trim();
+        function sendWhatsAppHelp() {
+            const name = document.getElementById('whatsapp-name').value;
+            const number = document.getElementById('whatsapp-number').value;
             
-            if (!name || !phone) {
-                alert('Por favor completa todos los campos');
+            if (!name || !number) {
+                alert('Por favor, completa todos los campos.');
                 return;
             }
             
-            const message = `Hola Tarciano, soy ${name} y tengo una consulta sobre mYpuB...`;
-            window.open(`https://wa.me/240222084663?text=${encodeURIComponent(message)}`, '_blank');
+            const message = `Hola Tarciano, soy ${name}. Tengo una consulta sobre mYpuB:`;
             
-            // Limpiar formulario y ocultar panel
-            document.getElementById('help-form-whatsapp').reset();
-            document.getElementById('help-panel').style.display = 'none';
+            window.open(`https://wa.me/+240222084663?text=${encodeURIComponent(message)}`, '_blank');
+            
+            alert('Se abrirá WhatsApp. Por favor, completa tu consulta y envíala.');
+            clearForm('whatsapp-help-form');
+            document.getElementById('help-panel').classList.remove('show');
         }
         
-        // Cambiar entre pestañas
-        function switchTab(e) {
-            // Actualizar navegación de pestañas
-            document.querySelectorAll('#main-tabs .nav-link').forEach(tab => {
-                tab.classList.remove('active');
-            });
-            e.target.classList.add('active');
-            
-            // Ocultar todos los contenidos de pestañas
-            document.querySelectorAll('.tab-panel-content').forEach(content => {
-                content.style.display = 'none';
-            });
-            
-            // Mostrar contenido de la pestaña seleccionada
-            const tabName = e.target.getAttribute('data-tab');
-            document.getElementById(`${tabName}-content`).style.display = 'block';
-            
-            // Cargar contenido según la pestaña
-            switch(tabName) {
-                case 'gallery':
-                    loadGallery();
-                    break;
-                case 'share':
-                    loadShareOptions();
-                    break;
-                case 'users':
-                    loadUsersTable();
-                    break;
-            }
+        // Funciones de archivos y carpetas
+        function handleFileSelect(e) {
+            selectedFiles = Array.from(e.target.files);
+            document.getElementById('upload-btn').disabled = false;
         }
         
-        // Subir archivos
-        function uploadFiles(e) {
+        function preventDefaults(e) {
             e.preventDefault();
-            
-            const fileInput = document.getElementById('file-input');
-            const title = document.getElementById('file-title').value.trim();
-            const description = document.getElementById('file-description').value.trim();
-            const privacy = document.querySelector('input[name="file-privacy"]:checked').value;
-            
-            if (fileInput.files.length === 0) {
-                displayMessage('register-message', 'Por favor selecciona al menos un archivo', 'error');
+            e.stopPropagation();
+        }
+        
+        function highlight() {
+            document.getElementById('drop-area').style.backgroundColor = 'rgba(78, 84, 200, 0.1)';
+        }
+        
+        function unhighlight() {
+            document.getElementById('drop-area').style.backgroundColor = '';
+        }
+        
+        function handleDrop(e) {
+            const dt = e.dataTransfer;
+            selectedFiles = Array.from(dt.files);
+            document.getElementById('upload-btn').disabled = false;
+        }
+        
+        function uploadFiles() {
+            if (selectedFiles.length === 0) {
+                alert('Por favor, selecciona al menos un archivo para subir.');
                 return;
             }
             
-            if (!title) {
-                displayMessage('register-message', 'Por favor ingresa un título', 'error');
-                return;
-            }
+            const folderId = document.getElementById('folder-select').value;
+            const visibility = document.querySelector('input[name="visibility"]:checked').value;
             
-            // Procesar cada archivo
-            Array.from(fileInput.files).forEach(file => {
+            const progressBar = document.querySelector('#upload-progress .progress-bar');
+            const progressContainer = document.getElementById('upload-progress');
+            progressContainer.classList.remove('d-none');
+            
+            let uploadedCount = 0;
+            
+            selectedFiles.forEach(file => {
                 const reader = new FileReader();
                 
-                reader.onload = function(event) {
-                    const fileData = event.target.result;
-                    const fileType = getFileType(file);
+                reader.onload = (e) => {
+                    const fileData = e.target.result;
                     
-                    // Crear objeto archivo para guardar
+                    // Crear objeto de archivo
                     const fileObj = {
                         name: file.name,
-                        title: title,
-                        description: description,
-                        type: fileType,
+                        type: file.type.startsWith('image') ? 'image' : 'video',
                         data: fileData,
-                        owner: currentUser.email,
-                        privacy: privacy,
-                        likes: 0,
-                        likedBy: [],
-                        timestamp: new Date().toISOString(),
-                        folder: 'General'
+                        size: file.size,
+                        userId: currentUser.id,
+                        folderId: folderId === 'root' ? null : parseInt(folderId),
+                        public: visibility === 'public',
+                        likes: [],
+                        title: file.name,
+                        description: '',
+                        createdAt: new Date()
                     };
                     
                     // Guardar archivo en IndexedDB
-                    const transaction = db.transaction(['files'], 'readwrite');
-                    const store = transaction.objectStore('files');
+                    const transaction = db.transaction([FILE_STORE], 'readwrite');
+                    const store = transaction.objectStore(FILE_STORE);
+                    
                     const request = store.add(fileObj);
                     
-                    request.onsuccess = function() {
-                        displayMessage('register-message', 'Archivo(s) subido(s) con éxito!', 'success');
-                        document.getElementById('upload-form').reset();
+                    request.onsuccess = () => {
+                        uploadedCount++;
+                        const progress = (uploadedCount / selectedFiles.length) * 100;
+                        progressBar.style.width = `${progress}%`;
                         
-                        // Actualizar galería si está visible
-                        if (document.getElementById('gallery-content').style.display === 'block') {
-                            loadGallery();
+                        if (uploadedCount === selectedFiles.length) {
+                            setTimeout(() => {
+                                progressContainer.classList.add('d-none');
+                                progressBar.style.width = '0%';
+                                alert('Archivos subidos correctamente.');
+                                loadFiles();
+                                updateStorageIndicator();
+                            }, 500);
                         }
                     };
                     
-                    request.onerror = function() {
-                        displayMessage('register-message', 'Error al subir archivo(s)', 'error');
+                    request.onerror = (event) => {
+                        console.error('Error al subir archivo:', event.target.error);
+                        alert('Error al subir archivo.');
                     };
                 };
                 
-                // Leer el archivo como Data URL
-                if (file.type.startsWith('image/') || file.type.startsWith('video/') || file.type === 'audio/mp3' || file.type === 'application/pdf') {
-                    reader.readAsDataURL(file);
-                } else {
-                    displayMessage('register-message', `Formato de archivo no soportado: ${file.name}`, 'error');
-                }
+                reader.readAsDataURL(file);
             });
+            
+            // Resetear selección
+            selectedFiles = [];
+            document.getElementById('upload-btn').disabled = true;
+            document.getElementById('file-input').value = '';
         }
         
-        // Determinar tipo de archivo
-        function getFileType(file) {
-            if (file.type.startsWith('image/')) return 'image';
-            if (file.type.startsWith('video/')) return 'video';
-            if (file.type === 'audio/mp3') return 'audio';
-            if (file.type === 'application/pdf') return 'pdf';
-            return 'other';
+        function showNewFolderModal() {
+            const modal = new bootstrap.Modal(document.getElementById('folderModal'));
+            modal.show();
         }
         
-        // Cargar galería de archivos
-        function loadGallery() {
-            const gallery = document.getElementById('gallery-grid');
-            gallery.innerHTML = ''; // Limpiar galería
+        function createFolder() {
+            const name = document.getElementById('folder-name').value;
+            const visibility = document.querySelector('input[name="folder-visibility"]:checked').value;
             
-            // Obtener archivos públicos y del usuario actual
-            const transaction = db.transaction(['files'], 'readonly');
-            const store = transaction.objectStore('files');
-            const index = store.index('privacy');
+            if (!name) {
+                alert('Por favor, ingresa un nombre para la carpeta.');
+                return;
+            }
             
-            const publicFiles = index.getAll('public');
-            const privateFiles = index.getAll('private');
+            const folder = {
+                name,
+                userId: currentUser.id,
+                public: visibility === 'public',
+                createdAt: new Date()
+            };
             
-            Promise.all([publicFiles, privateFiles]).then(results => {
-                const allPublicFiles = results[0];
-                const allPrivateFiles = results[1];
+            const transaction = db.transaction([FOLDER_STORE], 'readwrite');
+            const store = transaction.objectStore(FOLDER_STORE);
+            
+            const request = store.add(folder);
+            
+            request.onsuccess = () => {
+                alert('Carpeta creada correctamente.');
+                loadFolders();
                 
-                // Filtrar archivos privados que pertenezcan al usuario actual
-                const userPrivateFiles = allPrivateFiles.filter(file => file.owner === currentUser.email);
+                const modal = bootstrap.Modal.getInstance(document.getElementById('folderModal'));
+                modal.hide();
                 
-                // Combinar archivos públicos y privados del usuario
-                const filesToShow = [...allPublicFiles, ...userPrivateFiles];
+                clearForm('folder-form');
+            };
+            
+            request.onerror = (event) => {
+                console.error('Error al crear carpeta:', event.target.error);
+                alert('Error al crear carpeta.');
+            };
+        }
+        
+        function loadFolders() {
+            const container = document.getElementById('folders-container');
+            container.innerHTML = '';
+            
+            const transaction = db.transaction([FOLDER_STORE], 'readonly');
+            const store = transaction.objectStore(FOLDER_STORE);
+            const index = store.index('userId');
+            const request = index.getAll(currentUser.id);
+            
+            request.onsuccess = (event) => {
+                const folders = event.target.result;
                 
-                // Ordenar por fecha (más recientes primero)
-                filesToShow.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-                
-                // Mostrar archivos
-                if (filesToShow.length === 0) {
-                    gallery.innerHTML = '<div class="col-12 text-center py-5"><h5>No hay archivos para mostrar</h5></div>';
+                if (folders.length === 0) {
+                    container.innerHTML = '<div class="col-12 text-center text-muted py-3">No tienes carpetas creadas</div>';
                     return;
                 }
                 
-                filesToShow.forEach(file => {
-                    const fileCard = createFileCard(file);
-                    gallery.appendChild(fileCard);
+                folders.forEach(folder => {
+                    const folderCard = document.createElement('div');
+                    folderCard.className = 'col-md-3 mb-3';
+                    folderCard.innerHTML = `
+                        <div class="card folder-card h-100">
+                            <div class="card-body text-center">
+                                <i class="bi bi-folder folder-icon"></i>
+                                <h6 class="mt-2">${folder.name}</h6>
+                                <small class="text-muted">${folder.public ? 'Pública' : 'Privada'}</small>
+                            </div>
+                        </div>
+                    `;
+                    container.appendChild(folderCard);
                 });
-            });
+                
+                // Actualizar selector de carpetas
+                const folderSelect = document.getElementById('folder-select');
+                folderSelect.innerHTML = '<option value="root">Raíz</option>';
+                folders.forEach(folder => {
+                    const option = document.createElement('option');
+                    option.value = folder.id;
+                    option.textContent = folder.name;
+                    folderSelect.appendChild(option);
+                });
+            };
         }
         
-        // Crear tarjeta para archivo en la galería
-        function createFileCard(file) {
-            const col = document.createElement('div');
-            col.className = 'col-md-4 col-lg-3 mb-4';
+        function loadFiles() {
+            const container = document.getElementById('files-container');
+            container.innerHTML = '';
             
-            const card = document.createElement('div');
-            card.className = 'card h-100 media-card';
-            card.dataset.id = file.id;
+            const transaction = db.transaction([FILE_STORE], 'readonly');
+            const store = transaction.objectStore(FILE_STORE);
+            const request = store.getAll();
             
-            // Contenido de la tarjeta según el tipo de archivo
-            let cardBody;
-            
-            if (file.type === 'image') {
-                cardBody = `
-                    <img src="${file.data}" class="card-img-top" alt="${file.title}" style="height: 200px; object-fit: cover;">
-                    ${file.privacy === 'private' ? '<span class="badge bg-secondary private-badge">Privado</span>' : ''}
-                `;
-            } else if (file.type === 'video') {
-                cardBody = `
-                    <div class="ratio ratio-16x9">
-                        <video src="${file.data}" class="card-img-top" poster="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" style="background-color: #f5f5f5;"></video>
-                    </div>
-                    ${file.privacy === 'private' ? '<span class="badge bg-secondary private-badge">Privado</span>' : ''}
-                `;
-            } else if (file.type === 'audio') {
-                cardBody = `
-                    <div class="card-img-top d-flex justify-content-center align-items-center" style="height: 200px; background-color: #f5f5f5;">
-                        <i class="bi bi-file-earmark-music file-icon text-primary"></i>
-                    </div>
-                `;
-            } else if (file.type === 'pdf') {
-                cardBody = `
-                    <div class="card-img-top d-flex justify-content-center align-items-center" style="height: 200px; background-color: #f5f5f5;">
-                        <i class="bi bi-file-earmark-pdf file-icon text-danger"></i>
-                    </div>
-                `;
-            } else {
-                cardBody = `
-                    <div class="card-img-top d-flex justify-content-center align-items-center" style="height: 200px; background-color: #f5f5f5;">
-                        <i class="bi bi-file-earmark file-icon text-secondary"></i>
-                    </div>
-                `;
-            }
-            
-            // Footer con información del archivo
-            let footerHTML = '';
-            if (file.owner === currentUser.email) {
-                footerHTML = '<small class="text-muted">Subido por ti</small>';
-            } else {
-                footerHTML = `<small class="text-muted">Subido por ${file.owner.split('@')[0]}</small>`;
-            }
-            
-            card.innerHTML = `
-                ${cardBody}
-                <div class="card-body">
-                    <h6 class="card-title">${file.title}</h6>
-                    <p class="card-text text-truncate">${file.description || ''}</p>
-                    <div class="d-flex justify-content-between align-items-center">
-                        <small class="text-muted">${new Date(file.timestamp).toLocaleDateString()}</small>
-                        <div>
-                            <span class="me-2"><i class="bi bi-heart${file.likedBy.includes(currentUser.email) ? '-fill liked' : ''}"></i> ${file.likes}</span>
-                            <button class="btn btn-sm btn-outline-primary"><i class="bi bi-download"></i></button>
+            request.onsuccess = (event) => {
+                const files = event.target.result;
+                
+                if (files.length === 0) {
+                    container.innerHTML = '<div class="col-12 text-center text-muted py-5"><i class="bi bi-inbox me-2"></i>No hay archivos subidos</div>';
+                    return;
+                }
+                
+                // Filtrar archivos visibles para el usuario actual
+                const visibleFiles = files.filter(file => 
+                    file.public || file.userId === currentUser.id || isDeveloper
+                );
+                
+                visibleFiles.forEach(file => {
+                    const fileCard = document.createElement('div');
+                    fileCard.className = 'col';
+                    fileCard.innerHTML = `
+                        <div class="card file-item h-100">
+                            <div class="position-relative">
+                                ${file.type === 'image' ? 
+                                    `<img src="${file.data}" class="card-img-top" alt="${file.title}" style="height: 200px; object-fit: cover;">` :
+                                    `<div class="bg-dark text-white d-flex align-items-center justify-content-center" style="height: 200px;">
+                                        <i class="bi bi-play-btn fs-1"></i>
+                                    </div>`
+                                }
+                                <span class="badge status-badge ${file.public ? 'bg-primary' : 'bg-secondary'}">
+                                    ${file.public ? 'Público' : 'Privado'}
+                                </span>
+                                ${file.likes.length >= 100 ? 
+                                    '<span class="badge popular-badge status-badge" style="top: 40px;">POPULAR</span>' : ''}
+                            </div>
+                            <div class="card-body">
+                                <h6 class="card-title">${file.title}</h6>
+                                <p class="card-text small text-truncate">${file.description || 'Sin descripción'}</p>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <small class="text-muted">${formatDate(file.createdAt)}</small>
+                                    <div>
+                                        <button class="btn btn-sm btn-outline-secondary like-btn ${file.likes.includes(currentUser.id) ? 'liked' : ''}" data-id="${file.id}">
+                                            <i class="bi bi-heart${file.likes.includes(currentUser.id) ? '-fill' : ''}"></i> ${file.likes.length}
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-primary" data-id="${file.id}" data-bs-toggle="modal" data-bs-target="#fileModal">
+                                            <i class="bi bi-pencil"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                    ${footerHTML}
-                </div>
-            `;
+                    `;
+                    container.appendChild(fileCard);
+                });
+                
+                // Agregar event listeners para los botones de like
+                document.querySelectorAll('.like-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const fileId = parseInt(e.currentTarget.getAttribute('data-id'));
+                        toggleLike(fileId);
+                    });
+                });
+                
+                // Agregar event listeners para los botones de editar
+                document.querySelectorAll('[data-bs-target="#fileModal"]').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const fileId = parseInt(e.currentTarget.getAttribute('data-id'));
+                        openFileModal(fileId);
+                    });
+                });
+            };
+        }
+        
+        function openFileModal(fileId) {
+            const transaction = db.transaction([FILE_STORE], 'readonly');
+            const store = transaction.objectStore(FILE_STORE);
+            const request = store.get(fileId);
             
-            // Evento para mostrar detalles del archivo
-            card.addEventListener('click', function(e) {
-                if (!e.target.classList.contains('bi-download') && !e.target.parentElement.classList.contains('bi-download')) {
-                    showFileDetails(file);
+            request.onsuccess = (event) => {
+                const file = event.target.result;
+                currentFile = file;
+                
+                document.getElementById('file-modal-title').textContent = file.title;
+                document.getElementById('file-title').value = file.title;
+                document.getElementById('file-description').value = file.description || '';
+                document.getElementById('file-likes-count').textContent = file.likes.length;
+                
+                if (file.public) {
+                    document.getElementById('file-public').checked = true;
+                } else {
+                    document.getElementById('file-private').checked = true;
+                }
+                
+                const preview = document.getElementById('file-modal-preview');
+                preview.innerHTML = '';
+                
+                if (file.type === 'image') {
+                    const img = document.createElement('img');
+                    img.src = file.data;
+                    img.className = 'img-fluid';
+                    preview.appendChild(img);
+                } else {
+                    const video = document.createElement('video');
+                    video.src = file.data;
+                    video.controls = true;
+                    video.className = 'img-fluid';
+                    preview.appendChild(video);
+                }
+                
+                // Configurar botón de like
+                const likeBtn = document.getElementById('file-like-btn');
+                likeBtn.classList.toggle('liked', file.likes.includes(currentUser.id));
+                likeBtn.innerHTML = file.likes.includes(currentUser.id) ? 
+                    '<i class="bi bi-heart-fill"></i>' : '<i class="bi bi-heart"></i>';
+                
+                // Mostrar u ocultar botón de eliminar
+                const canDelete = (currentUser.id === file.userId) || isDeveloper;
+                document.getElementById('delete-file-btn').classList.toggle('d-none', !canDelete);
+            };
+        }
+        
+        function saveFileDetails() {
+            if (!currentFile) return;
+            
+            const title = document.getElementById('file-title').value;
+            const description = document.getElementById('file-description').value;
+            const public = document.getElementById('file-public').checked;
+            
+            // Actualizar objeto de archivo
+            currentFile.title = title;
+            currentFile.description = description;
+            currentFile.public = public;
+            
+            const transaction = db.transaction([FILE_STORE], 'readwrite');
+            const store = transaction.objectStore(FILE_STORE);
+            
+            const request = store.put(currentFile);
+            
+            request.onsuccess = () => {
+                alert('Cambios guardados correctamente.');
+                loadFiles();
+                
+                const modal = bootstrap.Modal.getInstance(document.getElementById('fileModal'));
+                modal.hide();
+            };
+            
+            request.onerror = (event) => {
+                console.error('Error al guardar cambios:', event.target.error);
+                alert('Error al guardar cambios.');
+            };
+        }
+        
+        function deleteFile() {
+            if (!currentFile) return;
+            
+            if (!confirm('¿Estás seguro de que quieres eliminar este archivo?')) {
+                return;
+            }
+            
+            const transaction = db.transaction([FILE_STORE], 'readwrite');
+            const store = transaction.objectStore(FILE_STORE);
+            
+            const request = store.delete(currentFile.id);
+            
+            request.onsuccess = () => {
+                alert('Archivo eliminado correctamente.');
+                loadFiles();
+                updateStorageIndicator();
+                
+                const modal = bootstrap.Modal.getInstance(document.getElementById('fileModal'));
+                modal.hide();
+            };
+            
+            request.onerror = (event) => {
+                console.error('Error al eliminar archivo:', event.target.error);
+                alert('Error al eliminar archivo.');
+            };
+        }
+        
+        function toggleLike(fileId) {
+            const transaction = db.transaction([FILE_STORE], 'readwrite');
+            const store = transaction.objectStore(FILE_STORE);
+            
+            const request = store.get(fileId);
+            
+            request.onsuccess = (event) => {
+                const file = event.target.result;
+                const index = file.likes.indexOf(currentUser.id);
+                
+                if (index === -1) {
+                    // Dar like
+                    file.likes.push(currentUser.id);
+                } else {
+                    // Quitar like
+                    file.likes.splice(index, 1);
+                }
+                
+                // Actualizar el archivo
+                const updateRequest = store.put(file);
+                
+                updateRequest.onsuccess = () => {
+                    loadFiles();
+                };
+            };
+        }
+        
+        function toggleFileLike() {
+            if (!currentFile) return;
+            toggleLike(currentFile.id);
+            
+            // Actualizar el estado del botón en el modal
+            const likeBtn = document.getElementById('file-like-btn');
+            const liked = currentFile.likes.includes(currentUser.id);
+            
+            likeBtn.classList.toggle('liked', !liked);
+            likeBtn.innerHTML = !liked ? 
+                '<i class="bi bi-heart-fill"></i>' : '<i class="bi bi-heart"></i>';
+            
+            // Actualizar el contador
+            document.getElementById('file-likes-count').textContent = 
+                liked ? currentFile.likes.length - 1 : currentFile.likes.length + 1;
+        }
+        
+        // Funciones de compartir
+        function loadUsersForSharing() {
+            const container = document.getElementById('users-list');
+            container.innerHTML = '';
+            
+            const transaction = db.transaction([USER_STORE], 'readonly');
+            const store = transaction.objectStore(USER_STORE);
+            const request = store.getAll();
+            
+            request.onsuccess = (event) => {
+                const users = event.target.result.filter(user => user.id !== currentUser.id);
+                
+                if (users.length === 0) {
+                    container.innerHTML = '<div class="text-center py-3 text-muted">No hay otros usuarios registrados</div>';
+                    return;
+                }
+                
+                users.forEach(user => {
+                    const userItem = document.createElement('a');
+                    userItem.href = '#';
+                    userItem.className = 'list-group-item list-group-item-action';
+                    userItem.innerHTML = `
+                        <div class="d-flex align-items-center">
+                            <div class="user-avatar me-3">${user.fullName.charAt(0)}</div>
+                            <div>
+                                <h6 class="mb-0">${user.fullName}</h6>
+                                <small class="text-muted">${user.email}</small>
+                            </div>
+                        </div>
+                    `;
+                    
+                    userItem.addEventListener('click', () => {
+                        document.querySelectorAll('#users-list .list-group-item').forEach(item => {
+                            item.classList.remove('active');
+                        });
+                        userItem.classList.add('active');
+                        selectedUser = user;
+                    });
+                    
+                    container.appendChild(userItem);
+                });
+            };
+        }
+        
+        function loadFilesForSharing() {
+            const container = document.getElementById('files-list');
+            container.innerHTML = '';
+            
+            const transaction = db.transaction([FILE_STORE], 'readonly');
+            const store = transaction.objectStore(FILE_STORE);
+            const index = store.index('userId');
+            const request = index.getAll(currentUser.id);
+            
+            request.onsuccess = (event) => {
+                const files = event.target.result;
+                
+                if (files.length === 0) {
+                    container.innerHTML = '<div class="text-center py-3 text-muted">No tienes archivos para compartir</div>';
+                    return;
+                }
+                
+                files.forEach(file => {
+                    const fileItem = document.createElement('a');
+                    fileItem.href = '#';
+                    fileItem.className = 'list-group-item list-group-item-action';
+                    fileItem.innerHTML = `
+                        <div class="d-flex align-items-center">
+                            <i class="bi ${file.type === 'image' ? 'bi-image' : 'bi-film'} me-3 fs-5"></i>
+                            <div>
+                                <h6 class="mb-0">${file.title}</h6>
+                                <small class="text-muted">${formatDate(file.createdAt)}</small>
+                            </div>
+                        </div>
+                    `;
+                    
+                    fileItem.addEventListener('click', () => {
+                        fileItem.classList.toggle('active');
+                        document.getElementById('share-files-btn').disabled = !selectedUser;
+                    });
+                    
+                    container.appendChild(fileItem);
+                });
+            };
+        }
+        
+        function shareFiles() {
+            if (!selectedUser) {
+                alert('Por favor, selecciona un usuario para compartir.');
+                return;
+            }
+            
+            const selectedFiles = [];
+            document.querySelectorAll('#files-list .list-group-item.active').forEach(item => {
+                const fileId = parseInt(item.getAttribute('data-id'));
+                if (fileId) {
+                    selectedFiles.push(fileId);
                 }
             });
             
-            col.appendChild(card);
-            return col;
-        }
-        
-        // Mostrar detalles del archivo en modal
-        function showFileDetails(file) {
-            document.getElementById('fileName').textContent = file.title;
-            
-            // Mostrar vista previa según el tipo de archivo
-            const preview = document.getElementById('filePreview');
-            preview.innerHTML = '';
-            
-            if (file.type === 'image') {
-                const img = document.createElement('img');
-                img.src = file.data;
-                img.className = 'img-fluid';
-                img.style.maxHeight = '60vh';
-                img.alt = file.title;
-                preview.appendChild(img);
-            } else if (file.type === 'video') {
-                const video = document.createElement('video');
-                video.src = file.data;
-                video.className = 'w-100';
-                video.controls = true;
-                preview.appendChild(video);
-            } else if (file.type === 'audio') {
-                const audio = document.createElement('audio');
-                audio.src = file.data;
-                audio.controls = true;
-                audio.className = 'w-100';
-                preview.appendChild(audio);
-            } // ... (continuación desde el código anterior)
-
-else if (file.type === 'pdf') {
-    const embed = document.createElement('embed');
-    embed.src = file.data;
-    embed.type = 'application/pdf';
-    embed.style.width = '100%';
-    embed.style.height = '60vh';
-    preview.appendChild(embed);
-} else {
-    const icon = document.createElement('i');
-    icon.className = 'bi bi-file-earmark file-icon text-secondary';
-    icon.style.fontSize = '5rem';
-    preview.appendChild(icon);
-}
-
-// Mostrar detalles del archivo
-const details = document.getElementById('fileDetails');
-details.innerHTML = `
-    <p><strong>Descripción:</strong> ${file.description || 'Sin descripción'}</p>
-    <p><strong>Tipo:</strong> ${file.type}</p>
-    <p><strong>Tamaño:</strong> ${formatFileSize(file.data.length)}</p>
-    <p><strong>Subido:</strong> ${new Date(file.timestamp).toLocaleString()}</p>
-    <p><strong>Propietario:</strong> ${file.owner === currentUser.email ? 'Tú' : file.owner}</p>
-`;
-
-// Configurar botones del modal
-const likeBtn = document.getElementById('like-btn');
-const likeCount = document.getElementById('like-count');
-likeCount.textContent = file.likes;
-likeBtn.className = `btn btn-sm btn-outline-secondary like-btn ${file.likedBy.includes(currentUser.email) ? 'liked' : ''}`;
-likeBtn.dataset.fileId = file.id;
-
-const downloadBtn = document.getElementById('download-btn');
-downloadBtn.dataset.fileId = file.id;
-
-const deleteBtn = document.getElementById('delete-btn');
-if (file.owner === currentUser.email || isDeveloper) {
-    deleteBtn.style.display = 'inline-block';
-    deleteBtn.dataset.fileId = file.id;
-} else {
-    deleteBtn.style.display = 'none';
-}
-
-// Mostrar modal
-const modal = new bootstrap.Modal(document.getElementById('fileModal'));
-modal.show();
-}
-
-// Formatear tamaño de archivo
-function formatFileSize(bytes) {
-if (bytes < 1024) return bytes + ' bytes';
-else if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
-else return (bytes / 1048576).toFixed(1) + ' MB';
-}
-
-// Crear carpeta
-function createFolder() {
-const folderName = prompt('Ingresa el nombre de la carpeta:');
-if (!folderName) return;
-
-const folder = {
-    name: folderName,
-    owner: currentUser.email,
-    created: new Date().toISOString()
-};
-
-const transaction = db.transaction(['folders'], 'readwrite');
-const store = transaction.objectStore('folders');
-const request = store.add(folder);
-
-request.onsuccess = function() {
-    alert('Carpeta creada con éxito!');
-    loadGallery();
-};
-
-request.onerror = function() {
-    alert('Error al crear carpeta');
-};
-}
-
-// Cargar opciones para compartir
-function loadShareOptions() {
-// Limpiar selects
-document.getElementById('share-user').innerHTML = '<option value="">Selecciona un usuario</option>';
-document.getElementById('share-file').innerHTML = '<option value="">Selecciona un archivo</option>';
-
-// Cargar usuarios (excluyendo al usuario actual)
-const transactionUsers = db.transaction(['users'], 'readonly');
-const usersStore = transactionUsers.objectStore('users');
-const usersRequest = usersStore.getAll();
-
-usersRequest.onsuccess = function() {
-    const users = usersRequest.result.filter(user => user.email !== currentUser.email);
-    
-    if (users.length === 0) {
-        document.getElementById('share-user').innerHTML = '<option value="">No hay otros usuarios</option>';
-        return;
-    }
-    
-    users.forEach(user => {
-        const option = document.createElement('option');
-        option.value = user.email;
-        option.textContent = `${user.fullname} (${user.email})`;
-        document.getElementById('share-user').appendChild(option);
-    });
-};
-
-// Cargar archivos del usuario actual
-const transactionFiles = db.transaction(['files'], 'readonly');
-const filesStore = transactionFiles.objectStore('files');
-const index = filesStore.index('owner');
-const filesRequest = index.getAll(currentUser.email);
-
-filesRequest.onsuccess = function() {
-    const files = filesRequest.result;
-    
-    if (files.length === 0) {
-        document.getElementById('share-file').innerHTML = '<option value="">No tienes archivos para compartir</option>';
-        return;
-    }
-    
-    files.forEach(file => {
-        const option = document.createElement('option');
-        option.value = file.id;
-        option.textContent = `${file.title} (${file.type})`;
-        document.getElementById('share-file').appendChild(option);
-    });
-};
-}
-
-// Compartir archivo
-function shareFile() {
-const userId = document.getElementById('share-user').value;
-const fileId = parseInt(document.getElementById('share-file').value);
-
-if (!userId || !fileId) {
-    alert('Por favor selecciona un usuario y un archivo');
-    return;
-}
-
-const transaction = db.transaction(['files'], 'readwrite');
-const store = transaction.objectStore('files');
-const request = store.get(fileId);
-
-request.onsuccess = function() {
-    const file = request.result;
-    
-    if (!file) {
-        alert('Archivo no encontrado');
-        return;
-    }
-    
-    // Verificar que el archivo pertenezca al usuario actual
-    if (file.owner !== currentUser.email) {
-        alert('Solo puedes compartir archivos que te pertenezcan');
-        return;
-    }
-    
-    // Crear una copia compartida del archivo
-    const sharedFile = {
-        ...file,
-        id: undefined, // Para que se genere un nuevo ID
-        sharedWith: userId,
-        originalOwner: currentUser.email,
-        timestamp: new Date().toISOString()
-    };
-    
-    const addRequest = store.add(sharedFile);
-    
-    addRequest.onsuccess = function() {
-        alert('Archivo compartido con éxito!');
-        document.getElementById('share-user').value = '';
-        document.getElementById('share-file').value = '';
-    };
-    
-    addRequest.onerror = function() {
-        alert('Error al compartir archivo');
-    };
-};
-}
-
-// Cargar tabla de usuarios (solo para admin)
-function loadUsersTable() {
-if (!isDeveloper) return;
-
-const table = document.getElementById('users-table');
-table.innerHTML = '';
-
-const transaction = db.transaction(['users'], 'readonly');
-const store = transaction.objectStore('users');
-const request = store.getAll();
-
-request.onsuccess = function() {
-    const users = request.result;
-    
-    if (users.length === 0) {
-        table.innerHTML = '<tr><td colspan="5" class="text-center">No hay usuarios registrados</td></tr>';
-        return;
-    }
-    
-    users.forEach(user => {
-        const row = document.createElement('tr');
-        row.innerHTML = `
-            <td>${user.fullname}</td>
-            <td>${user.email}</td>
-            <td>${user.phone}</td>
-            <td>${user.isDeveloper ? 'Desarrollador' : 'Usuario normal'}</td>
-            <td>
-                <button class="btn btn-sm btn-danger delete-user-btn" data-email="${user.email}">
-                    <i class="bi bi-trash"></i>
-                </button>
-            </td>
-        `;
-        table.appendChild(row);
-    });
-    
-    // Configurar eventos para botones de eliminar
-    document.querySelectorAll('.delete-user-btn').forEach(btn => {
-        btn.addEventListener('click', function() {
-            const email = this.dataset.email;
-            if (confirm(`¿Estás seguro de eliminar al usuario ${email}?`)) {
-                deleteUser(email);
+            if (selectedFiles.length === 0) {
+                alert('Por favor, selecciona al menos un archivo para compartir.');
+                return;
             }
-        });
-    });
-};
-}
-
-// Eliminar usuario
-function deleteUser(email) {
-if (email === currentUser.email) {
-    alert('No puedes eliminarte a ti mismo');
-    return;
-}
-
-const transaction = db.transaction(['users'], 'readwrite');
-const store = transaction.objectStore('users');
-const request = store.delete(email);
-
-request.onsuccess = function() {
-    alert('Usuario eliminado con éxito');
-    loadUsersTable();
-};
-
-request.onerror = function() {
-    alert('Error al eliminar usuario');
-};
-}
-
-// Dar like a un archivo
-function toggleLike() {
-const fileId = parseInt(this.dataset.fileId);
-const transaction = db.transaction(['files'], 'readwrite');
-const store = transaction.objectStore('files');
-const request = store.get(fileId);
-
-request.onsuccess = function() {
-    const file = request.result;
-    
-    if (!file) return;
-    
-    const userIndex = file.likedBy.indexOf(currentUser.email);
-    
-    if (userIndex === -1) {
-        // Añadir like
-        file.likes++;
-        file.likedBy.push(currentUser.email);
-    } else {
-        // Quitar like
-        file.likes--;
-        file.likedBy.splice(userIndex, 1);
-    }
-    
-    const updateRequest = store.put(file);
-    
-    updateRequest.onsuccess = function() {
-        // Actualizar contador en el modal
-        document.getElementById('like-count').textContent = file.likes;
-        
-        // Actualizar estado del botón
-        const likeBtn = document.getElementById('like-btn');
-        likeBtn.classList.toggle('liked');
-        
-        // Actualizar galería si está visible
-        if (document.getElementById('gallery-content').style.display === 'block') {
-            loadGallery();
+            
+            // Simular el proceso de compartir
+            alert(`Se han compartido ${selectedFiles.length} archivos con ${selectedUser.fullName}`);
+            
+            // Resetear selección
+            selectedUser = null;
+            document.querySelectorAll('#users-list .list-group-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            document.querySelectorAll('#files-list .list-group-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            document.getElementById('share-files-btn').disabled = true;
         }
-    };
-};
-}
-
-// Descargar archivo
-function downloadFile() {
-const fileId = parseInt(this.dataset.fileId);
-const transaction = db.transaction(['files'], 'readonly');
-const store = transaction.objectStore('files');
-const request = store.get(fileId);
-
-request.onsuccess = function() {
-    const file = request.result;
-    
-    if (!file) {
-        alert('Archivo no encontrado');
-        return;
-    }
-    
-    // Crear enlace de descarga
-    const a = document.createElement('a');
-    a.href = file.data;
-    a.download = file.name;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-};
-}
-
-// Eliminar archivo
-function deleteFile() {
-if (!confirm('¿Estás seguro de eliminar este archivo?')) return;
-
-const fileId = parseInt(this.dataset.fileId);
-const transaction = db.transaction(['files'], 'readwrite');
-const store = transaction.objectStore('files');
-const request = store.delete(fileId);
-
-request.onsuccess = function() {
-    // Cerrar modal
-    const modal = bootstrap.Modal.getInstance(document.getElementById('fileModal'));
-    modal.hide();
-    
-    // Actualizar galería
-    loadGallery();
-};
-
-request.onerror = function() {
-    alert('Error al eliminar archivo');
-};
-}
-
+        
+        // Funciones de gestión de usuarios (solo desarrollador)
+        function loadUsersForManagement() {
+            if (!isDeveloper) return;
+            
+            const container = document.getElementById('users-table');
+            container.innerHTML = '';
+            
+            const transaction = db.transaction([USER_STORE], 'readonly');
+            const store = transaction.objectStore(USER_STORE);
+            const request = store.getAll();
+            
+            request.onsuccess = (event) => {
+                const users = event.target.result.filter(user => user.id !== currentUser.id);
+                
+                if (users.length === 0) {
+                    container.innerHTML = '<tr><td colspan="5" class="text-center py-3 text-muted">No hay otros usuarios registrados</td></tr>';
+                    return;
+                }
+                
+                users.forEach(user => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${user.fullName}</td>
+                        <td>${user.email}</td>
+                        <td>${user.phone}</td>
+                        <td>
+                            <span class="badge bg-success">Activo</span>
+                        </td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-secondary" title="Editar">
+                                <i class="bi bi-pencil"></i>
+                            </button>
+                            <button class="btn btn-sm btn-outline-danger" title="Eliminar">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                            <button class="btn btn-sm btn-outline-warning" title="Bloquear">
+                                <i class="bi bi-lock"></i>
+                            </button>
+                        </td>
+                    `;
+                    container.appendChild(row);
+                });
+            };
+        }
+        
+        // Funciones auxiliares
+        function updateStorageIndicator() {
+            if (!currentUser) return;
+            
+            const transaction = db.transaction([FILE_STORE], 'readonly');
+            const store = transaction.objectStore(FILE_STORE);
+            const index = store.index('userId');
+            const request = index.getAll(currentUser.id);
+            
+            request.onsuccess = (event) => {
+                const files = event.target.result;
+                const totalSize = files.reduce((sum, file) => sum + file.size, 0);
+                const sizeInMB = (totalSize / (1024 * 1024)).toFixed(2);
+                
+                document.getElementById('storage-used').textContent = sizeInMB;
+                document.getElementById('storage-progress').style.width = `${(sizeInMB / 100) * 100}%`;
+            };
+        }
+        
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('es-ES', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+        
+        function clearForm(formId) {
+            const form = document.getElementById(formId);
+            if (form) {
+                form.reset();
+            }
+        }
+    </script>
+</body>
+</html>
