@@ -3,574 +3,964 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>mYpuB - Gestión Multimedia</title>
-    <!-- Bootstrap 5 CSS -->
+    <title>Sistema de Gestión Universitaria</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Bootstrap Icons -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --light-color: #ecf0f1;
+            --dark-color: #34495e;
+        }
+        
         body {
-            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-            min-height: 100vh;
+            background-color: #f8f9fa;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
         
-        .app-title {
-            font-family: 'Georgia', serif;
-            font-weight: bold;
-            color: #000;
-        }
-        
-        .card {
-            border-radius: 15px;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-            transition: transform 0.3s ease;
+        .app-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            border-radius: 10px;
             overflow: hidden;
-            border: none;
+            background-color: white;
+            min-height: 100vh;
         }
         
-        .card:hover {
-            transform: translateY(-5px);
-        }
-        
-        .card-header {
-            background: linear-gradient(to right, #4e54c8, #8f94fb);
+        .header {
+            background: linear-gradient(135deg, var(--primary-color), var(--dark-color));
             color: white;
-            font-weight: bold;
+            padding: 15px 0;
+            text-align: center;
+            position: relative;
         }
         
-        .btn-primary {
-            background: linear-gradient(to right, #4e54c8, #8f94fb);
-            border: none;
+        .logo-container {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background-color: white;
+            margin: -60px auto 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            position: relative;
+            z-index: 10;
+        }
+        
+        .logo-placeholder {
+            font-size: 3rem;
+            color: var(--secondary-color);
+        }
+        
+        .faculty-name {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .faculty-info {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            margin-bottom: 5px;
+        }
+        
+        .module-container {
+            padding: 25px;
+            min-height: 500px;
+        }
+        
+        .module-card {
+            border-radius: 10px;
+            overflow: hidden;
+            transition: transform 0.3s, box-shadow 0.3s;
+            height: 100%;
+        }
+        
+        .module-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        
+        .module-header {
+            background-color: var(--secondary-color);
+            color: white;
+            padding: 15px;
             font-weight: 600;
         }
         
+        .module-content {
+            padding: 20px;
+        }
+        
+        .nav-tabs .nav-link {
+            color: var(--dark-color);
+            font-weight: 500;
+            border: none;
+            border-radius: 0;
+        }
+        
+        .nav-tabs .nav-link.active {
+            background-color: var(--secondary-color);
+            color: white;
+            border: none;
+        }
+        
+        .btn-primary {
+            background-color: var(--secondary-color);
+            border: none;
+        }
+        
         .btn-primary:hover {
-            background: linear-gradient(to right, #3a40b5, #7a7ff5);
+            background-color: #2980b9;
         }
         
         .btn-danger {
-            background: linear-gradient(to right, #ff416c, #ff4b2b);
+            background-color: var(--accent-color);
             border: none;
         }
         
-        .btn-success {
-            background: linear-gradient(to right, #0f9b0f, #3ddb3d);
-            border: none;
+        .action-buttons .btn {
+            margin: 2px;
+            font-size: 0.8rem;
         }
         
-        .file-icon {
-            font-size: 4rem;
-            color: #4e54c8;
-            margin-bottom: 15px;
-        }
-        
-        .user-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: linear-gradient(to right, #4e54c8, #8f94fb);
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-        }
-        
-        .nav-link {
-            color: #495057;
-            font-weight: 500;
-            border-radius: 8px;
+        .file-card {
+            border-left: 4px solid var(--secondary-color);
             transition: all 0.3s;
         }
         
-        .nav-link:hover, .nav-link.active {
-            background: linear-gradient(to right, #4e54c8, #8f94fb);
-            color: white !important;
+        .file-card:hover {
+            background-color: #f1f9ff;
+            transform: translateX(5px);
         }
         
-        .media-container {
+        .password-strength {
+            height: 5px;
+            width: 100%;
+            background-color: #e0e0e0;
+            border-radius: 2px;
+            margin-top: 5px;
+        }
+        
+        .strength-meter {
+            height: 100%;
+            border-radius: 2px;
+            transition: width 0.3s;
+        }
+        
+        .log-entry {
+            border-left: 3px solid var(--secondary-color);
+            padding-left: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .log-entry.deletion {
+            border-left-color: var(--accent-color);
+        }
+        
+        .footer {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 20px 0;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .password-container {
             position: relative;
-            overflow: hidden;
-            border-radius: 12px;
-            background-color: #f8f9fa;
-            min-height: 200px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 20px;
+        }
+        
+        .toggle-password {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
             cursor: pointer;
+            color: #777;
         }
         
-        .media-container img, .media-container video {
-            max-width: 100%;
-            max-height: 300px;
-            object-fit: contain;
-        }
-        
-        .like-btn {
-            transition: all 0.2s;
-        }
-        
-        .like-btn:hover {
-            transform: scale(1.2);
-        }
-        
-        .like-btn.liked {
-            color: #ff416c;
-        }
-        
-        .folder-icon {
-            color: #ff9800;
-            font-size: 2rem;
+        .department-badge {
+            font-size: 0.9rem;
+            margin: 5px;
         }
         
         .folder-card {
-            cursor: pointer;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border: 1px solid #e0e0e0;
             transition: all 0.3s;
         }
         
         .folder-card:hover {
-            background-color: rgba(78, 84, 200, 0.1);
+            border-color: var(--secondary-color);
+            box-shadow: 0 5px 10px rgba(0,0,0,0.05);
         }
         
-        .progress-bar {
-            background: linear-gradient(to right, #4e54c8, #8f94fb);
+        .file-icon {
+            font-size: 2rem;
+            color: #e74c3c;
         }
         
-        .developer-badge {
-            background: linear-gradient(to right, #ff9800, #ff5722);
-            color: white;
-            padding: 3px 8px;
-            border-radius: 20px;
+        .role-badge {
             font-size: 0.8rem;
-            font-weight: bold;
+            padding: 4px 8px;
+            border-radius: 20px;
         }
         
-        .welcome-message {
-            background: linear-gradient(to right, rgba(78, 84, 200, 0.1), rgba(143, 148, 251, 0.1));
-            border-left: 4px solid #4e54c8;
-            padding: 15px;
-            border-radius: 0 8px 8px 0;
+        .admin-badge {
+            background-color: #e74c3c;
+            color: white;
         }
         
-        .upload-area {
-            border: 2px dashed #4e54c8;
-            border-radius: 12px;
-            padding: 30px;
-            text-align: center;
-            background-color: rgba(78, 84, 200, 0.05);
-            cursor: pointer;
-            transition: all 0.3s;
+        .secretariat-badge {
+            background-color: #3498db;
+            color: white;
         }
         
-        .upload-area:hover {
-            background-color: rgba(78, 84, 200, 0.1);
+        .department-badge {
+            background-color: #2ecc71;
+            color: white;
         }
         
-        .file-item {
+        .user-badge {
+            background-color: #f39c12;
+            color: white;
+        }
+        
+        .stat-card {
             border-radius: 10px;
-            overflow: hidden;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
-            transition: all 0.3s;
-        }
-        
-        .file-item:hover {
-            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
-        }
-        
-        .storage-indicator {
-            height: 8px;
-            border-radius: 4px;
-            overflow: hidden;
-            background-color: #e9ecef;
-        }
-        
-        .storage-progress {
-            height: 100%;
-            background: linear-gradient(to right, #4e54c8, #8f94fb);
-            width: 35%;
-        }
-        
-        .status-badge {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            z-index: 10;
-        }
-        
-        .popular-badge {
-            background: linear-gradient(to right, #ff9800, #ff5722);
+            background: linear-gradient(135deg, #3498db, #2c3e50);
             color: white;
-            animation: pulse 2s infinite;
+            padding: 15px;
+            text-align: center;
+            margin-bottom: 20px;
         }
         
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin: 10px 0;
         }
         
-        /* Nuevos estilos para reproducción de video */
-        .video-thumbnail {
-            position: relative;
-            cursor: pointer;
-            height: 200px;
-            overflow: hidden;
-        }
-        
-        .video-thumbnail .play-icon {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 4rem;
-            color: white;
-            opacity: 0.8;
-            transition: all 0.3s;
-        }
-        
-        .video-thumbnail:hover .play-icon {
-            opacity: 1;
-            transform: translate(-50%, -50%) scale(1.1);
+        .stat-label {
+            font-size: 1rem;
+            opacity: 0.9;
         }
     </style>
 </head>
 <body>
-    <!-- Contenedor principal -->
-    <div class="container py-4" id="app-container">
-        <!-- Vista de registro -->
-        <div class="row justify-content-center" id="register-view">
-            <div class="col-lg-6">
-                <div class="card shadow-lg">
-                    <div class="card-header text-center py-3">
-                        <h2 class="app-title">Regístrate en <span class="app-title">mYpuB</span></h2>
-                    </div>
-                    <div class="card-body p-4">
-                        <form id="register-form">
-                            <div class="mb-3">
-                                <label for="fullName" class="form-label">Nombre completo</label>
-                                <input type="text" class="form-control" id="fullName" required>
-                            </div>
-                            <div class="mb-3">
-                                <label for="email" class="form-label">Correo electrónico (Gmail)</label>
-                                <input type="email" class="form-control" id="email" required>
-                                <div class="form-text">Debe ser una cuenta de Gmail</div>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Sexo</label>
-                                <div>
-                                    <div class="form-check form-check-inline">
-                                        <input class="form-check-input" type="radio" name="gender" id="male" value="male" checked>
-                                        <label class="form-check-label" for="male">Hombre</label>
-                                    </div>
-                                    <div class="form-check form-check-inline">
-                                        <input class="form-check-input" type="radio" name="gender" id="female" value="female">
-                                        <label class="form-check-label" for="female">Mujer</label>
-                                    </div>
-                                    <div class="form-check form-check-inline">
-                                        <input class="form-check-input" type="radio" name="gender" id="other" value="other">
-                                        <label class="form-check-label" for="other">Otros</label>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="mb-3">
-                                <label for="phone" class="form-label">Teléfono (con prefijo)</label>
-                                <div class="input-group">
-                                    <span class="input-group-text">+</span>
-                                    <input type="text" class="form-control" id="prefix" placeholder="Prefijo" required>
-                                    <input type="tel" class="form-control" id="phone" placeholder="Número" required>
-                                </div>
-                            </div>
-                            <div class="mb-3">
-                                <label for="password" class="form-label">Contraseña</label>
-                                <input type="password" class="form-control" id="password" required>
-                                <div class="form-text">6 letras (primera mayúscula), 4 números, 2 símbolos (@#&)</div>
-                            </div>
-                            <div class="mb-3">
-                                <label for="confirmPassword" class="form-label">Confirmar contraseña</label>
-                                <input type="password" class="form-control" id="confirmPassword" required>
-                            </div>
-                            <div class="d-grid gap-2 mb-3">
-                                <button type="submit" class="btn btn-primary btn-lg">Registrarse</button>
-                            </div>
-                            <div class="text-center">
-                                <p>¿Ya tienes cuenta? <a href="#" id="login-link">Inicia sesión</a></p>
-                            </div>
-                        </form>
-                        
-                        <div class="text-center mt-4">
-                            <button class="btn btn-outline-secondary" id="help-btn">
-                                <i class="bi bi-question-circle me-2"></i>AYUDA
-                            </button>
-                        </div>
-                        
-                        <!-- Panel de Ayuda -->
-                        <div class="card mt-4 collapse" id="help-panel">
-                            <div class="card-header bg-info text-white">
-                                <h5 class="mb-0">Soporte y Ayuda</h5>
-                            </div>
-                            <div class="card-body">
-                                <div class="d-grid gap-2">
-                                    <button class="btn btn-outline-primary" id="email-help-btn">
-                                        <i class="bi bi-envelope me-2"></i>Enviar consulta por Email
-                                    </button>
-                                    <button class="btn btn-outline-success" id="whatsapp-help-btn">
-                                        <i class="bi bi-whatsapp me-2"></i>Enviar consulta por WhatsApp
-                                    </button>
-                                </div>
-                                
-                                <!-- Formulario de Email -->
-                                <div class="mt-3 collapse" id="email-help-form">
-                                    <div class="mb-3">
-                                        <label for="help-name" class="form-label">Nombre completo</label>
-                                        <input type="text" class="form-control" id="help-name" required>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="help-email" class="form-label">Email para respuesta</label>
-                                        <input type="email" class="form-control" id="help-email" required>
-                                    </div>
-                                    <button class="btn btn-primary w-100" id="send-email-btn">
-                                        Enviar al desarrollador
-                                    </button>
-                                </div>
-                                
-                                <!-- Formulario de WhatsApp -->
-                                <div class="mt-3 collapse" id="whatsapp-help-form">
-                                    <div class="mb-3">
-                                        <label for="whatsapp-name" class="form-label">Nombre completo</label>
-                                        <input type="text" class="form-control" id="whatsapp-name" required>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="whatsapp-number" class="form-label">Número de WhatsApp</label>
-                                        <input type="tel" class="form-control" id="whatsapp-number" required>
-                                    </div>
-                                    <button class="btn btn-success w-100" id="send-whatsapp-btn">
-                                        Enviar al desarrollador
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+    <div class="app-container">
+        <!-- Encabezado con logo y nombre de facultad -->
+        <div class="header">
+            <div class="logo-container">
+                <i class="fas fa-university logo-placeholder"></i>
             </div>
+            <h1 class="faculty-name">Facultad de Ciencias Económicas</h1>
+            <p class="faculty-info"><i class="fas fa-envelope"></i> facultad@unge.edu.gq | <i class="fas fa-phone"></i> +240 222 123 456</p>
+            <p class="faculty-info">Año Académico: 2023-2024</p>
         </div>
         
-        <!-- Vista de inicio de sesión (oculta inicialmente) -->
-        <div class="row justify-content-center d-none" id="login-view">
-            <div class="col-lg-6">
-                <div class="card shadow-lg">
-                    <div class="card-header text-center py-3">
-                        <h2 class="app-title">Inicie la sesión en <span class="app-title">mYpuB</span></h2>
-                    </div>
-                    <div class="card-body p-4">
-                        <form id="login-form">
-                            <div class="mb-3">
-                                <label for="login-email" class="form-label">Correo electrónico</label>
-                                <input type="email" class="form-control" id="login-email" required>
-                            </div>
-                            <div class="mb-3">
-                                <label for="login-password" class="form-label">Contraseña</label>
-                                <input type="password" class="form-control" id="login-password" required>
-                            </div>
-                            <div class="d-grid gap-2 mb-3">
-                                <button type="submit" class="btn btn-primary btn-lg">Iniciar sesión</button>
-                            </div>
-                            <div class="text-center">
-                                <p>¿No tienes cuenta? <a href="#" id="register-link">Regístrate</a></p>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Vista principal (oculta inicialmente) -->
-        <div class="d-none" id="main-app-view">
-            <!-- Barra de navegación -->
-            <nav class="navbar navbar-expand-lg navbar-dark mb-4" style="background: linear-gradient(to right, #4e54c8, #8f94fb);">
-                <div class="container-fluid">
-                    <a class="navbar-brand app-title" href="#">
-                        <i class="bi bi-cloud-arrow-up-fill me-2"></i>mYpuB
-                    </a>
-                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                        <span class="navbar-toggler-icon"></span>
-                    </button>
-                    <div class="collapse navbar-collapse" id="navbarNav">
-                        <ul class="navbar-nav me-auto">
-                            <li class="nav-item">
-                                <a class="nav-link" href="#" data-view="upload"><i class="bi bi-cloud-arrow-up me-1"></i> SUBIR TU</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="#" data-view="gallery"><i class="bi bi-images me-1"></i> GALERÍA</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="#" data-view="share"><i class="bi bi-share me-1"></i> COMPARTIR</a>
-                            </li>
-                            <li class="nav-item d-none" id="user-management-nav">
-                                <a class="nav-link" href="#" data-view="users"><i class="bi bi-people me-1"></i> GESTIÓN DE USUARIOS</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="#" data-view="info"><i class="bi bi-info-circle me-1"></i> INFÓRMATE</a>
-                            </li>
-                        </ul>
-                        <div class="d-flex align-items-center">
-                            <div class="user-avatar me-2" id="user-avatar">U</div>
-                            <div class="text-white me-3" id="user-name">Usuario</div>
-                            <button class="btn btn-outline-light btn-sm" id="logout-btn">
-                                <i class="bi bi-box-arrow-right"></i>
+        <!-- Navegación principal -->
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+            <div class="container-fluid">
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="mainNav">
+                    <ul class="navbar-nav me-auto">
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" data-module="dashboard"><i class="fas fa-home"></i> Inicio</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" data-module="configuration"><i class="fas fa-cog"></i> Configuración</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" data-module="secretariat"><i class="fas fa-users-cog"></i> Secretaría General</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" data-module="departments"><i class="fas fa-building"></i> Departamentos</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" data-module="control"><i class="fas fa-shield-alt"></i> Control</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" data-module="info"><i class="fas fa-info-circle"></i> Infórmate</a>
+                        </li>
+                    </ul>
+                    <div class="d-flex">
+                        <div class="dropdown">
+                            <button class="btn btn-outline-light dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown">
+                                <i class="fas fa-user-circle me-2"></i>Admin
                             </button>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li><a class="dropdown-item" href="#"><i class="fas fa-user me-2"></i>Perfil</a></li>
+                                <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i>Configuración</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item text-danger" href="#"><i class="fas fa-sign-out-alt me-2"></i>Cerrar Sesión</a></li>
+                            </ul>
                         </div>
                     </div>
                 </div>
-            </nav>
-            
-            <!-- Mensaje de bienvenida -->
-            <div class="alert welcome-message mb-4">
-                <h4 class="alert-heading" id="welcome-message">Bienvenido a <span class="app-title">mYpuB</span></h4>
             </div>
-            
-            <!-- Indicador de almacenamiento -->
-            <div class="card mb-4">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <span>Almacenamiento utilizado</span>
-                        <span><strong id="storage-used">0</strong> MB de 15,000 MB</span>
+        </nav>
+        
+        <!-- Contenido principal -->
+        <div class="container-fluid module-container">
+            <!-- Módulo: Dashboard -->
+            <div id="dashboard-module">
+                <div class="row mb-4">
+                    <div class="col-md-3">
+                        <div class="stat-card">
+                            <i class="fas fa-building fa-2x"></i>
+                            <div class="stat-number">7</div>
+                            <div class="stat-label">Departamentos</div>
+                        </div>
                     </div>
-                    <div class="storage-indicator">
-                        <div class="storage-progress" id="storage-progress"></div>
+                    <div class="col-md-3">
+                        <div class="stat-card">
+                            <i class="fas fa-folder fa-2x"></i>
+                            <div class="stat-number">24</div>
+                            <div class="stat-label">Carpetas</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-card">
+                            <i class="fas fa-file-pdf fa-2x"></i>
+                            <div class="stat-number">128</div>
+                            <div class="stat-label">Documentos</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-card">
+                            <i class="fas fa-users fa-2x"></i>
+                            <div class="stat-number">42</div>
+                            <div class="stat-label">Usuarios</div>
+                        </div>
                     </div>
                 </div>
-            </div>
-            
-            <!-- Vista de SUBIR TU -->
-            <div class="view" id="upload-view">
-                <div class="card mb-4">
-                    <div class="card-header">
-                        <h4 class="mb-0"><i class="bi bi-cloud-arrow-up me-2"></i>Subir archivos multimedia</h4>
+                
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="card module-card">
+                            <div class="module-header">
+                                <i class="fas fa-history me-2"></i> Actividad Reciente
+                            </div>
+                            <div class="module-content">
+                                <div class="log-entry">
+                                    <span class="badge admin-badge">Admin</span>
+                                    <strong>Admin User</strong> subió el archivo <strong>plan_estudios.pdf</strong> en el departamento <strong>Informática de Gestión</strong> 
+                                    <span class="text-muted">- Hoy a las 10:30</span>
+                                </div>
+                                <div class="log-entry deletion">
+                                    <span class="badge department-badge">Departamento</span>
+                                    <strong>Jefe Informática</strong> eliminó el archivo <strong>antiguo_reglamento.pdf</strong> en el departamento <strong>Informática de Gestión</strong> 
+                                    <span class="text-muted">- Hoy a las 09:15</span>
+                                </div>
+                                <div class="log-entry">
+                                    <span class="badge user-badge">Usuario</span>
+                                    <strong>Estudiante Ejemplo</strong> descargó el archivo <strong>calendario_academico.pdf</strong> en el departamento <strong>Secretaría General</strong> 
+                                    <span class="text-muted">- Ayer a las 16:45</span>
+                                </div>
+                                <div class="log-entry">
+                                    <span class="badge secretariat-badge">Secretaría</span>
+                                    <strong>Secretaría General</strong> creó el departamento <strong>Economía Aplicada</strong> 
+                                    <span class="text-muted">- Ayer a las 14:20</span>
+                                </div>
+                                <div class="log-entry">
+                                    <span class="badge department-badge">Departamento</span>
+                                    <strong>Jefe Contabilidad</strong> renombró el archivo <strong>nuevas_directrices.pdf</strong> en el departamento <strong>Contabilidad</strong> 
+                                    <span class="text-muted">- 12/05/2023 a las 11:10</span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="card-body">
-                        <div class="upload-area mb-4" id="drop-area">
-                            <i class="bi bi-cloud-arrow-up file-icon"></i>
-                            <h5>Arrastra y suelta tus archivos aquí</h5>
-                            <p class="text-muted">o</p>
-                            <button class="btn btn-primary" id="browse-btn">
-                                <i class="bi bi-folder2-open me-2"></i>Seleccionar archivos
-                            </button>
-                            <input type="file" id="file-input" multiple class="d-none" accept="image/*,video/*">
-                            <div class="mt-3 text-muted">
-                                Formatos soportados: JPG, PNG, GIF, MP4, AVI, MOV
+                    <div class="col-md-4">
+                        <div class="card module-card mb-4">
+                            <div class="module-header">
+                                <i class="fas fa-building me-2"></i> Departamentos
+                            </div>
+                            <div class="module-content">
+                                <div class="d-flex flex-wrap">
+                                    <span class="badge bg-primary department-badge">Informática de Gestión</span>
+                                    <span class="badge bg-primary department-badge">Contabilidad</span>
+                                    <span class="badge bg-primary department-badge">Economía</span>
+                                    <span class="badge bg-primary department-badge">Administración</span>
+                                    <span class="badge bg-primary department-badge">Finanzas</span>
+                                    <span class="badge bg-primary department-badge">Estadística</span>
+                                    <span class="badge bg-primary department-badge">Economía Aplicada</span>
+                                </div>
                             </div>
                         </div>
                         
-                        <div class="mb-3">
-                            <label for="folder-select" class="form-label">Guardar en carpeta:</label>
-                            <div class="d-flex">
-                                <select class="form-select me-2" id="folder-select">
-                                    <option value="root">Raíz</option>
-                                </select>
-                                <button class="btn btn-outline-primary" id="new-folder-btn">
-                                    <i class="bi bi-folder-plus"></i> Nueva Carpeta
+                        <div class="card module-card">
+                            <div class="module-header">
+                                <i class="fas fa-tasks me-2"></i> Acciones Rápidas
+                            </div>
+                            <div class="module-content">
+                                <button class="btn btn-primary w-100 mb-2">
+                                    <i class="fas fa-plus-circle me-2"></i>Nuevo Departamento
+                                </button>
+                                <button class="btn btn-secondary w-100 mb-2">
+                                    <i class="fas fa-folder-plus me-2"></i>Crear Carpeta
+                                </button>
+                                <button class="btn btn-success w-100">
+                                    <i class="fas fa-file-upload me-2"></i>Subir Documento
                                 </button>
                             </div>
                         </div>
-                        
-                        <div class="mb-3">
-                            <label class="form-label">Visibilidad:</label>
-                            <div>
-                                <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" name="visibility" id="public" value="public" checked>
-                                    <label class="form-check-label" for="public">Público</label>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Módulo: Configuración -->
+            <div id="configuration-module" class="hidden">
+                <div class="card module-card">
+                    <div class="module-header">
+                        <i class="fas fa-cog me-2"></i> Configuración de la Facultad
+                    </div>
+                    <div class="module-content">
+                        <form>
+                            <div class="row mb-4">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label">Nombre de la Facultad</label>
+                                        <input type="text" class="form-control" value="Facultad de Ciencias Económicas, Gestión y Administración">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Email de la Facultad</label>
+                                        <input type="email" class="form-control" value="facultad@unge.edu.gq">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Teléfono de la Facultad</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text">+240</span>
+                                            <input type="tel" class="form-control" value="222123456">
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Año Académico</label>
+                                        <select class="form-select">
+                                            <option>2022-2023</option>
+                                            <option selected>2023-2024</option>
+                                            <option>2024-2025</option>
+                                        </select>
+                                    </div>
                                 </div>
-                                <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" name="visibility" id="private" value="private">
-                                    <label class="form-check-label" for="private">Privado</label>
+                                <div class="col-md-6">
+                                    <div class="mb-3 text-center">
+                                        <label class="form-label">Logotipo de la Universidad</label>
+                                        <div class="border rounded p-4 text-center mb-3" style="height: 250px; background-color: #f8f9fa;">
+                                            <i class="fas fa-university fa-5x text-secondary mt-5"></i>
+                                            <p class="mt-3">Logotipo actual</p>
+                                        </div>
+                                        <input type="file" class="form-control">
+                                        <div class="form-text">Formatos permitidos: JPG, PNG. Tamaño máximo: 2MB</div>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        
-                        <div class="d-grid">
-                            <button class="btn btn-success" id="upload-btn" disabled>
-                                <i class="bi bi-upload me-2"></i>Subir Archivos
+                            <div class="d-flex justify-content-end">
+                                <button type="button" class="btn btn-primary"><i class="fas fa-save me-2"></i>Guardar Cambios</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Módulo: Secretaría General -->
+            <div id="secretariat-module" class="hidden">
+                <div class="card module-card">
+                    <div class="module-header">
+                        <i class="fas fa-users-cog me-2"></i> Gestión de Departamentos
+                    </div>
+                    <div class="module-content">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h5>Departamentos Existentes</h5>
+                            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addDepartmentModal">
+                                <i class="fas fa-plus me-2"></i>Nuevo Departamento
                             </button>
                         </div>
                         
-                        <div class="progress mt-3 d-none" id="upload-progress">
-                            <div class="progress-bar" role="progressbar" style="width: 0%"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Vista de GALERÍA -->
-            <div class="view d-none" id="gallery-view">
-                <div class="card mb-4">
-                    <div class="card-header">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <h4 class="mb-0"><i class="bi bi-images me-2"></i>Galería de archivos</h4>
-                            <div>
-                                <input type="text" class="form-control form-control-sm" id="search-files" placeholder="Buscar archivos...">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="card-body">
-                        <div class="mb-4">
-                            <h5><i class="bi bi-folder2 me-2 folder-icon"></i>Carpetas</h5>
-                            <div class="row" id="folders-container">
-                                <!-- Las carpetas se generarán dinámicamente aquí -->
-                            </div>
-                        </div>
-                        
-                        <div>
-                            <h5><i class="bi bi-collection me-2"></i>Archivos recientes</h5>
-                            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4" id="files-container">
-                                <!-- Los archivos se generarán dinámicamente aquí -->
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Vista de COMPARTIR -->
-            <div class="view d-none" id="share-view">
-                <div class="card mb-4">
-                    <div class="card-header">
-                        <h4 class="mb-0"><i class="bi bi-share me-2"></i>Compartir archivos</h4>
-                    </div>
-                    <div class="card-body">
                         <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <div class="card h-100">
-                                    <div class="card-header bg-light">
-                                        <h5 class="mb-0">Seleccionar usuario</h5>
+                            <div class="col-md-4">
+                                <div class="folder-card">
+                                    <div class="d-flex justify-content-between">
+                                        <h6>Informática de Gestión Empresarial</h6>
+                                        <span class="badge bg-info">15 carpetas</span>
                                     </div>
-                                    <div class="card-body">
-                                        <div class="mb-3">
-                                            <label for="user-search" class="form-label">Buscar usuarios:</label>
-                                            <input type="text" class="form-control" id="user-search" placeholder="Buscar por nombre o email">
-                                        </div>
-                                        <div class="list-group" id="users-list" style="max-height: 300px; overflow-y: auto;">
-                                            <!-- Usuarios se generarán dinámicamente aquí -->
-                                        </div>
+                                    <div class="d-flex justify-content-end mt-2">
+                                        <button class="btn btn-sm btn-outline-primary me-1">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-danger">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-6">
-                                <div class="card h-100">
+                            <div class="col-md-4">
+                                <div class="folder-card">
+                                    <div class="d-flex justify-content-between">
+                                        <h6>Contabilidad y Auditoría</h6>
+                                        <span class="badge bg-info">9 carpetas</span>
+                                    </div>
+                                    <div class="d-flex justify-content-end mt-2">
+                                        <button class="btn btn-sm btn-outline-primary me-1">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-danger">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="folder-card">
+                                    <div class="d-flex justify-content-between">
+                                        <h6>Economía y Finanzas</h6>
+                                        <span class="badge bg-info">12 carpetas</span>
+                                    </div>
+                                    <div class="d-flex justify-content-end mt-2">
+                                        <button class="btn btn-sm btn-outline-primary me-1">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-danger">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="folder-card">
+                                    <div class="d-flex justify-content-between">
+                                        <h6>Administración de Empresas</h6>
+                                        <span class="badge bg-info">7 carpetas</span>
+                                    </div>
+                                    <div class="d-flex justify-content-end mt-2">
+                                        <button class="btn btn-sm btn-outline-primary me-1">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-danger">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="folder-card">
+                                    <div class="d-flex justify-content-between">
+                                        <h6>Estadística Aplicada</h6>
+                                        <span class="badge bg-info">6 carpetas</span>
+                                    </div>
+                                    <div class="d-flex justify-content-end mt-2">
+                                        <button class="btn btn-sm btn-outline-primary me-1">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-danger">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="folder-card">
+                                    <div class="d-flex justify-content-between">
+                                        <h6>Marketing y Comunicación</h6>
+                                        <span class="badge bg-info">8 carpetas</span>
+                                    </div>
+                                    <div class="d-flex justify-content-end mt-2">
+                                        <button class="btn btn-sm btn-outline-primary me-1">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-danger">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Módulo: Departamentos -->
+            <div id="departments-module" class="hidden">
+                <div class="card module-card">
+                    <div class="module-header">
+                        <i class="fas fa-building me-2"></i> Departamento: Informática de Gestión Empresarial
+                    </div>
+                    <div class="module-content">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h5>Carpetas del Departamento</h5>
+                            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addFolderModal">
+                                <i class="fas fa-folder-plus me-2"></i>Nueva Carpeta
+                            </button>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="folder-card">
+                                    <div class="d-flex justify-content-between">
+                                        <h6>Planificación Académica 2023</h6>
+                                        <span class="badge bg-info">8 archivos</span>
+                                    </div>
+                                    <p class="text-muted small mb-2">Año: 2023-2024</p>
+                                    <div class="d-flex justify-content-end mt-2">
+                                        <button class="btn btn-sm btn-outline-primary me-1">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-danger">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-success ms-1">
+                                            <i class="fas fa-eye"></i> Ver
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="folder-card">
+                                    <div class="d-flex justify-content-between">
+                                        <h6>Reglamentos Internos</h6>
+                                        <span class="badge bg-info">5 archivos</span>
+                                    </div>
+                                    <p class="text-muted small mb-2">Año: 2022-2023</p>
+                                    <div class="d-flex justify-content-end mt-2">
+                                        <button class="btn btn-sm btn-outline-primary me-1">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-danger">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-success ms-1">
+                                            <i class="fas fa-eye"></i> Ver
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="folder-card">
+                                    <div class="d-flex justify-content-between">
+                                        <h6>Proyectos de Investigación</h6>
+                                        <span class="badge bg-info">12 archivos</span>
+                                    </div>
+                                    <p class="text-muted small mb-2">Año: 2023-2024</p>
+                                    <div class="d-flex justify-content-end mt-2">
+                                        <button class="btn btn-sm btn-outline-primary me-1">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-danger">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-success ms-1">
+                                            <i class="fas fa-eye"></i> Ver
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <hr class="my-4">
+                        
+                        <h5 class="mb-3">Documentos en Carpeta: Planificación Académica 2023</h5>
+                        
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div class="d-flex">
+                                <input type="text" class="form-control me-2" placeholder="Buscar documento..." style="width: 250px;">
+                                <button class="btn btn-outline-secondary me-2"><i class="fas fa-search"></i></button>
+                            </div>
+                            <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#uploadFileModal">
+                                <i class="fas fa-file-upload me-2"></i>Subir Documento
+                            </button>
+                        </div>
+                        
+                        <div class="list-group">
+                            <div class="list-group-item">
+                                <div class="row align-items-center">
+                                    <div class="col-md-1">
+                                        <i class="file-icon fas fa-file-pdf text-danger fa-2x"></i>
+                                    </div>
+                                    <div class="col-md-5">
+                                        <strong>Plan_Estudios_2023.pdf</strong>
+                                        <div class="text-muted small">Subido el 10/05/2023 por Admin</div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <span class="badge bg-success">Académico</span>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <span class="text-muted">1.2 MB</span>
+                                    </div>
+                                    <div class="col-md-2 action-buttons">
+                                        <button class="btn btn-sm btn-outline-primary" title="Renombrar">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-success" title="Descargar">
+                                            <i class="fas fa-download"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-info" title="Imprimir">
+                                            <i class="fas fa-print"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-danger" title="Eliminar">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="list-group-item">
+                                <div class="row align-items-center">
+                                    <div class="col-md-1">
+                                        <i class="file-icon fas fa-file-pdf text-danger fa-2x"></i>
+                                    </div>
+                                    <div class="col-md-5">
+                                        <strong>Calendario_Academico_2023-2024.pdf</strong>
+                                        <div class="text-muted small">Subido el 08/05/2023 por Secretaría</div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <span class="badge bg-primary">Calendario</span>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <span class="text-muted">0.8 MB</span>
+                                    </div>
+                                    <div class="col-md-2 action-buttons">
+                                        <button class="btn btn-sm btn-outline-primary" title="Renombrar">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-success" title="Descargar">
+                                            <i class="fas fa-download"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-info" title="Imprimir">
+                                            <i class="fas fa-print"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-danger" title="Eliminar">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="list-group-item">
+                                <div class="row align-items-center">
+                                    <div class="col-md-1">
+                                        <i class="file-icon fas fa-file-pdf text-danger fa-2x"></i>
+                                    </div>
+                                    <div class="col-md-5">
+                                        <strong>Reglamento_Evaluaciones.pdf</strong>
+                                        <div class="text-muted small">Subido el 05/05/2023 por Jefe Depto</div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <span class="badge bg-warning">Reglamento</span>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <span class="text-muted">0.5 MB</span>
+                                    </div>
+                                    <div class="col-md-2 action-buttons">
+                                        <button class="btn btn-sm btn-outline-primary" title="Renombrar">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-success" title="Descargar">
+                                            <i class="fas fa-download"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-info" title="Imprimir">
+                                            <i class="fas fa-print"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-danger" title="Eliminar">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Módulo: Control -->
+            <div id="control-module" class="hidden">
+                <div class="card module-card">
+                    <div class="module-header">
+                        <i class="fas fa-shield-alt me-2"></i> Panel de Control y Auditoría
+                    </div>
+                    <div class="module-content">
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i> Este módulo registra todas las acciones realizadas en el sistema. Solo el Administrador tiene acceso a esta información.
+                        </div>
+                        
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h5>Registro de Actividades</h5>
+                            <div>
+                                <input type="date" class="form-control me-2 d-inline-block" style="width: auto;">
+                                <button class="btn btn-outline-primary me-2"><i class="fas fa-filter"></i> Filtrar</button>
+                                <button class="btn btn-outline-success"><i class="fas fa-file-export"></i> Exportar</button>
+                            </div>
+                        </div>
+                        
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Fecha/Hora</th>
+                                        <th>Usuario</th>
+                                        <th>Rol</th>
+                                        <th>Departamento</th>
+                                        <th>Acción</th>
+                                        <th>Detalles</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>23/05/2023 10:30</td>
+                                        <td>Admin User</td>
+                                        <td><span class="badge admin-badge">Admin</span></td>
+                                        <td>Informática de Gestión</td>
+                                        <td>Subida de archivo</td>
+                                        <td>Plan_Estudios_2023.pdf</td>
+                                    </tr>
+                                    <tr>
+                                        <td>23/05/2023 09:15</td>
+                                        <td>Jefe Informática</td>
+                                        <td><span class="badge department-badge">Departamento</span></td>
+                                        <td>Informática de Gestión</td>
+                                        <td>Eliminación de archivo</td>
+                                        <td>antiguo_reglamento.pdf</td>
+                                    </tr>
+                                    <tr>
+                                        <td>22/05/2023 16:45</td>
+                                        <td>Estudiante Ejemplo</td>
+                                        <td><span class="badge user-badge">Usuario</span></td>
+                                        <td>Secretaría General</td>
+                                        <td>Descarga de archivo</td>
+                                        <td>calendario_academico.pdf</td>
+                                    </tr>
+                                    <tr>
+                                        <td>22/05/2023 14:20</td>
+                                        <td>Secretaría General</td>
+                                        <td><span class="badge secretariat-badge">Secretaría</span></td>
+                                        <td>Sistema</td>
+                                        <td>Creación de departamento</td>
+                                        <td>Economía Aplicada</td>
+                                    </tr>
+                                    <tr>
+                                        <td>21/05/2023 11:10</td>
+                                        <td>Jefe Contabilidad</td>
+                                        <td><span class="badge department-badge">Departamento</span></td>
+                                        <td>Contabilidad</td>
+                                        <td>Renombrado de archivo</td>
+                                        <td>directrices.pdf → nuevas_directrices.pdf</td>
+                                    </tr>
+                                    <tr>
+                                        <td>20/05/2023 15:33</td>
+                                        <td>Admin User</td>
+                                        <td><span class="badge admin-badge">Admin</span></td>
+                                        <td>Sistema</td>
+                                        <td>Actualización de configuración</td>
+                                        <td>Año académico 2023-2024</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <nav>
+                            <ul class="pagination justify-content-center">
+                                <li class="page-item disabled"><a class="page-link" href="#">Anterior</a></li>
+                                <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                                <li class="page-item"><a class="page-link" href="#">2</a></li>
+                                <li class="page-item"><a class="page-link" href="#">3</a></li>
+                                <li class="page-item"><a class="page-link" href="#">Siguiente</a></li>
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Módulo: Infórmate -->
+            <div id="info-module" class="hidden">
+                <div class="card module-card">
+                    <div class="module-header">
+                        <i class="fas fa-info-circle me-2"></i> Información sobre la Aplicación
+                    </div>
+                    <div class="module-content">
+                        <div class="row">
+                            <div class="col-md-8">
+                                <h5 class="mb-3">Sistema de Gestión Universitaria</h5>
+                                <p>Esta aplicación ha sido diseñada para facilitar la gestión documental y administrativa de facultades universitarias y sus departamentos.</p>
+                                
+                                <div class="card mb-4">
                                     <div class="card-header bg-light">
-                                        <h5 class="mb-0">Seleccionar archivos</h5>
+                                        <i class="fas fa-question-circle me-2"></i> ¿Para qué sirve?
                                     </div>
                                     <div class="card-body">
+                                        <ul>
+                                            <li>Gestión centralizada de la configuración institucional</li>
+                                            <li>Creación y administración de departamentos académicos</li>
+                                            <li>Organización de documentos en carpetas protegidas por contraseña</li>
+                                            <li>Almacenamiento seguro de documentos PDF</li>
+                                            <li>Control de acceso basado en roles de usuario</li>
+                                            <li>Registro detallado de todas las acciones realizadas en el sistema</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                
+                                <div class="card mb-4">
+                                    <div class="card-header bg-light">
+                                        <i class="fas fa-book-open me-2"></i> ¿Cómo se utiliza?
+                                    </div>
+                                    <div class="card-body">
+                                        <ol>
+                                            <li><strong>Configuración inicial:</strong> Establece los datos básicos de la facultad (nombre, logo, contacto, año académico)</li>
+                                            <li><strong>Creación de departamentos:</strong> Desde la Secretaría General, crea los departamentos académicos</li>
+                                            <li><strong>Gestión de carpetas:</strong> Cada departamento puede crear carpetas organizadas por año académico y protegidas con contraseña</li>
+                                            <li><strong>Subida de documentos:</strong> En cada carpeta, se pueden subir documentos PDF que serán gestionados por el departamento</li>
+                                            <li><strong>Control de acceso:</strong> Los usuarios con diferentes roles tendrán distintos niveles de acceso a la información</li>
+                                            <li><strong>Auditoría:</strong> Todas las acciones quedan registradas en el módulo de control para supervisión</li>
+                                        </ol>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="card">
+                                    <div class="card-header bg-light">
+                                        <i class="fas fa-user-tie me-2"></i> Información del Desarrollador
+                                    </div>
+                                    <div class="card-body text-center">
                                         <div class="mb-3">
-                                            <label for="file-search" class="form-label">Buscar archivos:</label>
-                                            <input type="text" class="form-control" id="file-search" placeholder="Buscar archivos">
+                                            <i class="fas fa-user-circle fa-5x text-primary"></i>
                                         </div>
-                                        <div class="list-group" id="files-list" style="max-height: 300px; overflow-y: auto;">
-                                            <!-- Archivos se generarán dinámicamente aquí -->
-                                        </div>
-                                        <div class="d-grid mt-3">
-                                            <button class="btn btn-primary" id="share-files-btn" disabled>
-                                                <i class="bi bi-send me-2"></i>Compartir archivos seleccionados
+                                        <h5>Tarciano ENZEMA NCHAMA</h5>
+                                        <p class="text-muted">Desarrollador de Software</p>
+                                        
+                                        <hr>
+                                        
+                                        <p><i class="fas fa-graduation-cap me-2"></i> Finalista Universitario</p>
+                                        <p><i class="fas fa-university me-2"></i> UNGE - Universidad Nacional de Guinea Ecuatorial</p>
+                                        <p><i class="fas fa-building me-2"></i> Facultad de Ciencias Económicas, Gestión y Administración</p>
+                                        <p><i class="fas fa-laptop-code me-2"></i> Departamento: Informática de Gestión Empresarial</p>
+                                        
+                                        <hr>
+                                        
+                                        <h6 class="mt-3">Contacto:</h6>
+                                        <p><i class="fas fa-envelope me-2"></i> enzemajr@gmail.com</p>
+                                        <p><i class="fas fa-phone me-2"></i> +240 222 123 456</p>
+                                        
+                                        <div class="mt-3">
+                                            <button class="btn btn-sm btn-outline-primary me-1">
+                                                <i class="fab fa-linkedin"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-info me-1">
+                                                <i class="fab fa-twitter"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-dark">
+                                                <i class="fab fa-github"></i>
                                             </button>
                                         </div>
                                     </div>
@@ -580,1227 +970,217 @@
                     </div>
                 </div>
             </div>
-            
-            <!-- Vista de GESTIÓN DE USUARIOS -->
-            <div class="view d-none" id="users-view">
-                <div class="card mb-4">
-                    <div class="card-header">
-                        <h4 class="mb-0"><i class="bi bi-people me-2"></i>Gestión de usuarios</h4>
+        </div>
+        
+        <!-- Footer -->
+        <div class="footer">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-6 text-md-start">
+                        <p>Sistema de Gestión Universitaria v1.0</p>
+                        <p>© 2023 Facultad de Ciencias Económicas, UNGE. Todos los derechos reservados.</p>
                     </div>
-                    <div class="card-body">
-                        <div class="alert alert-warning">
-                            <i class="bi bi-shield-lock me-2"></i>Esta sección solo está disponible para el desarrollador
-                        </div>
-                        <div class="table-responsive">
-                            <table class="table table-hover">
-                                <thead class="table-light">
-                                    <tr>
-                                        <th>Nombre</th>
-                                        <th>Email</th>
-                                        <th>Teléfono</th>
-                                        <th>Estado</th>
-                                        <th>Acciones</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="users-table">
-                                    <!-- Usuarios se generarán dinámicamente aquí -->
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Vista de INFÓRMATE -->
-            <div class="view d-none" id="info-view">
-                <div class="card mb-4">
-                    <div class="card-header">
-                        <h4 class="mb-0"><i class="bi bi-info-circle me-2"></i>Acerca de mYpuB</h4>
-                    </div>
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <h5 class="mb-3"><i class="bi bi-question-circle me-2"></i>¿Qué es mYpuB?</h5>
-                                <p>mYpuB es una plataforma para compartir y gestionar archivos multimedia (imágenes y videos) con control de visibilidad y permisos avanzados.</p>
-                                
-                                <h5 class="mt-4 mb-3"><i class="bi bi-gear me-2"></i>¿Cómo funciona?</h5>
-                                <ol>
-                                    <li>Regístrate con tu cuenta de Gmail</li>
-                                    <li>Sube tus imágenes y videos</li>
-                                    <li>Organiza en carpetas públicas o privadas</li>
-                                    <li>Comparte con otros usuarios</li>
-                                    <li>Interactúa con el contenido de otros usuarios</li>
-                                </ol>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="card border-primary">
-                                    <div class="card-header bg-primary text-white">
-                                        <h5 class="mb-0"><i class="bi bi-person-badge me-2"></i>Desarrollador</h5>
-                                    </div>
-                                    <div class="card-body">
-                                        <div class="d-flex align-items-center mb-3">
-                                            <div class="user-avatar me-3">TE</div>
-                                            <div>
-                                                <h5 class="mb-0">Tarciano ENZEMA NCHAMA</h5>
-                                                <span class="developer-badge">Desarrollador</span>
-                                            </div>
-                                        </div>
-                                        <ul class="list-group list-group-flush">
-                                            <li class="list-group-item">
-                                                <i class="bi bi-building me-2"></i>Finalista universitario de la UNGE
-                                            </li>
-                                            <li class="list-group-item">
-                                                <i class="bi bi-book me-2"></i>Facultad: Ciencias económicas gestión y administración
-                                            </li>
-                                            <li class="list-group-item">
-                                                <i class="bi bi-journal me-2"></i>Departamento: Informática de gestión empresarial
-                                            </li>
-                                            <li class="list-group-item">
-                                                <i class="bi bi-envelope me-2"></i>Contacto: enzemajr@gmail.com
-                                            </li>
-                                            <li class="list-group-item">
-                                                <i class="bi bi-calendar me-2"></i>Fecha final del desarrollo: 06/07/2025
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                    <div class="col-md-6 text-md-end">
+                        <p>Desarrollado por: Tarciano Enzema Nchama</p>
+                        <p><i class="fas fa-envelope me-1"></i> enzemajr@gmail.com</p>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-
-    <!-- Modal para nueva carpeta -->
-    <div class="modal fade" id="folderModal" tabindex="-1">
+    
+    <!-- Modal: Añadir Departamento -->
+    <div class="modal fade" id="addDepartmentModal" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Crear nueva carpeta</h5>
+                    <h5 class="modal-title">Crear Nuevo Departamento</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
-                    <div class="mb-3">
-                        <label for="folder-name" class="form-label">Nombre de la carpeta</label>
-                        <input type="text" class="form-control" id="folder-name" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Visibilidad:</label>
-                        <div>
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" name="folder-visibility" id="folder-public" value="public" checked>
-                                <label class="form-check-label" for="folder-public">Pública</label>
-                            </div>
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" name="folder-visibility" id="folder-private" value="private">
-                                <label class="form-check-label" for="folder-private">Privada</label>
-                            </div>
+                    <form>
+                        <div class="mb-3">
+                            <label class="form-label">Nombre del Departamento</label>
+                            <input type="text" class="form-control" placeholder="Ej: Informática de Gestión Empresarial">
                         </div>
-                    </div>
+                        <div class="mb-3">
+                            <label class="form-label">Descripción (Opcional)</label>
+                            <textarea class="form-control" rows="3" placeholder="Breve descripción del departamento"></textarea>
+                        </div>
+                    </form>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="button" class="btn btn-primary" id="create-folder-btn">Crear carpeta</button>
+                    <button type="button" class="btn btn-primary">Crear Departamento</button>
                 </div>
             </div>
         </div>
     </div>
-
-    <!-- Modal para detalles de archivo -->
-    <div class="modal fade" id="fileModal" tabindex="-1">
-        <div class="modal-dialog modal-lg">
+    
+    <!-- Modal: Añadir Carpeta -->
+    <div class="modal fade" id="addFolderModal" tabindex="-1">
+        <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="file-modal-title">Detalles del archivo</h5>
+                    <h5 class="modal-title">Crear Nueva Carpeta</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="media-container" id="file-modal-preview">
-                                <i class="bi bi-file-earmark-image file-icon"></i>
+                    <form>
+                        <div class="mb-3">
+                            <label class="form-label">Nombre de la Carpeta</label>
+                            <input type="text" class="form-control" placeholder="Ej: Planificación Académica 2023">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Año Académico</label>
+                            <select class="form-select">
+                                <option>2022-2023</option>
+                                <option selected>2023-2024</option>
+                                <option>2024-2025</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Contraseña de Acceso</label>
+                            <div class="password-container">
+                                <input type="password" class="form-control" placeholder="Contraseña segura">
+                                <span class="toggle-password"><i class="fas fa-eye"></i></span>
+                            </div>
+                            <div class="form-text">Mínimo 8 caracteres, con letras, números y símbolos</div>
+                            <div class="password-strength mt-2">
+                                <div class="strength-meter" style="width: 70%; background-color: #2ecc71;"></div>
                             </div>
                         </div>
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="file-title" class="form-label">Título</label>
-                                <input type="text" class="form-control" id="file-title">
-                            </div>
-                            <div class="mb-3">
-                                <label for="file-description" class="form-label">Descripción</label>
-                                <textarea class="form-control" id="file-description" rows="3"></textarea>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Visibilidad:</label>
-                                <div>
-                                    <div class="form-check form-check-inline">
-                                        <input class="form-check-input" type="radio" name="file-visibility" id="file-public" value="public">
-                                        <label class="form-check-label" for="file-public">Público</label>
-                                    </div>
-                                    <div class="form-check form-check-inline">
-                                        <input class="form-check-input" type="radio" name="file-visibility" id="file-private" value="private">
-                                        <label class="form-check-label" for="file-private">Privado</label>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Likes:</label>
-                                <div class="d-flex align-items-center">
-                                    <span id="file-likes-count">0</span>
-                                    <button class="btn btn-link like-btn ms-2" id="file-like-btn">
-                                        <i class="bi bi-heart"></i>
-                                    </button>
-                                </div>
-                            </div>
-                            <div class="d-flex justify-content-between mt-4">
-                                <button class="btn btn-outline-danger" id="delete-file-btn">
-                                    <i class="bi bi-trash me-2"></i>Eliminar
-                                </button>
-                                <button class="btn btn-primary" id="save-file-btn">
-                                    <i class="bi bi-save me-2"></i>Guardar cambios
-                                </button>
-                            </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary">Crear Carpeta</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal: Subir Archivo -->
+    <div class="modal fade" id="uploadFileModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Subir Documento PDF</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="mb-3">
+                            <label class="form-label">Seleccionar archivo PDF</label>
+                            <input type="file" class="form-control" accept=".pdf">
+                            <div class="form-text">Tamaño máximo: 10MB</div>
                         </div>
-                    </div>
+                        <div class="mb-3">
+                            <label class="form-label">Nombre del documento</label>
+                            <input type="text" class="form-control" placeholder="Ej: Plan_Estudios_2023">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Etiquetas (Opcional)</label>
+                            <input type="text" class="form-control" placeholder="Ej: Académico, Oficial, 2023">
+                            <div class="form-text">Separe con comas las etiquetas</div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary">Subir Documento</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-    
     <script>
-        // Base de datos IndexedDB
-        const DB_NAME = 'mYpuB_DB';
-        const DB_VERSION = 1;
-        let db;
-        
-        // Almacenes de objetos
-        const USER_STORE = 'users';
-        const FOLDER_STORE = 'folders';
-        const FILE_STORE = 'files';
-        
-        // Estado de la aplicación
-        let currentUser = null;
-        let isDeveloper = false;
-        let selectedFiles = [];
-        let selectedUser = null;
-        let currentFile = null;
-        
-        // Límite de almacenamiento: 15 GB (15,000 MB)
-        const STORAGE_LIMIT_MB = 15000;
-        
-        // Inicializar la aplicación
-        document.addEventListener('DOMContentLoaded', initApp);
-        
-        function initApp() {
-            setupEventListeners();
-            initDB();
-            showRegisterView();
-        }
-        
-        // Configurar event listeners
-        function setupEventListeners() {
-            // Navegación entre vistas
-            document.getElementById('login-link').addEventListener('click', showLoginView);
-            document.getElementById('register-link').addEventListener('click', showRegisterView);
-            
-            // Formularios
-            document.getElementById('register-form').addEventListener('submit', registerUser);
-            document.getElementById('login-form').addEventListener('submit', loginUser);
-            document.getElementById('logout-btn').addEventListener('click', logout);
-            
-            // Ayuda
-            document.getElementById('help-btn').addEventListener('click', toggleHelpPanel);
-            document.getElementById('email-help-btn').addEventListener('click', showEmailHelpForm);
-            document.getElementById('whatsapp-help-btn').addEventListener('click', showWhatsAppHelpForm);
-            document.getElementById('send-email-btn').addEventListener('click', sendEmailHelp);
-            document.getElementById('send-whatsapp-btn').addEventListener('click', sendWhatsAppHelp);
-            
-            // Panel principal
-            document.querySelectorAll('.nav-link').forEach(link => {
-                link.addEventListener('click', e => {
-                    e.preventDefault();
-                    showView(e.target.getAttribute('data-view'));
-                });
-            });
-            
-            // Subida de archivos
-            document.getElementById('browse-btn').addEventListener('click', () => {
-                document.getElementById('file-input').click();
-            });
-            
-            document.getElementById('file-input').addEventListener('change', handleFileSelect);
-            
-            const dropArea = document.getElementById('drop-area');
-            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-                dropArea.addEventListener(eventName, preventDefaults, false);
-            });
-            
-            ['dragenter', 'dragover'].forEach(eventName => {
-                dropArea.addEventListener(eventName, highlight, false);
-            });
-            
-            ['dragleave', 'drop'].forEach(eventName => {
-                dropArea.addEventListener(eventName, unhighlight, false);
-            });
-            
-            dropArea.addEventListener('drop', handleDrop, false);
-            
-            document.getElementById('upload-btn').addEventListener('click', uploadFiles);
-            document.getElementById('new-folder-btn').addEventListener('click', showNewFolderModal);
-            document.getElementById('create-folder-btn').addEventListener('click', createFolder);
-            
-            // Compartir archivos
-            document.getElementById('share-files-btn').addEventListener('click', shareFiles);
-            
-            // Detalles de archivo
-            document.getElementById('save-file-btn').addEventListener('click', saveFileDetails);
-            document.getElementById('delete-file-btn').addEventListener('click', deleteFile);
-            document.getElementById('file-like-btn').addEventListener('click', toggleFileLike);
-        }
-        
-        // Funciones de la base de datos
-        function initDB() {
-            const request = indexedDB.open(DB_NAME, DB_VERSION);
-            
-            request.onerror = (event) => {
-                console.error('Error al abrir la base de datos:', event.target.error);
-            };
-            
-            request.onupgradeneeded = (event) => {
-                db = event.target.result;
+        // Navegación entre módulos
+        document.querySelectorAll('[data-module]').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
                 
-                // Crear almacén de usuarios
-                if (!db.objectStoreNames.contains(USER_STORE)) {
-                    const userStore = db.createObjectStore(USER_STORE, { keyPath: 'id', autoIncrement: true });
-                    userStore.createIndex('email', 'email', { unique: true });
-                }
-                
-                // Crear almacén de carpetas
-                if (!db.objectStoreNames.contains(FOLDER_STORE)) {
-                    const folderStore = db.createObjectStore(FOLDER_STORE, { keyPath: 'id', autoIncrement: true });
-                    folderStore.createIndex('userId', 'userId', { unique: false });
-                }
-                
-                // Crear almacén de archivos
-                if (!db.objectStoreNames.contains(FILE_STORE)) {
-                    const fileStore = db.createObjectStore(FILE_STORE, { keyPath: 'id', autoIncrement: true });
-                    fileStore.createIndex('userId', 'userId', { unique: false });
-                    fileStore.createIndex('folderId', 'folderId', { unique: false });
-                }
-            };
-            
-            request.onsuccess = (event) => {
-                db = event.target.result;
-                console.log('Base de datos inicializada correctamente');
-                
-                // Intentar autenticar al usuario si existe en localStorage
-                const savedUser = localStorage.getItem('currentUser');
-                if (savedUser) {
-                    const user = JSON.parse(savedUser);
-                    authenticateUser(user.email, user.password);
-                }
-            };
-        }
-        
-        // Funciones de vistas
-        function showRegisterView() {
-            document.getElementById('register-view').classList.remove('d-none');
-            document.getElementById('login-view').classList.add('d-none');
-            document.getElementById('main-app-view').classList.add('d-none');
-        }
-        
-        function showLoginView() {
-            document.getElementById('register-view').classList.add('d-none');
-            document.getElementById('login-view').classList.remove('d-none');
-            document.getElementById('main-app-view').classList.add('d-none');
-        }
-        
-        function showMainAppView() {
-            document.getElementById('register-view').classList.add('d-none');
-            document.getElementById('login-view').classList.add('d-none');
-            document.getElementById('main-app-view').classList.remove('d-none');
-            
-            // Actualizar información del usuario
-            document.getElementById('user-name').textContent = currentUser.fullName;
-            document.getElementById('user-avatar').textContent = currentUser.fullName.charAt(0);
-            
-            // Actualizar mensaje de bienvenida según el género
-            let welcomeMessage = '';
-            switch(currentUser.gender) {
-                case 'male':
-                    welcomeMessage = `Bienvenido a <span class="app-title">mYpuB</span> Sr. ${currentUser.fullName}`;
-                    break;
-                case 'female':
-                    welcomeMessage = `Bienvenida a <span class="app-title">mYpuB</span> Sra. ${currentUser.fullName}`;
-                    break;
-                default:
-                    welcomeMessage = `Gracias por utilizar <span class="app-title">mYpuB</span>`;
-            }
-            document.getElementById('welcome-message').innerHTML = welcomeMessage;
-            
-            // Mostrar gestión de usuarios solo para el desarrollador
-            document.getElementById('user-management-nav').classList.toggle('d-none', !isDeveloper);
-            
-            // Mostrar vista por defecto
-            showView('upload');
-            
-            // Cargar datos de la aplicación
-            loadFolders();
-            loadFiles();
-            loadUsers();
-            updateStorageIndicator();
-        }
-        
-        function showView(viewId) {
-            // Ocultar todas las vistas
-            document.querySelectorAll('.view').forEach(view => {
-                view.classList.add('d-none');
-            });
-            
-            // Mostrar la vista seleccionada
-            document.getElementById(`${viewId}-view`).classList.remove('d-none');
-            
-            // Actualizar navegación activa
-            document.querySelectorAll('.nav-link').forEach(link => {
-                link.classList.remove('active');
-                if (link.getAttribute('data-view') === viewId) {
-                    link.classList.add('active');
-                }
-            });
-            
-            // Cargar datos específicos de la vista
-            if (viewId === 'gallery') {
-                loadFolders();
-                loadFiles();
-            } else if (viewId === 'share') {
-                loadUsersForSharing();
-                loadFilesForSharing();
-            } else if (viewId === 'users') {
-                loadUsersForManagement();
-            }
-        }
-        
-        // Funciones de autenticación
-        function registerUser(e) {
-            e.preventDefault();
-            
-            const fullName = document.getElementById('fullName').value;
-            const email = document.getElementById('email').value;
-            const gender = document.querySelector('input[name="gender"]:checked').value;
-            const prefix = document.getElementById('prefix').value;
-            const phone = document.getElementById('phone').value;
-            const password = document.getElementById('password').value;
-            const confirmPassword = document.getElementById('confirmPassword').value;
-            
-            // Validaciones
-            if (!email.endsWith('@gmail.com')) {
-                alert('Por favor, utiliza una cuenta de Gmail válida.');
-                return;
-            }
-            
-            if (password !== confirmPassword) {
-                alert('Las contraseñas no coinciden.');
-                return;
-            }
-            
-            // Validar contraseña: 6 letras (primera mayúscula), 4 números, 2 símbolos (@#&)
-            const passwordRegex = /^[A-Z][a-z]{5}\d{4}[@#&]{2}$/;
-            if (!passwordRegex.test(password)) {
-                alert('La contraseña debe tener 6 letras (primera mayúscula), 4 números y 2 símbolos (@#&).');
-                return;
-            }
-            
-            // Crear objeto de usuario
-            const user = {
-                fullName,
-                email,
-                gender,
-                phone: `+${prefix}${phone}`,
-                password,
-                storageUsed: 0,
-                createdAt: new Date()
-            };
-            
-            // Guardar usuario en IndexedDB
-            const transaction = db.transaction([USER_STORE], 'readwrite');
-            const store = transaction.objectStore(USER_STORE);
-            
-            const request = store.add(user);
-            
-            request.onsuccess = () => {
-                alert('Registro exitoso. Ahora puedes iniciar sesión.');
-                showLoginView();
-                clearForm('register-form');
-            };
-            
-            request.onerror = (event) => {
-                console.error('Error al registrar usuario:', event.target.error);
-                alert('Error al registrar usuario. El email ya podría estar en uso.');
-            };
-        }
-        
-        function loginUser(e) {
-            e.preventDefault();
-            
-            const email = document.getElementById('login-email').value;
-            const password = document.getElementById('login-password').value;
-            
-            authenticateUser(email, password);
-        }
-        
-        function authenticateUser(email, password) {
-            const transaction = db.transaction([USER_STORE], 'readonly');
-            const store = transaction.objectStore(USER_STORE);
-            const index = store.index('email');
-            
-            const request = index.get(email);
-            
-            request.onsuccess = (event) => {
-                const user = event.target.result;
-                
-                if (!user) {
-                    alert('Usuario no encontrado.');
-                    return;
-                }
-                
-                if (user.password !== password) {
-                    alert('Contraseña incorrecta.');
-                    return;
-                }
-                
-                // Verificar si es el desarrollador
-                isDeveloper = (password === 'Enzema0097@&');
-                
-                // Guardar usuario en estado
-                currentUser = user;
-                
-                // Guardar en localStorage para persistencia
-                localStorage.setItem('currentUser', JSON.stringify({email, password}));
-                
-                // Mostrar la aplicación principal
-                showMainAppView();
-                
-                // Limpiar formulario
-                clearForm('login-form');
-            };
-            
-            request.onerror = (event) => {
-                console.error('Error al autenticar usuario:', event.target.error);
-                alert('Error al autenticar usuario.');
-            };
-        }
-        
-        function logout() {
-            currentUser = null;
-            isDeveloper = false;
-            localStorage.removeItem('currentUser');
-            showLoginView();
-        }
-        
-        // Funciones de ayuda
-        function toggleHelpPanel() {
-            const helpPanel = document.getElementById('help-panel');
-            const bsCollapse = new bootstrap.Collapse(helpPanel, {
-                toggle: true
-            });
-        }
-        
-        function showEmailHelpForm() {
-            document.getElementById('email-help-form').classList.remove('collapse');
-            document.getElementById('whatsapp-help-form').classList.add('collapse');
-        }
-        
-        function showWhatsAppHelpForm() {
-            document.getElementById('whatsapp-help-form').classList.remove('collapse');
-            document.getElementById('email-help-form').classList.add('collapse');
-        }
-        
-        function sendEmailHelp() {
-            const name = document.getElementById('help-name').value;
-            const email = document.getElementById('help-email').value;
-            
-            if (!name || !email) {
-                alert('Por favor, completa todos los campos.');
-                return;
-            }
-            
-            const subject = `Consulta de ${name} sobre mYpuB`;
-            const body = `Hola Tarciano,\n\nTengo una consulta sobre mYpuB:\n\n`;
-            
-            window.location.href = `mailto:enzemajr@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-            
-            alert('Se abrirá tu cliente de correo. Por favor, completa tu consulta y envíala.');
-            clearForm('email-help-form');
-            document.getElementById('help-panel').classList.remove('show');
-        }
-        
-        function sendWhatsAppHelp() {
-            const name = document.getElementById('whatsapp-name').value;
-            const number = document.getElementById('whatsapp-number').value;
-            
-            if (!name || !number) {
-                alert('Por favor, completa todos los campos.');
-                return;
-            }
-            
-            const message = `Hola Tarciano, soy ${name}. Tengo una consulta sobre mYpuB:`;
-            
-            window.open(`https://wa.me/+240222084663?text=${encodeURIComponent(message)}`, '_blank');
-            
-            alert('Se abrirá WhatsApp. Por favor, completa tu consulta y envíala.');
-            clearForm('whatsapp-help-form');
-            document.getElementById('help-panel').classList.remove('show');
-        }
-        
-        // Funciones de archivos y carpetas
-        function handleFileSelect(e) {
-            selectedFiles = Array.from(e.target.files);
-            document.getElementById('upload-btn').disabled = false;
-        }
-        
-        function preventDefaults(e) {
-            e.preventDefault();
-            e.stopPropagation();
-        }
-        
-        function highlight() {
-            document.getElementById('drop-area').style.backgroundColor = 'rgba(78, 84, 200, 0.1)';
-        }
-        
-        function unhighlight() {
-            document.getElementById('drop-area').style.backgroundColor = '';
-        }
-        
-        function handleDrop(e) {
-            const dt = e.dataTransfer;
-            selectedFiles = Array.from(dt.files);
-            document.getElementById('upload-btn').disabled = false;
-        }
-        
-        function uploadFiles() {
-            if (selectedFiles.length === 0) {
-                alert('Por favor, selecciona al menos un archivo para subir.');
-                return;
-            }
-            
-            const folderId = document.getElementById('folder-select').value;
-            const visibility = document.querySelector('input[name="visibility"]:checked').value;
-            
-            const progressBar = document.querySelector('#upload-progress .progress-bar');
-            const progressContainer = document.getElementById('upload-progress');
-            progressContainer.classList.remove('d-none');
-            
-            let uploadedCount = 0;
-            
-            selectedFiles.forEach(file => {
-                const reader = new FileReader();
-                
-                reader.onload = (e) => {
-                    const fileData = e.target.result;
-                    
-                    // Crear objeto de archivo
-                    const fileObj = {
-                        name: file.name,
-                        type: file.type.startsWith('image') ? 'image' : 'video',
-                        data: fileData,
-                        size: file.size,
-                        userId: currentUser.id,
-                        folderId: folderId === 'root' ? null : parseInt(folderId),
-                        public: visibility === 'public',
-                        likes: [],
-                        title: file.name,
-                        description: '',
-                        createdAt: new Date()
-                    };
-                    
-                    // Guardar archivo en IndexedDB
-                    const transaction = db.transaction([FILE_STORE], 'readwrite');
-                    const store = transaction.objectStore(FILE_STORE);
-                    
-                    const request = store.add(fileObj);
-                    
-                    request.onsuccess = () => {
-                        uploadedCount++;
-                        const progress = (uploadedCount / selectedFiles.length) * 100;
-                        progressBar.style.width = `${progress}%`;
-                        
-                        if (uploadedCount === selectedFiles.length) {
-                            setTimeout(() => {
-                                progressContainer.classList.add('d-none');
-                                progressBar.style.width = '0%';
-                                alert('Archivos subidos correctamente.');
-                                loadFiles();
-                                updateStorageIndicator();
-                            }, 500);
-                        }
-                    };
-                    
-                    request.onerror = (event) => {
-                        console.error('Error al subir archivo:', event.target.error);
-                        alert('Error al subir archivo.');
-                    };
-                };
-                
-                reader.readAsDataURL(file);
-            });
-            
-            // Resetear selección
-            selectedFiles = [];
-            document.getElementById('upload-btn').disabled = true;
-            document.getElementById('file-input').value = '';
-        }
-        
-        function showNewFolderModal() {
-            const modal = new bootstrap.Modal(document.getElementById('folderModal'));
-            modal.show();
-        }
-        
-        function createFolder() {
-            const name = document.getElementById('folder-name').value;
-            const visibility = document.querySelector('input[name="folder-visibility"]:checked').value;
-            
-            if (!name) {
-                alert('Por favor, ingresa un nombre para la carpeta.');
-                return;
-            }
-            
-            const folder = {
-                name,
-                userId: currentUser.id,
-                public: visibility === 'public',
-                createdAt: new Date()
-            };
-            
-            const transaction = db.transaction([FOLDER_STORE], 'readwrite');
-            const store = transaction.objectStore(FOLDER_STORE);
-            
-            const request = store.add(folder);
-            
-            request.onsuccess = () => {
-                alert('Carpeta creada correctamente.');
-                loadFolders();
-                
-                const modal = bootstrap.Modal.getInstance(document.getElementById('folderModal'));
-                modal.hide();
-                
-                clearForm('folder-form');
-            };
-            
-            request.onerror = (event) => {
-                console.error('Error al crear carpeta:', event.target.error);
-                alert('Error al crear carpeta.');
-            };
-        }
-        
-        function loadFolders() {
-            const container = document.getElementById('folders-container');
-            container.innerHTML = '';
-            
-            const transaction = db.transaction([FOLDER_STORE], 'readonly');
-            const store = transaction.objectStore(FOLDER_STORE);
-            const index = store.index('userId');
-            const request = index.getAll(currentUser.id);
-            
-            request.onsuccess = (event) => {
-                const folders = event.target.result;
-                
-                if (folders.length === 0) {
-                    container.innerHTML = '<div class="col-12 text-center text-muted py-3">No tienes carpetas creadas</div>';
-                    return;
-                }
-                
-                folders.forEach(folder => {
-                    const folderCard = document.createElement('div');
-                    folderCard.className = 'col-md-3 mb-3';
-                    folderCard.innerHTML = `
-                        <div class="card folder-card h-100">
-                            <div class="card-body text-center">
-                                <i class="bi bi-folder folder-icon"></i>
-                                <h6 class="mt-2">${folder.name}</h6>
-                                <small class="text-muted">${folder.public ? 'Pública' : 'Privada'}</small>
-                            </div>
-                        </div>
-                    `;
-                    container.appendChild(folderCard);
+                // Ocultar todos los módulos
+                document.querySelectorAll('.module-container > div').forEach(module => {
+                    module.classList.add('hidden');
                 });
                 
-                // Actualizar selector de carpetas
-                const folderSelect = document.getElementById('folder-select');
-                folderSelect.innerHTML = '<option value="root">Raíz</option>';
-                folders.forEach(folder => {
-                    const option = document.createElement('option');
-                    option.value = folder.id;
-                    option.textContent = folder.name;
-                    folderSelect.appendChild(option);
+                // Mostrar el módulo seleccionado
+                const moduleId = this.getAttribute('data-module') + '-module';
+                document.getElementById(moduleId).classList.remove('hidden');
+                
+                // Actualizar navegación activa
+                document.querySelectorAll('.nav-link').forEach(navLink => {
+                    navLink.classList.remove('active');
                 });
-            };
-        }
+                this.classList.add('active');
+            });
+        });
         
-        function loadFiles() {
-            const container = document.getElementById('files-container');
-            container.innerHTML = '';
-            
-            const transaction = db.transaction([FILE_STORE], 'readonly');
-            const store = transaction.objectStore(FILE_STORE);
-            const request = store.getAll();
-            
-            request.onsuccess = (event) => {
-                const files = event.target.result;
-                
-                if (files.length === 0) {
-                    container.innerHTML = '<div class="col-12 text-center text-muted py-5"><i class="bi bi-inbox me-2"></i>No hay archivos subidos</div>';
-                    return;
-                }
-                
-                // Filtrar archivos visibles para el usuario actual
-                const visibleFiles = files.filter(file => 
-                    file.public || file.userId === currentUser.id || isDeveloper
-                );
-                
-                visibleFiles.forEach(file => {
-                    const fileCard = document.createElement('div');
-                    fileCard.className = 'col';
-                    fileCard.innerHTML = `
-                        <div class="card file-item h-100">
-                            <div class="position-relative">
-                                ${file.type === 'image' ? 
-                                    `<img src="${file.data}" class="card-img-top" alt="${file.title}" style="height: 200px; object-fit: cover;">` :
-                                    `<div class="video-thumbnail bg-dark" style="height: 200px;" data-id="${file.id}">
-                                        <video class="d-none" id="video-${file.id}" src="${file.data}"></video>
-                                        <i class="bi bi-play-circle-fill play-icon"></i>
-                                    </div>`
-                                }
-                                <span class="badge status-badge ${file.public ? 'bg-primary' : 'bg-secondary'}">
-                                    ${file.public ? 'Público' : 'Privado'}
-                                </span>
-                                ${file.likes.length >= 100 ? 
-                                    '<span class="badge popular-badge status-badge" style="top: 40px;">POPULAR</span>' : ''}
-                            </div>
-                            <div class="card-body">
-                                <h6 class="card-title">${file.title}</h6>
-                                <p class="card-text small text-truncate">${file.description || 'Sin descripción'}</p>
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <small class="text-muted">${formatDate(file.createdAt)}</small>
-                                    <div>
-                                        <button class="btn btn-sm btn-outline-secondary like-btn ${file.likes.includes(currentUser.id) ? 'liked' : ''}" data-id="${file.id}">
-                                            <i class="bi bi-heart${file.likes.includes(currentUser.id) ? '-fill' : ''}"></i> ${file.likes.length}
-                                        </button>
-                                        <button class="btn btn-sm btn-outline-primary" data-id="${file.id}" data-bs-toggle="modal" data-bs-target="#fileModal">
-                                            <i class="bi bi-pencil"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                    container.appendChild(fileCard);
-                });
-                
-                // Agregar event listeners para los botones de like
-                document.querySelectorAll('.like-btn').forEach(btn => {
-                    btn.addEventListener('click', (e) => {
-                        const fileId = parseInt(e.currentTarget.getAttribute('data-id'));
-                        toggleLike(fileId);
-                    });
-                });
-                
-                // Agregar event listeners para los botones de editar
-                document.querySelectorAll('[data-bs-target="#fileModal"]').forEach(btn => {
-                    btn.addEventListener('click', (e) => {
-                        const fileId = parseInt(e.currentTarget.getAttribute('data-id'));
-                        openFileModal(fileId);
-                    });
-                });
-                
-                // Agregar event listeners para reproducción de video
-                document.querySelectorAll('.video-thumbnail').forEach(thumbnail => {
-                    thumbnail.addEventListener('click', (e) => {
-                        const fileId = thumbnail.getAttribute('data-id');
-                        const video = document.getElementById(`video-${fileId}`);
-                        
-                        if (video.classList.contains('d-none')) {
-                            // Mostrar y reproducir el video
-                            video.classList.remove('d-none');
-                            video.style.height = '200px';
-                            video.style.width = '100%';
-                            video.style.objectFit = 'cover';
-                            video.controls = true;
-                            video.play();
-                            
-                            // Ocultar el icono de reproducción
-                            thumbnail.querySelector('.play-icon').classList.add('d-none');
-                        }
-                    });
-                });
-            };
-        }
+        // Mostrar dashboard al cargar
+        document.getElementById('dashboard-module').classList.remove('hidden');
         
-        function openFileModal(fileId) {
-            const transaction = db.transaction([FILE_STORE], 'readonly');
-            const store = transaction.objectStore(FILE_STORE);
-            const request = store.get(fileId);
-            
-            request.onsuccess = (event) => {
-                const file = event.target.result;
-                currentFile = file;
-                
-                document.getElementById('file-modal-title').textContent = file.title;
-                document.getElementById('file-title').value = file.title;
-                document.getElementById('file-description').value = file.description || '';
-                document.getElementById('file-likes-count').textContent = file.likes.length;
-                
-                if (file.public) {
-                    document.getElementById('file-public').checked = true;
-                } else {
-                    document.getElementById('file-private').checked = true;
-                }
-                
-                const preview = document.getElementById('file-modal-preview');
-                preview.innerHTML = '';
-                
-                if (file.type === 'image') {
-                    const img = document.createElement('img');
-                    img.src = file.data;
-                    img.className = 'img-fluid';
-                    preview.appendChild(img);
-                } else {
-                    const video = document.createElement('video');
-                    video.src = file.data;
-                    video.controls = true;
-                    video.className = 'img-fluid';
-                    preview.appendChild(video);
-                    
-                    // Agregar evento de clic para reproducir el video
-                    video.addEventListener('click', function() {
-                        if (video.paused) {
-                            video.play();
-                        } else {
-                            video.pause();
-                        }
-                    });
-                }
-                
-                // Configurar botón de like
-                const likeBtn = document.getElementById('file-like-btn');
-                likeBtn.classList.toggle('liked', file.likes.includes(currentUser.id));
-                likeBtn.innerHTML = file.likes.includes(currentUser.id) ? 
-                    '<i class="bi bi-heart-fill"></i>' : '<i class="bi bi-heart"></i>';
-                
-                // Mostrar u ocultar botón de eliminar
-                const canDelete = (currentUser.id === file.userId) || isDeveloper;
-                document.getElementById('delete-file-btn').classList.toggle('d-none', !canDelete);
-            };
-        }
+        // Alternar visibilidad de contraseña
+        document.querySelector('.toggle-password').addEventListener('click', function() {
+            const passwordInput = this.previousElementSibling;
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+            this.innerHTML = type === 'password' ? '<i class="fas fa-eye"></i>' : '<i class="fas fa-eye-slash"></i>';
+        });
         
-        function saveFileDetails() {
-            if (!currentFile) return;
-            
-            const title = document.getElementById('file-title').value;
-            const description = document.getElementById('file-description').value;
-            const public = document.getElementById('file-public').checked;
-            
-            // Actualizar objeto de archivo
-            currentFile.title = title;
-            currentFile.description = description;
-            currentFile.public = public;
-            
-            const transaction = db.transaction([FILE_STORE], 'readwrite');
-            const store = transaction.objectStore(FILE_STORE);
-            
-            const request = store.put(currentFile);
-            
-            request.onsuccess = () => {
-                alert('Cambios guardados correctamente.');
-                loadFiles();
-                
-                const modal = bootstrap.Modal.getInstance(document.getElementById('fileModal'));
-                modal.hide();
-            };
-            
-            request.onerror = (event) => {
-                console.error('Error al guardar cambios:', event.target.error);
-                alert('Error al guardar cambios.');
-            };
-        }
+        // Simular funcionalidad de subida de archivos
+        document.getElementById('uploadFileModal').addEventListener('shown.bs.modal', function() {
+            // Aquí iría la lógica para subir archivos a IndexedDB
+        });
         
-        function deleteFile() {
-            if (!currentFile) return;
-            
-            if (!confirm('¿Estás seguro de que quieres eliminar este archivo?')) {
-                return;
-            }
-            
-            const transaction = db.transaction([FILE_STORE], 'readwrite');
-            const store = transaction.objectStore(FILE_STORE);
-            
-            const request = store.delete(currentFile.id);
-            
-            request.onsuccess = () => {
-                alert('Archivo eliminado correctamente.');
-                loadFiles();
-                updateStorageIndicator();
-                
-                const modal = bootstrap.Modal.getInstance(document.getElementById('fileModal'));
-                modal.hide();
-            };
-            
-            request.onerror = (event) => {
-                console.error('Error al eliminar archivo:', event.target.error);
-                alert('Error al eliminar archivo.');
-            };
-        }
+        // Simular creación de departamentos
+        document.getElementById('addDepartmentModal').addEventListener('shown.bs.modal', function() {
+            // Aquí iría la lógica para crear departamentos en IndexedDB
+        });
         
-        function toggleLike(fileId) {
-            const transaction = db.transaction([FILE_STORE], 'readwrite');
-            const store = transaction.objectStore(FILE_STORE);
-            
-            const request = store.get(fileId);
-            
-            request.onsuccess = (event) => {
-                const file = event.target.result;
-                const index = file.likes.indexOf(currentUser.id);
-                
-                if (index === -1) {
-                    // Dar like
-                    file.likes.push(currentUser.id);
-                } else {
-                    // Quitar like
-                    file.likes.splice(index, 1);
-                }
-                
-                // Actualizar el archivo
-                const updateRequest = store.put(file);
-                
-                updateRequest.onsuccess = () => {
-                    loadFiles();
-                };
-            };
-        }
+        // Simular creación de carpetas
+        document.getElementById('addFolderModal').addEventListener('shown.bs.modal', function() {
+            // Aquí iría la lógica para crear carpetas en IndexedDB con encriptación
+        });
         
-        function toggleFileLike() {
-            if (!currentFile) return;
-            toggleLike(currentFile.id);
-            
-            // Actualizar el estado del botón en el modal
-            const likeBtn = document.getElementById('file-like-btn');
-            const liked = currentFile.likes.includes(currentUser.id);
-            
-            likeBtn.classList.toggle('liked', !liked);
-            likeBtn.innerHTML = !liked ? 
-                '<i class="bi bi-heart-fill"></i>' : '<i class="bi bi-heart"></i>';
-            
-            // Actualizar el contador
-            document.getElementById('file-likes-count').textContent = 
-                liked ? currentFile.likes.length - 1 : currentFile.likes.length + 1;
-        }
-        
-        // Funciones de compartir
-        function loadUsersForSharing() {
-            const container = document.getElementById('users-list');
-            container.innerHTML = '';
-            
-            const transaction = db.transaction([USER_STORE], 'readonly');
-            const store = transaction.objectStore(USER_STORE);
-            const request = store.getAll();
-            
-            request.onsuccess = (event) => {
-                const users = event.target.result.filter(user => user.id !== currentUser.id);
+        // Simular acciones en documentos
+        document.querySelectorAll('.action-buttons .btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const action = this.title;
+                const fileName = this.closest('.list-group-item').querySelector('strong').textContent;
                 
-                if (users.length === 0) {
-                    container.innerHTML = '<div class="text-center py-3 text-muted">No hay otros usuarios registrados</div>';
-                    return;
-                }
-                
-                users.forEach(user => {
-                    const userItem = document.createElement('a');
-                    userItem.href = '#';
-                    userItem.className = 'list-group-item list-group-item-action';
-                    userItem.innerHTML = `
-                        <div class="d-flex align-items-center">
-                            <div class="user-avatar me-3">${user.fullName.charAt(0)}</div>
-                            <div>
-                                <h6 class="mb-0">${user.fullName}</h6>
-                                <small class="text-muted">${user.email}</small>
-                            </div>
-                        </div>
-                    `;
-                    
-                    userItem.addEventListener('click', () => {
-                        document.querySelectorAll('#users-list .list-group-item').forEach(item => {
-                            item.classList.remove('active');
-                        });
-                        userItem.classList.add('active');
-                        selectedUser = user;
-                    });
-                    
-                    container.appendChild(userItem);
-                });
-            };
-        }
-        
-        function loadFilesForSharing() {
-            const container = document.getElementById('files-list');
-            container.innerHTML = '';
-            
-            const transaction = db.transaction([FILE_STORE], 'readonly');
-            const store = transaction.objectStore(FILE_STORE);
-            const index = store.index('userId');
-            const request = index.getAll(currentUser.id);
-            
-            request.onsuccess = (event) => {
-                const files = event.target.result;
-                
-                if (files.length === 0) {
-                    container.innerHTML = '<div class="text-center py-3 text-muted">No tienes archivos para compartir</div>';
-                    return;
-                }
-                
-                files.forEach(file => {
-                    const fileItem = document.createElement('a');
-                    fileItem.href = '#';
-                    fileItem.className = 'list-group-item list-group-item-action';
-                    fileItem.setAttribute('data-id', file.id);
-                    fileItem.innerHTML = `
-                        <div class="d-flex align-items-center">
-                            <i class="bi ${file.type === 'image' ? 'bi-image' : 'bi-film'} me-3 fs-5"></i>
-                            <div>
-                                <h6 class="mb-0">${file.title}</h6>
-                                <small class="text-muted">${formatDate(file.createdAt)}</small>
-                            </div>
-                        </div>
-                    `;
-                    
-                    fileItem.addEventListener('click', () => {
-                        fileItem.classList.toggle('active');
-                        document.getElementById('share-files-btn').disabled = !selectedUser;
-                    });
-                    
-                    container.appendChild(fileItem);
-                });
-            };
-        }
-        
-        function shareFiles() {
-            if (!selectedUser) {
-                alert('Por favor, selecciona un usuario para compartir.');
-                return;
-            }
-            
-            const selectedFiles = [];
-            document.querySelectorAll('#files-list .list-group-item.active').forEach(item => {
-                const fileId = parseInt(item.getAttribute('data-id'));
-                if (fileId) {
-                    selectedFiles.push(fileId);
+                if(action === 'Renombrar') {
+                    const newName = prompt('Ingrese el nuevo nombre para el archivo:', fileName);
+                    if(newName && newName.trim() !== '') {
+                        alert(`Archivo renombrado a: ${newName}`);
+                        // Aquí iría la lógica para actualizar en IndexedDB
+                    }
+                } else if(action === 'Eliminar') {
+                    if(confirm(`¿Está seguro que desea eliminar el archivo "${fileName}"?`)) {
+                        alert(`Archivo "${fileName}" eliminado`);
+                        // Aquí iría la lógica para eliminar de IndexedDB
+                    }
+                } else if(action === 'Descargar') {
+                    alert(`Iniciando descarga de: ${fileName}`);
+                    // Aquí iría la lógica para descargar desde IndexedDB
+                } else if(action === 'Imprimir') {
+                    alert(`Preparando para imprimir: ${fileName}`);
+                    // Aquí iría la lógica para imprimir desde IndexedDB
                 }
             });
+        });
+        
+        // Simular acceso no autorizado al módulo de control
+        document.querySelector('[data-module="control"]').addEventListener('click', function(e) {
+            // En un escenario real, verificaríamos el rol del usuario
+            const isAdmin = true; // Simulamos que es administrador
             
-            if (selectedFiles.length === 0) {
-                alert('Por favor, selecciona al menos un archivo para compartir.');
-                return;
+            if(!isAdmin) {
+                e.preventDefault();
+                alert('No tienes permiso para acceder a este módulo. Por favor, contacta al administrador: enzemajr@gmail.com');
             }
-            
-            // Simular el proceso de compartir
-            alert(`Se han compartido ${selectedFiles.length} archivos con ${selectedUser.fullName}`);
-            
-            // Resetear selección
-            selectedUser = null;
-            document.querySelectorAll('#users-list .list-group-item').forEach(item => {
-                item.classList.remove('active');
-            });
-            document.querySelectorAll('#files-list .list-group-item').forEach(item => {
-                item.classList.remove('active');
-            });
-            document.getElementById('share-files-btn').disabled = true;
-        }
-        
-        // Funciones de gestión de usuarios (solo desarrollador)
-        function loadUsersForManagement() {
-            if (!isDeveloper) return;
-            
-            const container = document.getElementById('users-table');
-            container.innerHTML = '';
-            
-            const transaction = db.transaction([USER_STORE], 'readonly');
-            const store = transaction.objectStore(USER_STORE);
-            const request = store.getAll();
-            
-            request.onsuccess = (event) => {
-                const users = event.target.result.filter(user => user.id !== currentUser.id);
-                
-                if (users.length === 0) {
-                    container.innerHTML = '<tr><td colspan="5" class="text-center py-3 text-muted">No hay otros usuarios registrados</td></tr>';
-                    return;
-                }
-                
-                users.forEach(user => {
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td>${user.fullName}</td>
-                        <td>${user.email}</td>
-                        <td>${user.phone}</td>
-                        <td>
-                            <span class="badge bg-success">Activo</span>
-                        </td>
-                        <td>
-                            <button class="btn btn-sm btn-outline-secondary" title="Editar">
-                                <i class="bi bi-pencil"></i>
-                            </button>
-                            <button class="btn btn-sm btn-outline-danger" title="Eliminar">
-                                <i class="bi bi-trash"></i>
-                            </button>
-                            <button class="btn btn-sm btn-outline-warning" title="Bloquear">
-                                <i class="bi bi-lock"></i>
-                            </button>
-                        </td>
-                    `;
-                    container.appendChild(row);
-                });
-            };
-        }
-        
-        // Funciones auxiliares
-        function updateStorageIndicator() {
-            if (!currentUser) return;
-            
-            const transaction = db.transaction([FILE_STORE], 'readonly');
-            const store = transaction.objectStore(FILE_STORE);
-            const index = store.index('userId');
-            const request = index.getAll(currentUser.id);
-            
-            request.onsuccess = (event) => {
-                const files = event.target.result;
-                const totalSize = files.reduce((sum, file) => sum + file.size, 0);
-                const sizeInMB = (totalSize / (1024 * 1024)).toFixed(2);
-                
-                document.getElementById('storage-used').textContent = sizeInMB;
-                
-                // Actualizar el porcentaje de almacenamiento usado (15,000 MB = 15 GB)
-                const percentage = (sizeInMB / STORAGE_LIMIT_MB) * 100;
-                document.getElementById('storage-progress').style.width = `${percentage}%`;
-            };
-        }
-        
-        function formatDate(dateString) {
-            const date = new Date(dateString);
-            return date.toLocaleDateString('es-ES', {
-                year: 'numeric',
-                month: 'short',
-                day: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit'
-            });
-        }
-        
-        function clearForm(formId) {
-            const form = document.getElementById(formId);
-            if (form) {
-                form.reset();
-            }
-        }
+        });
     </script>
 </body>
 </html>
