@@ -288,6 +288,26 @@
             padding: 50px;
             color: #e74c3c;
         }
+        .secretariat-document-view {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+        .secretariat-document-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .secretariat-document-title {
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+        .secretariat-document-department {
+            font-size: 0.9rem;
+            color: #666;
+        }
     </style>
 </head>
 <body>
@@ -481,23 +501,47 @@
             <div id="secretariat-module" class="hidden">
                 <div class="card module-card">
                     <div class="module-header">
-                        <i class="fas fa-users-cog me-2"></i> Gestión de Departamentos
+                        <i class="fas fa-users-cog me-2"></i> Gestión de Departamentos y Documentos
                     </div>
                     <div class="module-content">
-                        <div class="d-flex justify-content-between align-items-center mb-4">
-                            <h5>Departamentos Existentes</h5>
-                            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addDepartmentModal" id="add-department-btn-secretariat">
-                                <i class="fas fa-plus me-2"></i>Nuevo Departamento
-                            </button>
-                        </div>
-                        <!-- Buscador de departamentos -->
-                        <div class="search-container mb-4">
-                            <i class="fas fa-search search-icon"></i>
-                            <input type="text" class="form-control search-input" id="department-search" placeholder="Buscar departamento...">
-                        </div>
-                        <div class="row" id="departments-container">
-                            <div class="col-12">
-                                <div class="no-results">Cargando departamentos...</div>
+                        <ul class="nav nav-tabs" id="secretariatTabs" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active" id="departments-tab" data-bs-toggle="tab" data-bs-target="#departments-tab-pane" type="button" role="tab">Departamentos</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="documents-tab" data-bs-toggle="tab" data-bs-target="#documents-tab-pane" type="button" role="tab">Documentos</button>
+                            </li>
+                        </ul>
+                        <div class="tab-content" id="secretariatTabsContent">
+                            <div class="tab-pane fade show active" id="departments-tab-pane" role="tabpanel">
+                                <div class="d-flex justify-content-between align-items-center mb-4 mt-3">
+                                    <h5>Departamentos Existentes</h5>
+                                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addDepartmentModal" id="add-department-btn-secretariat">
+                                        <i class="fas fa-plus me-2"></i>Nuevo Departamento
+                                    </button>
+                                </div>
+                                <!-- Buscador de departamentos -->
+                                <div class="search-container mb-4">
+                                    <i class="fas fa-search search-icon"></i>
+                                    <input type="text" class="form-control search-input" id="department-search" placeholder="Buscar departamento...">
+                                </div>
+                                <div class="row" id="departments-container">
+                                    <div class="col-12">
+                                        <div class="no-results">Cargando departamentos...</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="tab-pane fade" id="documents-tab-pane" role="tabpanel">
+                                <div class="d-flex justify-content-between align-items-center mb-4 mt-3">
+                                    <h5>Documentos de Todos los Departamentos</h5>
+                                    <div class="search-container">
+                                        <i class="fas fa-search search-icon"></i>
+                                        <input type="text" class="form-control search-input" id="secretariat-document-search" placeholder="Buscar documento...">
+                                    </div>
+                                </div>
+                                <div id="secretariat-documents-container">
+                                    <div class="no-results">Cargando documentos...</div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -956,6 +1000,7 @@
                 loadDashboardData();
                 loadDepartments();
                 loadActivities();
+                loadAllDocumentsForSecretariat(); // Cargar documentos para secretaría
             };
             
             request.onerror = function(event) {
@@ -1372,6 +1417,59 @@
             });
         }
         
+        // Cargar todos los documentos para la Secretaría General
+        function loadAllDocumentsForSecretariat() {
+            Promise.all([
+                getAllData(STORES.DOCUMENTS),
+                getAllData(STORES.DEPARTMENTS),
+                getAllData(STORES.FOLDERS)
+            ]).then(([documents, departments, folders]) => {
+                const container = document.getElementById('secretariat-documents-container');
+                container.innerHTML = '';
+                
+                if (documents.length > 0) {
+                    documents.forEach(doc => {
+                        const department = departments.find(d => d.id === doc.departmentId);
+                        const folder = folders.find(f => f.id === doc.folderId);
+                        
+                        const docElement = document.createElement('div');
+                        docElement.className = 'secretariat-document-view';
+                        
+                        docElement.innerHTML = `
+                            <div class="secretariat-document-header">
+                                <div>
+                                    <span class="secretariat-document-title">${doc.name}</span>
+                                    <div class="secretariat-document-department">
+                                        Departamento: ${department ? department.name : 'Desconocido'} | 
+                                        Carpeta: ${folder ? folder.name : 'Desconocida'}
+                                    </div>
+                                </div>
+                                <div>
+                                    <button class="btn btn-sm btn-outline-primary view-document-secretariat" data-id="${doc.id}">
+                                        <i class="fas fa-eye"></i> Ver
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <small class="text-muted">Subido: ${new Date(doc.uploadedAt).toLocaleDateString()}</small>
+                                ${doc.tags ? `<small class="text-muted">Etiquetas: ${doc.tags}</small>` : ''}
+                            </div>
+                        `;
+                        
+                        container.appendChild(docElement);
+                        
+                        // Añadir event listener para ver el documento
+                        docElement.querySelector('.view-document-secretariat').addEventListener('click', function() {
+                            const docId = this.getAttribute('data-id');
+                            viewDocument(docId);
+                        });
+                    });
+                } else {
+                    container.innerHTML = '<div class="no-results">No hay documentos en el sistema</div>';
+                }
+            });
+        }
+        
         // Contar carpetas por departamento
         function countFoldersForDepartment(departmentId) {
             return new Promise((resolve) => {
@@ -1664,6 +1762,7 @@
                 
                 loadDepartments();
                 loadDashboardData();
+                loadAllDocumentsForSecretariat();
                 
                 alert('Departamento creado con éxito');
             });
@@ -1724,6 +1823,7 @@
                         
                         loadDepartments();
                         loadDashboardData();
+                        loadAllDocumentsForSecretariat();
                         
                         alert('Departamento actualizado con éxito');
                     });
@@ -1759,6 +1859,7 @@
                             
                             loadDepartments();
                             loadDashboardData();
+                            loadAllDocumentsForSecretariat();
                             
                             alert('Departamento eliminado con éxito');
                         });
@@ -1831,6 +1932,7 @@
                 document.getElementById('password-strength-meter').style.width = '0%';
                 
                 loadDashboardData();
+                loadAllDocumentsForSecretariat();
                 
                 // Si estamos en el módulo de departamentos, recargar las carpetas
                 if (document.getElementById('departments-module').classList.contains('hidden') === false) {
@@ -1926,6 +2028,7 @@
                         document.getElementById('pdf-preview').classList.add('hidden');
                         
                         loadDashboardData();
+                        loadAllDocumentsForSecretariat();
                         
                         // Si estamos en el módulo de departamentos, recargar los documentos
                         if (document.getElementById('departments-module').classList.contains('hidden') === false) {
@@ -1961,6 +2064,7 @@
                         );
                         
                         loadDashboardData();
+                        loadAllDocumentsForSecretariat();
                         
                         // Si estamos en el módulo de departamentos, recargar los documentos
                         if (document.getElementById('departments-module').classList.contains('hidden') === false) {
@@ -1999,6 +2103,23 @@
                     card.closest('.col-md-4').style.display = 'block';
                 } else {
                     card.closest('.col-md-4').style.display = 'none';
+                }
+            });
+        }
+        
+        // Función para buscar documentos en secretaría
+        function searchSecretariatDocuments() {
+            const searchTerm = document.getElementById('secretariat-document-search').value.toLowerCase();
+            const documentElements = document.querySelectorAll('#secretariat-documents-container .secretariat-document-view');
+            
+            documentElements.forEach(element => {
+                const documentName = element.querySelector('.secretariat-document-title').textContent.toLowerCase();
+                const departmentName = element.querySelector('.secretariat-document-department').textContent.toLowerCase();
+                
+                if (documentName.includes(searchTerm) || departmentName.includes(searchTerm)) {
+                    element.style.display = 'block';
+                } else {
+                    element.style.display = 'none';
                 }
             });
         }
@@ -2053,6 +2174,11 @@
                     navLink.classList.add('active');
                 }
             });
+            
+            // Si es el módulo de secretaría, cargar documentos
+            if (moduleId === 'secretariat' && checkPermissions('secretariat')) {
+                loadAllDocumentsForSecretariat();
+            }
         }
         
         // Verificar permisos para un módulo
@@ -2179,6 +2305,7 @@
         document.getElementById('department-search').addEventListener('input', searchDepartments);
         document.getElementById('folder-search').addEventListener('input', searchFolders);
         document.getElementById('document-search').addEventListener('input', searchDocuments);
+        document.getElementById('secretariat-document-search').addEventListener('input', searchSecretariatDocuments);
         
         // Event listener para logout
         document.getElementById('logout-btn').addEventListener('click', function(e) {
