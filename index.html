@@ -163,6 +163,23 @@
         .strength-weak { background-color: #dc3545; }
         .strength-medium { background-color: #ffc107; }
         .strength-strong { background-color: #28a745; }
+        
+        /* Nuevos estilos para mejoras visuales */
+        .registration-success {
+            background-color: #d4edda;
+            border-color: #c3e6cb;
+            color: #155724;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 15px;
+            text-align: center;
+            display: none;
+        }
+        .login-suggestion {
+            margin-top: 15px;
+            text-align: center;
+            font-weight: 500;
+        }
     </style>
 </head>
 <body>
@@ -201,6 +218,9 @@
                         </div>
                     </div>
                     <button class="btn btn-primary w-100 py-2" onclick="login()">Acceder</button>
+                    <div class="login-suggestion" id="loginSuggestion">
+                        ¡Registro exitoso! Por favor inicia sesión con tus nuevas credenciales.
+                    </div>
                 </div>
                 
                 <!-- Registro -->
@@ -248,6 +268,9 @@
                         </select>
                     </div>
                     <button class="btn btn-success w-100 py-2" onclick="register()">Registrarse</button>
+                    <div class="registration-success" id="registrationSuccess">
+                        ¡Registro exitoso! Tus credenciales se han guardado.
+                    </div>
                 </div>
             </div>
         </div>
@@ -613,7 +636,13 @@
         // Inicialización
         document.addEventListener('DOMContentLoaded', function() {
             initDB();
+            hideLoginSuggestion();
         });
+        
+        // Ocultar mensaje de sugerencia de login
+        function hideLoginSuggestion() {
+            document.getElementById('loginSuggestion').style.display = 'none';
+        }
         
         // Base de datos IndexedDB
         function initDB() {
@@ -709,9 +738,31 @@
                 } else {
                     const addRequest = store.add(user);
                     addRequest.onsuccess = function() {
-                        alert('Registro exitoso. Ahora puede iniciar sesión.');
-                        document.getElementById('authError').classList.add('d-none');
+                        // Mostrar mensaje de éxito
+                        document.getElementById('registrationSuccess').style.display = 'block';
+                        
+                        // Limpiar formulario de registro
+                        document.getElementById('fullName').value = '';
+                        document.getElementById('address').value = '';
+                        document.getElementById('phone').value = '';
+                        document.getElementById('email').value = '';
+                        document.getElementById('password').value = '';
+                        document.getElementById('role').value = '';
+                        
+                        // Guardar credenciales en localStorage
+                        localStorage.setItem('registeredEmail', email);
+                        localStorage.setItem('registeredPassword', password);
+                        
+                        // Prellenar formulario de login
+                        document.getElementById('loginEmail').value = email;
+                        document.getElementById('loginPassword').value = password;
+                        
+                        // Cambiar a pestaña de login
                         document.getElementById('login-tab').click();
+                        
+                        // Mostrar sugerencia de inicio de sesión
+                        document.getElementById('loginSuggestion').style.display = 'block';
+                        
                         logAction(`Nuevo usuario registrado: ${email} (${role})`);
                     };
                     
@@ -746,6 +797,10 @@
                     currentUser = user;
                     showDashboardView();
                     logAction(`Inicio de sesión de ${user.fullName} (${user.role})`);
+                    
+                    // Limpiar credenciales guardadas
+                    localStorage.removeItem('registeredEmail');
+                    localStorage.removeItem('registeredPassword');
                 } else {
                     showAuthError('Credenciales incorrectas');
                 }
@@ -762,6 +817,10 @@
             currentUser = null;
             document.getElementById('loginScreen').classList.remove('d-none');
             document.getElementById('dashboard').classList.add('d-none');
+            
+            // Limpiar formulario de login al cerrar sesión
+            document.getElementById('loginEmail').value = '';
+            document.getElementById('loginPassword').value = '';
         }
         
         // Verificar autenticación
@@ -771,6 +830,16 @@
             } else {
                 document.getElementById('loginScreen').classList.remove('d-none');
                 document.getElementById('dashboard').classList.add('d-none');
+                
+                // Intentar cargar credenciales guardadas
+                const savedEmail = localStorage.getItem('registeredEmail');
+                const savedPassword = localStorage.getItem('registeredPassword');
+                
+                if (savedEmail && savedPassword) {
+                    document.getElementById('loginEmail').value = savedEmail;
+                    document.getElementById('loginPassword').value = savedPassword;
+                    document.getElementById('loginSuggestion').style.display = 'block';
+                }
             }
         }
         
