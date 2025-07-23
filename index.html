@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Gestión Universitaria</title>
+    <title>GESTIFAC</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -178,6 +178,7 @@
             margin-bottom: 15px;
             border: 1px solid #e0e0e0;
             transition: all 0.3s;
+            cursor: pointer;
         }
         .folder-card:hover {
             border-color: var(--secondary-color);
@@ -245,535 +246,2361 @@
             color: #777;
             font-style: italic;
         }
-        /* Login/Register modal styles */
-        .auth-modal .modal-content {
-            border-radius: 15px;
+        .login-container {
+            max-width: 500px;
+            margin: 50px auto;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            background-color: white;
         }
-        .auth-modal .form-control {
-            border-radius: 8px;
+        .login-logo {
+            text-align: center;
+            margin-bottom: 30px;
         }
-        .auth-modal .modal-header {
-            border-bottom: none;
+        .pdf-preview {
+            max-width: 100%;
+            height: 300px;
+            border: 1px solid #ddd;
+            margin-bottom: 15px;
+            overflow: hidden;
         }
-        .auth-modal .modal-footer {
-            border-top: none;
+        .pdf-preview iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
         }
-        .auth-modal .toggle-link {
-            cursor: pointer;
-            color: var(--secondary-color);
-            text-decoration: underline;
+        .document-item {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        .document-item:hover {
+            background-color: #f9f9f9;
+        }
+        .document-icon {
+            font-size: 24px;
+            color: #e74c3c;
+            margin-right: 15px;
+        }
+        .document-info {
+            flex-grow: 1;
+        }
+        .document-actions {
+            margin-left: 15px;
+        }
+        .folder-icon {
+            font-size: 24px;
+            color: #3498db;
+            margin-right: 10px;
+        }
+        .access-denied {
+            text-align: center;
+            padding: 50px;
+            color: #e74c3c;
         }
     </style>
 </head>
 <body>
-    <div class="app-container" id="mainApp" style="display: none;">
-        <!-- HEADER, NAVBAR, MODULES, FOOTER (igual que antes, sin datos simulados, sin valores por defecto) -->
-
-        <!-- ... (todo el HTML principal igual que tu ejemplo, pero con los valores por defecto retirados) ... -->
-
-        <!-- Encabezado con logo y nombre de facultad -->
-        <div class="header">
-            <div class="logo-container" id="logo-display">
-                <i class="fas fa-university logo-placeholder"></i>
+    <!-- Pantalla de Login -->
+    <div id="login-screen">
+        <div class="login-container">
+            <div class="login-logo">
+                <div class="logo-container">
+                    <i class="fas fa-university logo-placeholder"></i>
+                </div>
+                <h2 class="faculty-name">GESTIFAC</h2>
+                <p>Sistema de Gestión Documental Universitaria</p>
             </div>
-            <h1 class="faculty-name" id="faculty-name"></h1>
-            <p class="faculty-info"><i class="fas fa-envelope"></i> <span id="faculty-email"></span> | <i class="fas fa-phone"></i> <span id="faculty-phone"></span></p>
-            <p class="faculty-info">Año Académico: <span id="academic-year"></span></p>
+            
+            <form id="login-form">
+                <div class="mb-3">
+                    <label for="login-email" class="form-label">Correo Electrónico</label>
+                    <input type="email" class="form-control" id="login-email" required>
+                </div>
+                <div class="mb-3">
+                    <label for="login-password" class="form-label">Contraseña</label>
+                    <div class="password-container">
+                        <input type="password" class="form-control" id="login-password" required>
+                        <span class="toggle-password"><i class="fas fa-eye"></i></span>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary w-100">Iniciar Sesión</button>
+            </form>
+            
+            <div class="mt-3 text-center">
+                <p>¿No tienes una cuenta? <a href="#" id="show-register">Regístrate</a></p>
+            </div>
         </div>
-        <!-- ... resto igual ... (NAVEGACIÓN, MODULOS, FOOTER, MODALES) ... -->
-        <!-- ... CONTENIDO OMITIDO PARA ENFOCAR EN LA LÓGICA NUEVA ... -->
+        
+        <!-- Formulario de Registro -->
+        <div id="register-container" class="hidden">
+            <div class="login-container">
+                <div class="login-logo">
+                    <div class="logo-container">
+                        <i class="fas fa-university logo-placeholder"></i>
+                    </div>
+                    <h2 class="faculty-name">Registro de Usuario</h2>
+                </div>
+                
+                <form id="register-form">
+                    <div class="mb-3">
+                        <label for="register-name" class="form-label">Nombre Completo</label>
+                        <input type="text" class="form-control" id="register-name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="register-email" class="form-label">Correo Electrónico</label>
+                        <input type="email" class="form-control" id="register-email" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="register-password" class="form-label">Contraseña</label>
+                        <div class="password-container">
+                            <input type="password" class="form-control" id="register-password" required>
+                            <span class="toggle-password"><i class="fas fa-eye"></i></span>
+                        </div>
+                        <div class="password-strength mt-2">
+                            <div class="strength-meter" id="register-strength-meter" style="width: 0%; background-color: #e74c3c;"></div>
+                        </div>
+                        <div class="form-text">Mínimo 8 caracteres, con letras, números y símbolos</div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="register-confirm-password" class="form-label">Confirmar Contraseña</label>
+                        <div class="password-container">
+                            <input type="password" class="form-control" id="register-confirm-password" required>
+                            <span class="toggle-password"><i class="fas fa-eye"></i></span>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="register-role" class="form-label">Rol</label>
+                        <select class="form-select" id="register-role" required>
+                            <option value="" disabled selected>Seleccione un rol</option>
+                            <option value="admin">Administrador</option>
+                            <option value="secretariat">Secretaría General</option>
+                            <option value="department">Jefe de Departamento</option>
+                            <option value="user">Usuario Regular</option>
+                        </select>
+                    </div>
+                    <div class="mb-3" id="department-select-container" style="display: none;">
+                        <label for="register-department" class="form-label">Departamento</label>
+                        <select class="form-select" id="register-department">
+                            <option value="">Seleccione un departamento</option>
+                        </select>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between">
+                        <button type="button" class="btn btn-secondary" id="cancel-register">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Registrarse</button>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
 
-    <!-- MODALES LOGIN Y REGISTRO -->
-    <div class="modal fade auth-modal" id="authModal" tabindex="-1">
+    <!-- Aplicación Principal (oculta inicialmente) -->
+    <div class="app-container hidden" id="app-container">
+        <!-- Encabezado con logo y nombre de facultad -->
+        <div class="header">
+            <div class="logo-container">
+                <img id="faculty-logo-img" class="logo-img hidden">
+                <i class="fas fa-university logo-placeholder" id="logo-placeholder"></i>
+            </div>
+            <h1 class="faculty-name" id="faculty-name">Facultad de Ciencias Económicas</h1>
+            <p class="faculty-info"><i class="fas fa-envelope"></i> <span id="faculty-email">facultad@unge.edu.gq</span> | <i class="fas fa-phone"></i> <span id="faculty-phone">+240 222 123 456</span></p>
+            <p class="faculty-info">Año Académico: <span id="academic-year">2023-2024</span></p>
+        </div>
+
+        <!-- Navegación principal -->
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+            <div class="container-fluid">
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="mainNav">
+                    <ul class="navbar-nav me-auto">
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" data-module="dashboard"><i class="fas fa-home"></i> Inicio</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" data-module="configuration"><i class="fas fa-cog"></i> Configuración</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" data-module="secretariat"><i class="fas fa-users-cog"></i> Secretaría General</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" data-module="departments"><i class="fas fa-building"></i> Departamentos</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" data-module="control"><i class="fas fa-shield-alt"></i> Control</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" data-module="info"><i class="fas fa-info-circle"></i> Infórmate</a>
+                        </li>
+                    </ul>
+                    <div class="d-flex">
+                        <div class="dropdown">
+                            <button class="btn btn-outline-light dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown">
+                                <i class="fas fa-user-circle me-2"></i><span id="current-user-name">Usuario</span>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li><a class="dropdown-item" href="#"><i class="fas fa-user me-2"></i>Perfil</a></li>
+                                <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i>Configuración</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item text-danger" href="#" id="logout-btn"><i class="fas fa-sign-out-alt me-2"></i>Cerrar Sesión</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Contenido principal -->
+        <div class="container-fluid module-container">
+            <!-- Módulo: Dashboard -->
+            <div id="dashboard-module">
+                <div class="row mb-4">
+                    <div class="col-md-3">
+                        <div class="stat-card">
+                            <i class="fas fa-building fa-2x"></i>
+                            <div class="stat-number" id="departments-count">0</div>
+                            <div class="stat-label">Departamentos</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-card">
+                            <i class="fas fa-folder fa-2x"></i>
+                            <div class="stat-number" id="folders-count">0</div>
+                            <div class="stat-label">Carpetas</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-card">
+                            <i class="fas fa-file-pdf fa-2x"></i>
+                            <div class="stat-number" id="documents-count">0</div>
+                            <div class="stat-label">Documentos</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-card">
+                            <i class="fas fa-users fa-2x"></i>
+                            <div class="stat-number" id="users-count">0</div>
+                            <div class="stat-label">Usuarios</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="card module-card">
+                            <div class="module-header">
+                                <i class="fas fa-history me-2"></i> Actividad Reciente
+                            </div>
+                            <div class="module-content" id="recent-activity">
+                                <div class="no-results">Cargando actividad reciente...</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card module-card mb-4">
+                            <div class="module-header">
+                                <i class="fas fa-building me-2"></i> Departamentos
+                            </div>
+                            <div class="module-content" id="departments-list">
+                                <div class="no-results">Cargando departamentos...</div>
+                            </div>
+                        </div>
+                        <div class="card module-card">
+                            <div class="module-header">
+                                <i class="fas fa-tasks me-2"></i> Acciones Rápidas
+                            </div>
+                            <div class="module-content">
+                                <button class="btn btn-primary w-100 mb-2" data-bs-toggle="modal" data-bs-target="#addDepartmentModal" id="add-department-btn">
+                                    <i class="fas fa-plus-circle me-2"></i>Nuevo Departamento
+                                </button>
+                                <button class="btn btn-secondary w-100 mb-2" data-bs-toggle="modal" data-bs-target="#addFolderModal" id="add-folder-btn">
+                                    <i class="fas fa-folder-plus me-2"></i>Crear Carpeta
+                                </button>
+                                <button class="btn btn-success w-100" data-bs-toggle="modal" data-bs-target="#uploadFileModal" id="upload-file-btn">
+                                    <i class="fas fa-file-upload me-2"></i>Subir Documento
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Módulo: Configuración -->
+            <div id="configuration-module" class="hidden">
+                <div class="card module-card">
+                    <div class="module-header">
+                        <i class="fas fa-cog me-2"></i> Configuración de la Facultad
+                    </div>
+                    <div class="module-content">
+                        <form id="faculty-config-form">
+                            <div class="row mb-4">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label">Nombre de la Facultad</label>
+                                        <input type="text" class="form-control" id="faculty-name-input">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Email de la Facultad</label>
+                                        <input type="email" class="form-control" id="faculty-email-input">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Teléfono de la Facultad</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text">+240</span>
+                                            <input type="tel" class="form-control" id="faculty-phone-input">
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Año Académico</label>
+                                        <select class="form-select" id="academic-year-select">
+                                            <option>2022-2023</option>
+                                            <option>2023-2024</option>
+                                            <option>2024-2025</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3 text-center">
+                                        <label class="form-label">Logotipo de la Universidad</label>
+                                        <div class="border rounded p-4 text-center mb-3" style="height: 250px; background-color: #f8f9fa;">
+                                            <img id="current-logo-preview" class="img-fluid h-100 hidden">
+                                            <i class="fas fa-university fa-5x text-secondary mt-5" id="logo-preview-placeholder"></i>
+                                            <p class="mt-3" id="logo-preview-text">Logotipo actual</p>
+                                        </div>
+                                        <input type="file" class="form-control" id="logo-upload" accept="image/jpeg,image/png">
+                                        <div class="form-text">Formatos permitidos: JPG, PNG. Tamaño máximo: 2MB</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="d-flex justify-content-end">
+                                <button type="button" class="btn btn-primary" id="save-config"><i class="fas fa-save me-2"></i>Guardar Cambios</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Módulo: Secretaría General -->
+            <div id="secretariat-module" class="hidden">
+                <div class="card module-card">
+                    <div class="module-header">
+                        <i class="fas fa-users-cog me-2"></i> Gestión de Departamentos
+                    </div>
+                    <div class="module-content">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h5>Departamentos Existentes</h5>
+                            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addDepartmentModal" id="add-department-btn-secretariat">
+                                <i class="fas fa-plus me-2"></i>Nuevo Departamento
+                            </button>
+                        </div>
+                        <!-- Buscador de departamentos -->
+                        <div class="search-container mb-4">
+                            <i class="fas fa-search search-icon"></i>
+                            <input type="text" class="form-control search-input" id="department-search" placeholder="Buscar departamento...">
+                        </div>
+                        <div class="row" id="departments-container">
+                            <div class="col-12">
+                                <div class="no-results">Cargando departamentos...</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Módulo: Departamentos -->
+            <div id="departments-module" class="hidden">
+                <div class="card module-card">
+                    <div class="module-header">
+                        <i class="fas fa-building me-2"></i> Departamento: <span id="current-department-name">Seleccione un departamento</span>
+                    </div>
+                    <div class="module-content">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h5>Carpetas del Departamento</h5>
+                            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addFolderModal" id="add-folder-btn-department">
+                                <i class="fas fa-folder-plus me-2"></i>Nueva Carpeta
+                            </button>
+                        </div>
+                        <!-- Buscador de carpetas -->
+                        <div class="search-container mb-4">
+                            <i class="fas fa-search search-icon"></i>
+                            <input type="text" class="form-control search-input" id="folder-search" placeholder="Buscar carpeta...">
+                        </div>
+                        <div class="row" id="folders-container">
+                            <div class="col-12">
+                                <div class="no-results">Seleccione un departamento para ver sus carpetas</div>
+                            </div>
+                        </div>
+                        <hr class="my-4">
+                        <h5 class="mb-3">Documentos en Carpeta: <span id="current-folder-name">Seleccione una carpeta</span></h5>
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div class="d-flex">
+                                <div class="search-container">
+                                    <i class="fas fa-search search-icon"></i>
+                                    <input type="text" class="form-control search-input" id="document-search" placeholder="Buscar documento...">
+                                </div>
+                            </div>
+                            <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#uploadFileModal" id="upload-file-btn-department">
+                                <i class="fas fa-file-upload me-2"></i>Subir Documento
+                            </button>
+                        </div>
+                        <div class="list-group" id="documents-container">
+                            <div class="no-results">Seleccione una carpeta para ver sus documentos</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Módulo: Control -->
+            <div id="control-module" class="hidden">
+                <div class="card module-card">
+                    <div class="module-header">
+                        <i class="fas fa-shield-alt me-2"></i> Panel de Control y Auditoría
+                    </div>
+                    <div class="module-content">
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i> Este módulo registra todas las acciones realizadas en el sistema. Solo el Administrador tiene acceso a esta información.
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h5>Registro de Actividades</h5>
+                            <div>
+                                <input type="date" class="form-control me-2 d-inline-block" style="width: auto;" id="activity-date-filter">
+                                <button class="btn btn-outline-primary me-2" id="filter-activities"><i class="fas fa-filter"></i> Filtrar</button>
+                                <button class="btn btn-outline-success" id="export-activities"><i class="fas fa-file-export"></i> Exportar</button>
+                            </div>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Fecha/Hora</th>
+                                        <th>Usuario</th>
+                                        <th>Rol</th>
+                                        <th>Departamento</th>
+                                        <th>Acción</th>
+                                        <th>Detalles</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="activities-container">
+                                    <tr><td colspan="6" class="text-center">Cargando actividades...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <nav>
+                            <ul class="pagination justify-content-center" id="activities-pagination">
+                                <li class="page-item disabled"><a class="page-link" href="#">Anterior</a></li>
+                                <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                                <li class="page-item"><a class="page-link" href="#">2</a></li>
+                                <li class="page-item"><a class="page-link" href="#">3</a></li>
+                                <li class="page-item"><a class="page-link" href="#">Siguiente</a></li>
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Módulo: Infórmate -->
+            <div id="info-module" class="hidden">
+                <div class="card module-card">
+                    <div class="module-header">
+                        <i class="fas fa-info-circle me-2"></i> Información sobre la Aplicación
+                    </div>
+                    <div class="module-content">
+                        <div class="row">
+                            <div class="col-md-8">
+                                <h5 class="mb-3">Sistema de Gestión Universitaria</h5>
+                                <p>Esta aplicación ha sido diseñada para facilitar la gestión documental y administrativa de facultades universitarias y sus departamentos.</p>
+                                <div class="card mb-4">
+                                    <div class="card-header bg-light">
+                                        <i class="fas fa-question-circle me-2"></i> ¿Para qué sirve?
+                                    </div>
+                                    <div class="card-body">
+                                        <ul>
+                                            <li>Gestión centralizada de la configuración institucional</li>
+                                            <li>Creación y administración de departamentos académicos</li>
+                                            <li>Organización de documentos en carpetas protegidas por contraseña</li>
+                                            <li>Almacenamiento seguro de documentos PDF</li>
+                                            <li>Control de acceso basado en roles de usuario</li>
+                                            <li>Registro detallado de todas las acciones realizadas en el sistema</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div class="card mb-4">
+                                    <div class="card-header bg-light">
+                                        <i class="fas fa-book-open me-2"></i> ¿Cómo se utiliza?
+                                    </div>
+                                    <div class="card-body">
+                                        <ol>
+                                            <li><strong>Configuración inicial:</strong> Establece los datos básicos de la facultad (nombre, logo, contacto, año académico)</li>
+                                            <li><strong>Creación de departamentos:</strong> Desde la Secretaría General, crea los departamentos académicos</li>
+                                            <li><strong>Gestión de carpetas:</strong> Cada departamento puede crear carpetas organizadas por año académico y protegidas con contraseña</li>
+                                            <li><strong>Subida de documentos:</strong> En cada carpeta, se pueden subir documentos PDF que serán gestionados por el departamento</li>
+                                            <li><strong>Control de acceso:</strong> Los usuarios con diferentes roles tendrán distintos niveles de acceso a la información</li>
+                                            <li><strong>Auditoría:</strong> Todas las acciones quedan registradas en el módulo de control para supervisión</li>
+                                        </ol>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="card">
+                                    <div class="card-header bg-light">
+                                        <i class="fas fa-user-tie me-2"></i> Información del Desarrollador
+                                    </div>
+                                    <div class="card-body text-center">
+                                        <div class="mb-3">
+                                            <i class="fas fa-user-circle fa-5x text-primary"></i>
+                                        </div>
+                                        <h5>Tarciano ENZEMA NCHAMA</h5>
+                                        <p class="text-muted">Desarrollador de Software</p>
+                                        <hr>
+                                        <p><i class="fas fa-graduation-cap me-2"></i> Finalista Universitario</p>
+                                        <p><i class="fas fa-university me-2"></i> UNGE - Universidad Nacional de Guinea Ecuatorial</p>
+                                        <p><i class="fas fa-building me-2"></i> Facultad de Ciencias Económicas, Gestión y Administración</p>
+                                        <p><i class="fas fa-laptop-code me-2"></i> Departamento: Informática de Gestión Empresarial</p>
+                                        <hr>
+                                        <h6 class="mt-3">Contacto:</h6>
+                                        <p><i class="fas fa-envelope me-2"></i> enzemajr@gmail.com</p>
+                                        <p><i class="fas fa-phone me-2"></i> +240 222 084 663</p>
+                                        <div class="mt-3">
+                                            <button class="btn btn-sm btn-outline-primary me-1">
+                                                <i class="fab fa-linkedin"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-info me-1">
+                                                <i class="fab fa-twitter"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-dark">
+                                                <i class="fab fa-github"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Acceso Denegado -->
+            <div id="access-denied-module" class="hidden">
+                <div class="access-denied">
+                    <i class="fas fa-ban fa-5x mb-4"></i>
+                    <h3>Acceso Denegado</h3>
+                    <p>No tienes permisos para acceder a esta sección.</p>
+                    <p>Contacta al administrador del sistema si necesitas acceso.</p>
+                    <button class="btn btn-primary mt-3" id="go-to-dashboard-btn">Volver al Inicio</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-6 text-md-start">
+                        <p>Sistema de Gestión Universitaria v1.0</p>
+                        <p>© 2025 Facultad de Ciencias Económicas, UNGE. Todos los derechos reservados.</p>
+                    </div>
+                    <div class="col-md-6 text-md-end">
+                        <p>Desarrollado por: Tarciano Enzema Nchama</p>
+                        <p><i class="fas fa-envelope me-1"></i> enzemajr@gmail.com</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Añadir Departamento -->
+    <div class="modal fade" id="addDepartmentModal" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="authModalTitle">Iniciar Sesión</h5>
+                    <h5 class="modal-title">Crear Nuevo Departamento</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
-                    <form id="login-form">
+                    <form id="department-form">
                         <div class="mb-3">
-                            <label class="form-label">Usuario</label>
-                            <input type="text" class="form-control" id="login-username" required autocomplete="username">
+                            <label class="form-label">Nombre del Departamento</label>
+                            <input type="text" class="form-control" id="department-name" placeholder="Ej: Informática de Gestión Empresarial" required>
                         </div>
-                        <div class="mb-3 password-container">
-                            <label class="form-label">Contraseña</label>
-                            <input type="password" class="form-control" id="login-password" required autocomplete="current-password">
-                            <span class="toggle-password" id="toggle-login-password"><i class="fas fa-eye"></i></span>
+                        <div class="mb-3">
+                            <label class="form-label">Descripción (Opcional)</label>
+                            <textarea class="form-control" id="department-description" rows="3" placeholder="Breve descripción del departamento"></textarea>
                         </div>
-                        <div class="mb-2 text-end">
-                            <span class="toggle-link" id="show-register">¿No tienes cuenta? Regístrate</span>
-                        </div>
-                        <div id="login-error" class="text-danger mb-2" style="display: none;"></div>
-                        <button type="submit" class="btn btn-primary w-100">Ingresar</button>
                     </form>
-                    <form id="register-form" style="display: none;">
-                        <div class="mb-3">
-                            <label class="form-label">Nombre de Usuario</label>
-                            <input type="text" class="form-control" id="register-username" required autocomplete="username">
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Correo</label>
-                            <input type="email" class="form-control" id="register-email" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Rol</label>
-                            <select class="form-select" id="register-role" required>
-                                <option value="">Selecciona un rol</option>
-                                <option value="Admin">Administrador</option>
-                                <option value="Secretaría">Secretaría General</option>
-                                <option value="Departamento">Departamento</option>
-                                <option value="Usuario">Usuario</option>
-                            </select>
-                        </div>
-                        <div class="mb-3 password-container">
-                            <label class="form-label">Contraseña</label>
-                            <input type="password" class="form-control" id="register-password" required autocomplete="new-password">
-                            <span class="toggle-password" id="toggle-register-password"><i class="fas fa-eye"></i></span>
-                        </div>
-                        <div class="mb-2 text-end">
-                            <span class="toggle-link" id="show-login">¿Ya tienes cuenta? Inicia sesión</span>
-                        </div>
-                        <div id="register-error" class="text-danger mb-2" style="display: none;"></div>
-                        <button type="submit" class="btn btn-success w-100">Registrarse</button>
-                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="save-department">Crear Departamento</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- ... RESTO DE MODALES: addDepartmentModal, addFolderModal, uploadFileModal ... (igual que tu código de ejemplo) -->
+    <!-- Modal: Añadir Carpeta -->
+    <div class="modal fade" id="addFolderModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Crear Nueva Carpeta</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="folder-form">
+                        <div class="mb-3">
+                            <label class="form-label">Nombre de la Carpeta</label>
+                            <input type="text" class="form-control" id="folder-name" placeholder="Ej: Planificación Académica 2023" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Año Académico</label>
+                            <select class="form-select" id="folder-academic-year">
+                                <option>2023-2024</option>
+                                <option selected>2024-2025</option>
+                                <option>2025-2026</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Contraseña de Acceso</label>
+                            <div class="password-container">
+                                <input type="password" class="form-control" id="folder-password" placeholder="Contraseña segura" required>
+                                <span class="toggle-password"><i class="fas fa-eye"></i></span>
+                            </div>
+                            <div class="form-text">Mínimo 8 caracteres, con letras, números y símbolos</div>
+                            <div class="password-strength mt-2">
+                                <div class="strength-meter" id="password-strength-meter" style="width: 0%; background-color: #e74c3c;"></div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Confirmar Contraseña</label>
+                            <div class="password-container">
+                                <input type="password" class="form-control" id="folder-confirm-password" placeholder="Repita la contraseña" required>
+                                <span class="toggle-password"><i class="fas fa-eye"></i></span>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="save-folder">Crear Carpeta</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Subir Archivo -->
+    <div class="modal fade" id="uploadFileModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Subir Documento PDF</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="document-form">
+                        <div class="mb-3">
+                            <label class="form-label">Seleccionar archivo PDF</label>
+                            <input type="file" class="form-control" id="document-file" accept=".pdf" required>
+                            <div class="form-text">Tamaño máximo: 10MB</div>
+                            <div class="pdf-preview mt-2 hidden" id="pdf-preview">
+                                <iframe id="pdf-preview-iframe"></iframe>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Nombre del documento</label>
+                            <input type="text" class="form-control" id="document-name" placeholder="Ej: Plan_Estudios_2025" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Etiquetas (Opcional)</label>
+                            <input type="text" class="form-control" id="document-tags" placeholder="Ej: Académico, Oficial, 2025">
+                            <div class="form-text">Separe con comas las etiquetas</div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="save-document">Subir Documento</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Ver Documento -->
+    <div class="modal fade" id="viewDocumentModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="document-modal-title">Documento PDF</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="pdf-preview" style="height: 600px;">
+                        <iframe id="document-viewer" style="width: 100%; height: 100%; border: none;"></iframe>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    <a href="#" class="btn btn-primary" id="download-document-btn"><i class="fas fa-download me-2"></i>Descargar</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Acceso a Carpeta -->
+    <div class="modal fade" id="folderAccessModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Acceso a Carpeta Protegida</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Esta carpeta está protegida con contraseña. Por favor, ingrese la contraseña para acceder.</p>
+                    <div class="mb-3">
+                        <label class="form-label">Contraseña</label>
+                        <div class="password-container">
+                            <input type="password" class="form-control" id="folder-access-password" placeholder="Ingrese la contraseña" required>
+                            <span class="toggle-password"><i class="fas fa-eye"></i></span>
+                        </div>
+                    </div>
+                    <div class="alert alert-danger hidden" id="folder-access-error">
+                        Contraseña incorrecta. Por favor, intente nuevamente.
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="confirm-folder-access">Acceder</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // --- IndexedDB CONFIG ---
+        // Base de datos IndexedDB
         const DB_NAME = 'university_management';
-        const DB_VERSION = 2;
+        const DB_VERSION = 2; // Versión incrementada para el esquema actualizado
+        
+        // Object stores
         const STORES = {
             FACULTIES: 'faculties',
             DEPARTMENTS: 'departments',
             FOLDERS: 'folders',
             DOCUMENTS: 'documents',
             ACTIVITIES: 'activities',
-            USERS: 'users'
+            USERS: 'users',
+            LOGOS: 'logos'
         };
+        
         let db;
-        let currentUser = null; // El usuario autenticado
         let currentDepartmentId = null;
         let currentFolderId = null;
-        let currentFacultyLogo = null; // Blob o DataURL
-
-        // AUTH: Hash simple (para demo, usar bcrypt en producción)
-        function hashPass(p) {
-            return Array.from(new TextEncoder().encode(p)).reduce((s,x)=>s+String.fromCharCode(x),'');
-        }
-
-        // ----- IndexedDB -----
+        let currentUser = null;
+        let currentPage = 1;
+        const ITEMS_PER_PAGE = 10;
+        
+        // Roles y permisos
+        const ROLES = {
+            ADMIN: 'admin',
+            SECRETARIAT: 'secretariat',
+            DEPARTMENT: 'department',
+            USER: 'user'
+        };
+        
+        // Inicializar la base de datos
         function initDB() {
-            const req = indexedDB.open(DB_NAME, DB_VERSION);
-            req.onupgradeneeded = function(event) {
+            const request = indexedDB.open(DB_NAME, DB_VERSION);
+            
+            request.onupgradeneeded = function(event) {
                 db = event.target.result;
-                // Crear stores si faltan
-                for (const k in STORES) {
-                    if (!db.objectStoreNames.contains(STORES[k])) {
-                        db.createObjectStore(STORES[k], { keyPath: 'id', autoIncrement: true });
-                    }
+                
+                // Crear object stores si no existen
+                if (!db.objectStoreNames.contains(STORES.FACULTIES)) {
+                    db.createObjectStore(STORES.FACULTIES, { keyPath: 'id', autoIncrement: true });
+                }
+                
+                if (!db.objectStoreNames.contains(STORES.DEPARTMENTS)) {
+                    db.createObjectStore(STORES.DEPARTMENTS, { keyPath: 'id', autoIncrement: true });
+                }
+                
+                if (!db.objectStoreNames.contains(STORES.FOLDERS)) {
+                    db.createObjectStore(STORES.FOLDERS, { keyPath: 'id', autoIncrement: true });
+                }
+                
+                if (!db.objectStoreNames.contains(STORES.DOCUMENTS)) {
+                    db.createObjectStore(STORES.DOCUMENTS, { keyPath: 'id', autoIncrement: true });
+                }
+                
+                if (!db.objectStoreNames.contains(STORES.ACTIVITIES)) {
+                    db.createObjectStore(STORES.ACTIVITIES, { keyPath: 'id', autoIncrement: true });
+                }
+                
+                if (!db.objectStoreNames.contains(STORES.USERS)) {
+                    const usersStore = db.createObjectStore(STORES.USERS, { keyPath: 'id', autoIncrement: true });
+                    usersStore.createIndex('email', 'email', { unique: true });
+                }
+                
+                if (!db.objectStoreNames.contains(STORES.LOGOS)) {
+                    db.createObjectStore(STORES.LOGOS, { keyPath: 'id', autoIncrement: true });
                 }
             };
-            req.onsuccess = function(event) {
+            
+            request.onsuccess = function(event) {
                 db = event.target.result;
-                showAuthModal(); // Mostrar login/registro antes que nada
+                console.log('Base de datos abierta con éxito');
+                
+                // Verificar si hay usuarios en la base de datos
+                checkInitialSetup();
             };
-            req.onerror = function(event) {
-                alert('Error abriendo base de datos.');
+            
+            request.onerror = function(event) {
+                console.error('Error al abrir la base de datos:', event.target.error);
             };
         }
-        // CRUD BASICS
+        
+        // Verificar configuración inicial
+        function checkInitialSetup() {
+            getAllData(STORES.USERS).then(users => {
+                if (users.length === 0) {
+                    // No hay usuarios, mostrar pantalla de registro
+                    document.getElementById('login-screen').classList.remove('hidden');
+                    document.getElementById('register-container').classList.remove('hidden');
+                    document.getElementById('login-screen').style.display = 'block';
+                    
+                    // Crear usuario admin por defecto
+                    const adminUser = {
+                        name: 'Administrador',
+                        email: 'admin@unge.edu.gq',
+                        password: hashPassword('Admin123!'),
+                        role: ROLES.ADMIN,
+                        departmentId: null,
+                        createdAt: new Date().toISOString()
+                    };
+                    
+                    saveData(STORES.USERS, adminUser).then(() => {
+                        console.log('Usuario administrador creado por defecto');
+                    });
+                } else {
+                    // Hay usuarios, mostrar pantalla de login
+                    document.getElementById('login-screen').classList.remove('hidden');
+                    document.getElementById('login-screen').style.display = 'block';
+                }
+            });
+        }
+        
+        // Función para hashear contraseñas (simplificada para este ejemplo)
+        function hashPassword(password) {
+            // En una aplicación real, usaría un algoritmo seguro como bcrypt
+            return btoa(encodeURIComponent(password));
+        }
+        
+        // Guardar datos en la base de datos
         function saveData(storeName, data) {
             return new Promise((resolve, reject) => {
-                const tx = db.transaction([storeName], 'readwrite');
-                const store = tx.objectStore(storeName);
-                const req = store.add(data);
-                req.onsuccess = e => resolve(e.target.result);
-                req.onerror = e => reject(e.target.error);
+                const transaction = db.transaction([storeName], 'readwrite');
+                const store = transaction.objectStore(storeName);
+                const request = store.add(data);
+                
+                request.onsuccess = function(event) {
+                    resolve(event.target.result);
+                };
+                
+                request.onerror = function(event) {
+                    reject(event.target.error);
+                };
             });
         }
+        
+        // Actualizar datos en la base de datos
         function updateData(storeName, id, data) {
             return new Promise((resolve, reject) => {
-                const tx = db.transaction([storeName], 'readwrite');
-                const store = tx.objectStore(storeName);
-                const getReq = store.get(id);
-                getReq.onsuccess = function(e) {
-                    const record = e.target.result;
+                const transaction = db.transaction([storeName], 'readwrite');
+                const store = transaction.objectStore(storeName);
+                const getRequest = store.get(id);
+                
+                getRequest.onsuccess = function(event) {
+                    const record = event.target.result;
                     if (record) {
-                        const updated = {...record, ...data};
-                        const putReq = store.put(updated);
-                        putReq.onsuccess = ()=>resolve(updated);
-                        putReq.onerror = e=>reject(e.target.error);
-                    } else reject(new Error('No encontrado'));
+                        const updatedRecord = { ...record, ...data };
+                        const putRequest = store.put(updatedRecord);
+                        
+                        putRequest.onsuccess = function() {
+                            resolve(updatedRecord);
+                        };
+                        
+                        putRequest.onerror = function(event) {
+                            reject(event.target.error);
+                        };
+                    } else {
+                        reject(new Error('Registro no encontrado'));
+                    }
                 };
-                getReq.onerror = e=>reject(e.target.error);
+                
+                getRequest.onerror = function(event) {
+                    reject(event.target.error);
+                };
             });
         }
+        
+        // Obtener todos los datos de un object store
         function getAllData(storeName) {
             return new Promise((resolve, reject) => {
-                const tx = db.transaction([storeName], 'readonly');
-                const store = tx.objectStore(storeName);
-                const req = store.getAll();
-                req.onsuccess = e => resolve(e.target.result);
-                req.onerror = e => reject(e.target.error);
-            });
-        }
-        function getDataBy(storeName, key, value) {
-            return new Promise((resolve, reject) => {
-                const tx = db.transaction([storeName], 'readonly');
-                const store = tx.objectStore(storeName);
-                const req = store.getAll();
-                req.onsuccess = e => {
-                    const res = e.target.result.filter(x=>x[key]===value);
-                    resolve(res);
+                const transaction = db.transaction([storeName], 'readonly');
+                const store = transaction.objectStore(storeName);
+                const request = store.getAll();
+                
+                request.onsuccess = function(event) {
+                    resolve(event.target.result);
                 };
-                req.onerror = e => reject(e.target.error);
-            });
-        }
-        function getRecordBy(storeName, key, value) {
-            return new Promise((resolve, reject) => {
-                const tx = db.transaction([storeName], 'readonly');
-                const store = tx.objectStore(storeName);
-                const req = store.getAll();
-                req.onsuccess = e => {
-                    const found = e.target.result.find(x => x[key] === value);
-                    resolve(found);
+                
+                request.onerror = function(event) {
+                    reject(event.target.error);
                 };
-                req.onerror = e => reject(e.target.error);
             });
         }
-        // ---- AUTH ----
-        function showAuthModal() {
-            const authModal = new bootstrap.Modal(document.getElementById('authModal'), { backdrop: 'static', keyboard: false });
-            document.getElementById('mainApp').style.display = 'none';
-            authModal.show();
-        }
-        function setUserSession(user) {
-            currentUser = user;
-            document.getElementById('mainApp').style.display = '';
-            document.querySelectorAll('.dropdown-toggle').forEach(btn=>{
-                btn.innerHTML = `<i class="fas fa-user-circle me-2"></i>${user.username}`;
+        
+        // Obtener datos por ID
+        function getDataById(storeName, id) {
+            return new Promise((resolve, reject) => {
+                const transaction = db.transaction([storeName], 'readonly');
+                const store = transaction.objectStore(storeName);
+                const request = store.get(id);
+                
+                request.onsuccess = function(event) {
+                    resolve(event.target.result);
+                };
+                
+                request.onerror = function(event) {
+                    reject(event.target.error);
+                };
             });
-            // Actualizar UI para el rol
-            // (puedes ocultar módulos o enlaces según currentUser.role aquí)
-            // ...
-            // Cargar datos principales
-            loadFacultyConfig();
-            loadDashboardData();
-            loadDepartments();
-            loadActivities();
         }
-        // --- Login/Register handlers ---
-        document.addEventListener('DOMContentLoaded', function() {
-            // Login/registro toggle
-            document.getElementById('show-register').onclick = function() {
-                document.getElementById('login-form').style.display = 'none';
-                document.getElementById('register-form').style.display = '';
-                document.getElementById('authModalTitle').textContent = 'Registro de Usuario';
-            };
-            document.getElementById('show-login').onclick = function() {
-                document.getElementById('login-form').style.display = '';
-                document.getElementById('register-form').style.display = 'none';
-                document.getElementById('authModalTitle').textContent = 'Iniciar Sesión';
-            };
-            // Mostrar/ocultar contraseña
-            document.getElementById('toggle-login-password').onclick = function() {
-                const input = document.getElementById('login-password');
-                input.type = input.type === 'password' ? 'text' : 'password';
-                this.innerHTML = input.type === 'password' ? '<i class="fas fa-eye"></i>' : '<i class="fas fa-eye-slash"></i>';
-            };
-            document.getElementById('toggle-register-password').onclick = function() {
-                const input = document.getElementById('register-password');
-                input.type = input.type === 'password' ? 'text' : 'password';
-                this.innerHTML = input.type === 'password' ? '<i class="fas fa-eye"></i>' : '<i class="fas fa-eye-slash"></i>';
-            };
-            // LOGIN
-            document.getElementById('login-form').onsubmit = async function(e) {
-                e.preventDefault();
-                const username = document.getElementById('login-username').value.trim();
-                const password = document.getElementById('login-password').value;
-                const user = await getRecordBy(STORES.USERS, 'username', username);
-                if (user && user.password === hashPass(password)) {
-                    document.getElementById('login-error').style.display = 'none';
-                    bootstrap.Modal.getInstance(document.getElementById('authModal')).hide();
-                    setUserSession(user);
-                } else {
-                    document.getElementById('login-error').textContent = 'Credenciales incorrectas';
-                    document.getElementById('login-error').style.display = '';
-                }
-            };
-            // REGISTRO
-            document.getElementById('register-form').onsubmit = async function(e) {
-                e.preventDefault();
-                const username = document.getElementById('register-username').value.trim();
-                const email = document.getElementById('register-email').value.trim();
-                const role = document.getElementById('register-role').value;
-                const password = document.getElementById('register-password').value;
-                if (!username || !email || !role || !password) {
-                    document.getElementById('register-error').textContent = 'Completa todos los campos';
-                    document.getElementById('register-error').style.display = '';
-                    return;
-                }
-                const exists = await getRecordBy(STORES.USERS, 'username', username);
-                if (exists) {
-                    document.getElementById('register-error').textContent = 'El usuario ya existe';
-                    document.getElementById('register-error').style.display = '';
-                    return;
-                }
-                await saveData(STORES.USERS, {
-                    username, email, role, password: hashPass(password)
-                });
-                document.getElementById('register-error').style.display = 'none';
-                alert('Registro exitoso, ahora puedes iniciar sesión.');
-                document.getElementById('show-login').click();
-            };
-        });
-        // ----- FACULTY LOGO -----
+        
+        // Obtener datos por índice
+        function getDataByIndex(storeName, indexName, value) {
+            return new Promise((resolve, reject) => {
+                const transaction = db.transaction([storeName], 'readonly');
+                const store = transaction.objectStore(storeName);
+                const index = store.index(indexName);
+                const request = index.get(value);
+                
+                request.onsuccess = function(event) {
+                    resolve(event.target.result);
+                };
+                
+                request.onerror = function(event) {
+                    reject(event.target.error);
+                };
+            });
+        }
+        
+        // Eliminar datos
+        function deleteData(storeName, id) {
+            return new Promise((resolve, reject) => {
+                const transaction = db.transaction([storeName], 'readwrite');
+                const store = transaction.objectStore(storeName);
+                const request = store.delete(id);
+                
+                request.onsuccess = function() {
+                    resolve();
+                };
+                
+                request.onerror = function(event) {
+                    reject(event.target.error);
+                };
+            });
+        }
+        
+        // Obtener datos con paginación
+        function getPaginatedData(storeName, page, itemsPerPage) {
+            return new Promise((resolve, reject) => {
+                const transaction = db.transaction([storeName], 'readonly');
+                const store = transaction.objectStore(storeName);
+                const request = store.getAll();
+                
+                request.onsuccess = function(event) {
+                    const allItems = event.target.result;
+                    const startIndex = (page - 1) * itemsPerPage;
+                    const endIndex = startIndex + itemsPerPage;
+                    const paginatedItems = allItems.slice(startIndex, endIndex);
+                    const totalPages = Math.ceil(allItems.length / itemsPerPage);
+                    
+                    resolve({
+                        items: paginatedItems,
+                        totalPages: totalPages,
+                        currentPage: page
+                    });
+                };
+                
+                request.onerror = function(event) {
+                    reject(event.target.error);
+                };
+            });
+        }
+        
+        // Cargar configuración de la facultad
         function loadFacultyConfig() {
-            getAllData(STORES.FACULTIES).then(faculties => {
+            Promise.all([
+                getAllData(STORES.FACULTIES),
+                getDataById(STORES.LOGOS, 1)
+            ]).then(([faculties, logo]) => {
                 if (faculties.length > 0) {
                     const faculty = faculties[0];
-                    document.getElementById('faculty-name').textContent = faculty.name || '';
-                    document.getElementById('faculty-email').textContent = faculty.email || '';
-                    document.getElementById('faculty-phone').textContent = faculty.phone || '';
-                    document.getElementById('academic-year').textContent = faculty.academicYear || '';
-                    // Logo
-                    if (faculty.logo) {
-                        setLogoDisplay(faculty.logo);
-                    } else {
-                        setLogoDisplay(null);
+                    document.getElementById('faculty-name').textContent = faculty.name;
+                    document.getElementById('faculty-email').textContent = faculty.email;
+                    document.getElementById('faculty-phone').textContent = faculty.phone;
+                    document.getElementById('academic-year').textContent = faculty.academicYear;
+                    
+                    // Actualizar formulario de configuración
+                    document.getElementById('faculty-name-input').value = faculty.name;
+                    document.getElementById('faculty-email-input').value = faculty.email;
+                    document.getElementById('faculty-phone-input').value = faculty.phone;
+                    document.getElementById('academic-year-select').value = faculty.academicYear;
+                    
+                    // Mostrar logo si existe
+                    if (logo) {
+                        const logoUrl = URL.createObjectURL(logo.file);
+                        document.getElementById('faculty-logo-img').src = logoUrl;
+                        document.getElementById('faculty-logo-img').classList.remove('hidden');
+                        document.getElementById('logo-placeholder').classList.add('hidden');
+                        
+                        // Mostrar en el preview de configuración
+                        document.getElementById('current-logo-preview').src = logoUrl;
+                        document.getElementById('current-logo-preview').classList.remove('hidden');
+                        document.getElementById('logo-preview-placeholder').classList.add('hidden');
+                        document.getElementById('logo-preview-text').textContent = 'Logotipo actual';
                     }
                 } else {
-                    // Vacío, no datos simulados
-                    setLogoDisplay(null);
+                    // Datos iniciales predeterminados
+                    const initialFaculty = {
+                        name: 'Facultad de Ciencias Económicas, Gestión y Administración',
+                        email: 'facultad@unge.edu.gq',
+                        phone: '+240 222 123 456',
+                        academicYear: '2025-2026'
+                    };
+                    
+                    saveData(STORES.FACULTIES, initialFaculty).then(() => {
+                        loadFacultyConfig();
+                    });
                 }
             });
         }
-        function setLogoDisplay(logoDataUrl) {
-            const logoDiv = document.getElementById('logo-display');
-            logoDiv.innerHTML = '';
-            if (logoDataUrl) {
-                const img = document.createElement('img');
-                img.src = logoDataUrl;
-                img.className = 'logo-img';
-                logoDiv.appendChild(img);
-            } else {
-                logoDiv.innerHTML = '<i class="fas fa-university logo-placeholder"></i>';
+        
+        // Guardar configuración de la facultad
+        function saveFacultyConfig() {
+            const name = document.getElementById('faculty-name-input').value;
+            const email = document.getElementById('faculty-email-input').value;
+            const phone = document.getElementById('faculty-phone-input').value;
+            const academicYear = document.getElementById('academic-year-select').value;
+            const logoFile = document.getElementById('logo-upload').files[0];
+            
+            if (!name || !email || !phone || !academicYear) {
+                alert('Por favor, complete todos los campos requeridos');
+                return;
             }
-        }
-        // Logo input en Configuración
-        document.addEventListener('DOMContentLoaded', function() {
-            // Si tienes el input del logo así: <input type="file" class="form-control" id="faculty-logo-input">
-            // Agrégalo en el HTML del modal de configuración.
-            // Escucha el cambio y almacena DataURL en IndexedDB.
-            if (!document.getElementById('faculty-logo-input') && document.getElementById('configuration-module')) {
-                // Si no existe el input, créalo dinámicamente (mejor ponerlo en el HTML)
-                const input = document.createElement('input');
-                input.type = "file";
-                input.accept = "image/png, image/jpeg";
-                input.className = "form-control";
-                input.id = "faculty-logo-input";
-                input.style.marginTop = "10px";
-                document.querySelector('#configuration-module .module-content .col-md-6').appendChild(input);
-            }
-            document.getElementById('faculty-logo-input')?.addEventListener('change', function(evt) {
-                const file = this.files[0];
-                if (!file) return;
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    currentFacultyLogo = e.target.result;
-                    setLogoDisplay(currentFacultyLogo);
-                };
-                reader.readAsDataURL(file);
-            });
-            // Guardar Configuración de Facultad
-            document.getElementById('save-config')?.addEventListener('click', function() {
-                const name = document.getElementById('faculty-name-input').value;
-                const email = document.getElementById('faculty-email-input').value;
-                const phone = document.getElementById('faculty-phone-input').value;
-                const academicYear = document.getElementById('academic-year-select').value;
+            
+            // Primero guardar el logo si se ha seleccionado uno
+            const logoPromise = logoFile ? saveLogo(logoFile) : Promise.resolve();
+            
+            logoPromise.then(() => {
+                // Luego guardar la configuración de la facultad
                 getAllData(STORES.FACULTIES).then(faculties => {
                     if (faculties.length > 0) {
                         const faculty = faculties[0];
-                        updateData(STORES.FACULTIES, faculty.id, {
-                            name, email, phone, academicYear, logo: currentFacultyLogo
-                        }).then(loadFacultyConfig);
+                        updateData(STORES.FACULTIES, faculty.id, { 
+                            name, 
+                            email, 
+                            phone, 
+                            academicYear 
+                        }).then(() => {
+                            // Registrar actividad
+                            saveActivity(
+                                currentUser.name,
+                                currentUser.role,
+                                'Sistema',
+                                'actualizó la configuración de la facultad',
+                                name
+                            );
+                            
+                            loadFacultyConfig();
+                            alert('Configuración guardada correctamente');
+                        });
                     } else {
-                        saveData(STORES.FACULTIES, {
-                            name, email, phone, academicYear, logo: currentFacultyLogo
-                        }).then(loadFacultyConfig);
+                        saveData(STORES.FACULTIES, { 
+                            name, 
+                            email, 
+                            phone, 
+                            academicYear 
+                        }).then(() => {
+                            loadFacultyConfig();
+                            alert('Configuración guardada correctamente');
+                        });
                     }
                 });
             });
-        });
-
-        // SUBIDA Y VISUALIZACIÓN DE PDF FUNCIONAL Y SEGURA
-        document.addEventListener('DOMContentLoaded', function() {
-            // Botón de guardar documento PDF
-            document.getElementById('save-document')?.addEventListener('click', async function() {
-                const fileInput = document.getElementById('document-file');
-                const name = document.getElementById('document-name').value.trim();
-                const tags = document.getElementById('document-tags').value.trim();
-                if (!fileInput.files.length || !name) {
-                    alert('Selecciona un PDF y escribe un nombre.');
-                    return;
-                }
-                const file = fileInput.files[0];
-                if (file.type !== 'application/pdf' || file.size > 10*1024*1024) {
-                    alert('Solo se permiten archivos PDF hasta 10MB.');
-                    return;
-                }
-                // Leer el PDF como Blob y guardar en IndexedDB
+        }
+        
+        // Guardar logo en la base de datos
+        function saveLogo(file) {
+            return new Promise((resolve, reject) => {
                 const reader = new FileReader();
-                reader.onload = async function(e) {
-                    const documentData = {
-                        name,
-                        tags: tags.split(',').map(t=>t.trim()).filter(Boolean),
-                        file: e.target.result,
-                        folderId: currentFolderId,
-                        departmentId: currentDepartmentId,
-                        uploadedBy: currentUser.username,
+                
+                reader.onload = function(event) {
+                    const logoData = {
+                        id: 1,
+                        name: file.name,
+                        type: file.type,
+                        size: file.size,
+                        file: file,
                         uploadedAt: new Date().toISOString()
                     };
-                    await saveData(STORES.DOCUMENTS, documentData);
-                    // Registrar en actividades
-                    await saveData(STORES.ACTIVITIES, {
-                        date: new Date().toLocaleString(),
-                        user: currentUser.username,
-                        role: currentUser.role,
-                        department: currentDepartmentId,
-                        action: 'subió documento',
-                        details: name
+                    
+                    // Verificar si ya existe un logo
+                    getDataById(STORES.LOGOS, 1).then(existingLogo => {
+                        if (existingLogo) {
+                            // Actualizar logo existente
+                            updateData(STORES.LOGOS, 1, logoData).then(() => {
+                                resolve();
+                            });
+                        } else {
+                            // Crear nuevo logo
+                            saveData(STORES.LOGOS, logoData).then(() => {
+                                resolve();
+                            });
+                        }
                     });
-                    // Cerrar modal, limpiar, recargar documentos
-                    bootstrap.Modal.getInstance(document.getElementById('uploadFileModal')).hide();
-                    document.getElementById('document-form').reset();
-                    loadDocuments(currentFolderId);
-                    alert('Documento subido correctamente.');
                 };
-                reader.readAsDataURL(file);
+                
+                reader.onerror = function() {
+                    reject(new Error('Error al leer el archivo'));
+                };
+                
+                reader.readAsArrayBuffer(file);
             });
-        });
-
-        // SECRETARÍA GENERAL: ABRIR DEPARTAMENTOS, CARPETAS Y DOCUMENTOS
+        }
+        
+        // Cargar datos para el dashboard
+        function loadDashboardData() {
+            Promise.all([
+                getAllData(STORES.DEPARTMENTS),
+                getAllData(STORES.FOLDERS),
+                getAllData(STORES.DOCUMENTS),
+                getAllData(STORES.ACTIVITIES),
+                getAllData(STORES.USERS)
+            ]).then(([departments, folders, documents, activities, users]) => {
+                // Actualizar contadores
+                document.getElementById('departments-count').textContent = departments.length;
+                document.getElementById('folders-count').textContent = folders.length;
+                document.getElementById('documents-count').textContent = documents.length;
+                document.getElementById('users-count').textContent = users.length;
+                
+                // Actualizar lista de departamentos
+                const departmentsList = document.getElementById('departments-list');
+                departmentsList.innerHTML = '';
+                
+                if (departments.length > 0) {
+                    const container = document.createElement('div');
+                    container.className = 'd-flex flex-wrap';
+                    
+                    departments.forEach(department => {
+                        const badge = document.createElement('span');
+                        badge.className = 'badge bg-primary department-badge';
+                        badge.textContent = department.name;
+                        badge.style.cursor = 'pointer';
+                        badge.addEventListener('click', () => {
+                            currentDepartmentId = department.id;
+                            document.getElementById('current-department-name').textContent = department.name;
+                            loadFoldersForDepartment(department.id);
+                            showModule('departments');
+                        });
+                        container.appendChild(badge);
+                    });
+                    
+                    departmentsList.appendChild(container);
+                } else {
+                    departmentsList.innerHTML = '<div class="no-results">No hay departamentos registrados</div>';
+                }
+                
+                // Actualizar actividad reciente
+                const recentActivity = document.getElementById('recent-activity');
+                recentActivity.innerHTML = '';
+                
+                if (activities.length > 0) {
+                    // Mostrar las últimas 5 actividades
+                    const recent = activities.slice(-5).reverse();
+                    
+                    recent.forEach(activity => {
+                        const entry = document.createElement('div');
+                        entry.className = `log-entry ${activity.action.includes('elimin') ? 'deletion' : ''}`;
+                        
+                        let badgeClass = 'badge user-badge';
+                        if (activity.role === 'admin') badgeClass = 'badge admin-badge';
+                        if (activity.role === 'secretariat') badgeClass = 'badge secretariat-badge';
+                        if (activity.role === 'department') badgeClass = 'badge department-badge';
+                        
+                        entry.innerHTML = `
+                            <span class="${badgeClass}">${getRoleName(activity.role)}</span>
+                            <strong>${activity.user}</strong> ${activity.action} <strong>${activity.details}</strong>
+                            <span class="text-muted">- ${activity.date}</span>
+                        `;
+                        
+                        recentActivity.appendChild(entry);
+                    });
+                } else {
+                    recentActivity.innerHTML = '<div class="no-results">No hay actividad reciente</div>';
+                }
+            });
+        }
+        
+        // Cargar departamentos para la Secretaría
         function loadDepartments() {
             getAllData(STORES.DEPARTMENTS).then(departments => {
                 const container = document.getElementById('departments-container');
-                if (!container) return;
                 container.innerHTML = '';
+                
                 if (departments.length > 0) {
-                    departments.forEach(dept => {
+                    departments.forEach(department => {
                         const col = document.createElement('div');
                         col.className = 'col-md-4 mb-3';
-                        col.innerHTML = `
-                            <div class="folder-card" style="cursor:pointer" data-id="${dept.id}">
-                                <div class="d-flex justify-content-between">
-                                    <h6>${dept.name}</h6>
+                        
+                        // Contar carpetas para este departamento
+                        countFoldersForDepartment(department.id).then(folderCount => {
+                            col.innerHTML = `
+                                <div class="folder-card">
+                                    <div class="d-flex justify-content-between">
+                                        <h6>${department.name}</h6>
+                                        <span class="badge bg-info">${folderCount} carpetas</span>
+                                    </div>
+                                    <p class="text-muted small">${department.description || 'Sin descripción'}</p>
+                                    <div class="d-flex justify-content-end mt-2">
+                                        <button class="btn btn-sm btn-outline-primary me-1 edit-department" data-id="${department.id}">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-danger delete-department" data-id="${department.id}">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
                                 </div>
-                                <div>${dept.description || ''}</div>
-                            </div>
-                        `;
-                        container.appendChild(col);
-                    });
-                    // Click para abrir departamento
-                    container.querySelectorAll('.folder-card').forEach(card => {
-                        card.onclick = function() {
-                            currentDepartmentId = parseInt(this.getAttribute('data-id'));
-                            loadFolders(currentDepartmentId);
-                            showModule('departments');
-                        };
+                            `;
+                            
+                            container.appendChild(col);
+                            
+                            // Añadir event listeners a los botones
+                            col.querySelector('.edit-department').addEventListener('click', function() {
+                                const departmentId = this.getAttribute('data-id');
+                                editDepartment(departmentId);
+                            });
+                            
+                            col.querySelector('.delete-department').addEventListener('click', function() {
+                                const departmentId = this.getAttribute('data-id');
+                                deleteDepartment(departmentId);
+                            });
+                        });
                     });
                 } else {
                     container.innerHTML = '<div class="col-12"><div class="no-results">No hay departamentos registrados</div></div>';
                 }
             });
         }
-        function loadFolders(departmentId) {
-            getDataBy(STORES.FOLDERS, 'departmentId', departmentId).then(folders => {
+        
+        // Contar carpetas por departamento
+        function countFoldersForDepartment(departmentId) {
+            return new Promise((resolve) => {
+                getAllData(STORES.FOLDERS).then(folders => {
+                    const count = folders.filter(folder => folder.departmentId === departmentId).length;
+                    resolve(count);
+                });
+            });
+        }
+        
+        // Cargar carpetas para un departamento
+        function loadFoldersForDepartment(departmentId) {
+            getAllData(STORES.FOLDERS).then(folders => {
                 const container = document.getElementById('folders-container');
-                if (!container) return;
                 container.innerHTML = '';
-                if (folders.length > 0) {
-                    folders.forEach(folder => {
+                
+                const departmentFolders = folders.filter(folder => folder.departmentId === departmentId);
+                
+                if (departmentFolders.length > 0) {
+                    departmentFolders.forEach(folder => {
                         const col = document.createElement('div');
-                        col.className = 'col-md-4 mb-3';
-                        col.innerHTML = `
-                            <div class="folder-card" style="cursor:pointer" data-id="${folder.id}">
-                                <div class="d-flex justify-content-between">
-                                    <h6>${folder.name}</h6>
+                        col.className = 'col-md-6 mb-3';
+                        
+                        // Contar documentos para esta carpeta
+                        countDocumentsForFolder(folder.id).then(documentCount => {
+                            col.innerHTML = `
+                                <div class="folder-card" data-id="${folder.id}">
+                                    <div class="d-flex align-items-center">
+                                        <i class="fas fa-folder folder-icon"></i>
+                                        <div>
+                                            <h6>${folder.name}</h6>
+                                            <p class="text-muted small mb-0">Año: ${folder.academicYear} • ${documentCount} documentos</p>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div>${folder.academicYear}</div>
-                            </div>
-                        `;
-                        container.appendChild(col);
-                    });
-                    // Click para abrir carpeta
-                    container.querySelectorAll('.folder-card').forEach(card => {
-                        card.onclick = function() {
-                            currentFolderId = parseInt(this.getAttribute('data-id'));
-                            loadDocuments(currentFolderId);
-                        };
+                            `;
+                            
+                            container.appendChild(col);
+                            
+                            // Añadir event listener para abrir la carpeta
+                            col.querySelector('.folder-card').addEventListener('click', function() {
+                                const folderId = this.getAttribute('data-id');
+                                openFolder(folderId);
+                            });
+                        });
                     });
                 } else {
                     container.innerHTML = '<div class="col-12"><div class="no-results">No hay carpetas en este departamento</div></div>';
                 }
             });
         }
-        function loadDocuments(folderId) {
-            getDataBy(STORES.DOCUMENTS, 'folderId', folderId).then(documents => {
+        
+        // Contar documentos por carpeta
+        function countDocumentsForFolder(folderId) {
+            return new Promise((resolve) => {
+                getAllData(STORES.DOCUMENTS).then(documents => {
+                    const count = documents.filter(doc => doc.folderId === folderId).length;
+                    resolve(count);
+                });
+            });
+        }
+        
+        // Abrir una carpeta (verificar contraseña si es necesario)
+        function openFolder(folderId) {
+            getDataById(STORES.FOLDERS, folderId).then(folder => {
+                if (!folder) return;
+                
+                // Verificar si el usuario tiene acceso sin contraseña (admin o secretaría)
+                if (currentUser.role === ROLES.ADMIN || currentUser.role === ROLES.SECRETARIAT) {
+                    currentFolderId = folderId;
+                    document.getElementById('current-folder-name').textContent = folder.name;
+                    loadDocumentsForFolder(folderId);
+                    return;
+                }
+                
+                // Verificar si el usuario es del mismo departamento
+                if (currentUser.departmentId === folder.departmentId) {
+                    // Mostrar modal para ingresar contraseña
+                    const modal = new bootstrap.Modal(document.getElementById('folderAccessModal'));
+                    document.getElementById('folder-access-password').value = '';
+                    document.getElementById('folder-access-error').classList.add('hidden');
+                    
+                    const confirmBtn = document.getElementById('confirm-folder-access');
+                    confirmBtn.onclick = function() {
+                        const password = document.getElementById('folder-access-password').value;
+                        
+                        if (password === folder.password) {
+                            currentFolderId = folderId;
+                            document.getElementById('current-folder-name').textContent = folder.name;
+                            loadDocumentsForFolder(folderId);
+                            modal.hide();
+                        } else {
+                            document.getElementById('folder-access-error').classList.remove('hidden');
+                        }
+                    };
+                    
+                    modal.show();
+                } else {
+                    alert('No tienes permiso para acceder a esta carpeta');
+                }
+            });
+        }
+        
+        // Cargar documentos para una carpeta
+        function loadDocumentsForFolder(folderId) {
+            getAllData(STORES.DOCUMENTS).then(documents => {
                 const container = document.getElementById('documents-container');
-                if (!container) return;
                 container.innerHTML = '';
-                if (documents.length > 0) {
-                    documents.forEach(doc => {
+                
+                const folderDocuments = documents.filter(doc => doc.folderId === folderId);
+                
+                if (folderDocuments.length > 0) {
+                    folderDocuments.forEach(doc => {
                         const item = document.createElement('div');
-                        item.className = 'list-group-item d-flex align-items-center justify-content-between';
+                        item.className = 'document-item';
+                        
                         item.innerHTML = `
-                            <span>
-                                <i class="fas fa-file-pdf file-icon me-2"></i>
+                            <div class="document-icon">
+                                <i class="fas fa-file-pdf"></i>
+                            </div>
+                            <div class="document-info">
                                 <strong>${doc.name}</strong>
-                                <small class="text-muted ms-2">${doc.tags.join(', ')}</small>
-                            </span>
-                            <button class="btn btn-sm btn-outline-info" data-docid="${doc.id}"><i class="fas fa-eye"></i> Abrir</button>
+                                <p class="text-muted small mb-0">Subido: ${new Date(doc.uploadedAt).toLocaleDateString()}</p>
+                                ${doc.tags ? `<p class="text-muted small mb-0">Etiquetas: ${doc.tags}</p>` : ''}
+                            </div>
+                            <div class="document-actions">
+                                <button class="btn btn-sm btn-outline-primary view-document" data-id="${doc.id}">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-danger delete-document" data-id="${doc.id}">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
                         `;
+                        
                         container.appendChild(item);
-                    });
-                    // Abrir visor de PDF
-                    container.querySelectorAll('button[data-docid]').forEach(btn => {
-                        btn.onclick = function() {
-                            const docId = parseInt(this.getAttribute('data-docid'));
-                            openPDF(docId);
-                        };
+                        
+                        // Añadir event listeners a los botones
+                        item.querySelector('.view-document').addEventListener('click', function() {
+                            const docId = this.getAttribute('data-id');
+                            viewDocument(docId);
+                        });
+                        
+                        item.querySelector('.delete-document').addEventListener('click', function() {
+                            const docId = this.getAttribute('data-id');
+                            deleteDocument(docId);
+                        });
                     });
                 } else {
                     container.innerHTML = '<div class="no-results">No hay documentos en esta carpeta</div>';
                 }
             });
         }
-        function openPDF(docId) {
-            // Recuperar el PDF y abrir en nueva ventana
-            getAllData(STORES.DOCUMENTS).then(docs => {
-                const doc = docs.find(x => x.id === docId);
-                if (doc && doc.file) {
-                    const win = window.open();
-                    win.document.write(`<iframe src="${doc.file}" type="application/pdf" width="100%" height="100%"></iframe>`);
+        
+        // Ver un documento
+        function viewDocument(docId) {
+            getDataById(STORES.DOCUMENTS, docId).then(doc => {
+                if (!doc) return;
+                
+                const modal = new bootstrap.Modal(document.getElementById('viewDocumentModal'));
+                document.getElementById('document-modal-title').textContent = doc.name;
+                
+                // Crear URL para el PDF
+                const pdfUrl = URL.createObjectURL(doc.file);
+                document.getElementById('document-viewer').src = pdfUrl;
+                
+                // Configurar botón de descarga
+                document.getElementById('download-document-btn').href = pdfUrl;
+                document.getElementById('download-document-btn').download = doc.name + '.pdf';
+                
+                modal.show();
+                
+                // Registrar actividad
+                saveActivity(
+                    currentUser.name,
+                    currentUser.role,
+                    'Documentos',
+                    'visualizó el documento',
+                    doc.name
+                );
+            });
+        }
+        
+        // Cargar actividades para el módulo de control
+        function loadActivities(page = 1) {
+            getPaginatedData(STORES.ACTIVITIES, page, ITEMS_PER_PAGE).then(result => {
+                const container = document.getElementById('activities-container');
+                container.innerHTML = '';
+                
+                if (result.items.length > 0) {
+                    result.items.forEach(activity => {
+                        const row = document.createElement('tr');
+                        
+                        let badgeClass = 'badge user-badge';
+                        if (activity.role === 'admin') badgeClass = 'badge admin-badge';
+                        if (activity.role === 'secretariat') badgeClass = 'badge secretariat-badge';
+                        if (activity.role === 'department') badgeClass = 'badge department-badge';
+                        
+                        row.innerHTML = `
+                            <td>${activity.date}</td>
+                            <td>${activity.user}</td>
+                            <td><span class="${badgeClass}">${getRoleName(activity.role)}</span></td>
+                            <td>${activity.department}</td>
+                            <td>${activity.action}</td>
+                            <td>${activity.details}</td>
+                        `;
+                        
+                        container.appendChild(row);
+                    });
+                } else {
+                    container.innerHTML = '<tr><td colspan="6" class="text-center">No hay actividades registradas</td></tr>';
+                }
+                
+                // Actualizar paginación
+                updatePagination(result.totalPages, page);
+            });
+        }
+        
+        // Actualizar controles de paginación
+        function updatePagination(totalPages, currentPage) {
+            const pagination = document.getElementById('activities-pagination');
+            pagination.innerHTML = '';
+            
+            // Botón Anterior
+            const prevItem = document.createElement('li');
+            prevItem.className = `page-item ${currentPage === 1 ? 'disabled' : ''}`;
+            prevItem.innerHTML = '<a class="page-link" href="#">Anterior</a>';
+            prevItem.addEventListener('click', (e) => {
+                e.preventDefault();
+                if (currentPage > 1) {
+                    loadActivities(currentPage - 1);
+                }
+            });
+            pagination.appendChild(prevItem);
+            
+            // Números de página
+            for (let i = 1; i <= totalPages; i++) {
+                const pageItem = document.createElement('li');
+                pageItem.className = `page-item ${i === currentPage ? 'active' : ''}`;
+                pageItem.innerHTML = `<a class="page-link" href="#">${i}</a>`;
+                pageItem.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    loadActivities(i);
+                });
+                pagination.appendChild(pageItem);
+            }
+            
+            // Botón Siguiente
+            const nextItem = document.createElement('li');
+            nextItem.className = `page-item ${currentPage === totalPages ? 'disabled' : ''}`;
+            nextItem.innerHTML = '<a class="page-link" href="#">Siguiente</a>';
+            nextItem.addEventListener('click', (e) => {
+                e.preventDefault();
+                if (currentPage < totalPages) {
+                    loadActivities(currentPage + 1);
+                }
+            });
+            pagination.appendChild(nextItem);
+        }
+        
+        // Crear un nuevo departamento
+        function createDepartment() {
+            const name = document.getElementById('department-name').value;
+            const description = document.getElementById('department-description').value;
+            
+            if (!name) {
+                alert('Por favor, ingrese un nombre para el departamento');
+                return;
+            }
+            
+            const department = {
+                name,
+                description,
+                createdAt: new Date().toISOString()
+            };
+            
+            saveData(STORES.DEPARTMENTS, department).then(id => {
+                // Registrar actividad
+                saveActivity(
+                    currentUser.name,
+                    currentUser.role,
+                    'Secretaría',
+                    'creó el departamento',
+                    name
+                );
+                
+                // Cerrar modal y actualizar datos
+                bootstrap.Modal.getInstance(document.getElementById('addDepartmentModal')).hide();
+                document.getElementById('department-form').reset();
+                
+                loadDepartments();
+                loadDashboardData();
+                
+                alert('Departamento creado con éxito');
+            });
+        }
+        
+        // Editar departamento
+        function editDepartment(id) {
+            getDataById(STORES.DEPARTMENTS, id).then(department => {
+                if (!department) return;
+                
+                // Llenar el formulario con los datos del departamento
+                document.getElementById('department-name').value = department.name;
+                document.getElementById('department-description').value = department.description || '';
+                
+                // Cambiar el texto del botón
+                document.getElementById('save-department').textContent = 'Actualizar Departamento';
+                
+                // Guardar el ID del departamento en el botón
+                document.getElementById('save-department').setAttribute('data-id', id);
+                
+                // Mostrar el modal
+                const modal = new bootstrap.Modal(document.getElementById('addDepartmentModal'));
+                modal.show();
+                
+                // Cambiar el event listener temporalmente
+                const saveBtn = document.getElementById('save-department');
+                const originalListener = saveBtn.onclick;
+                
+                saveBtn.onclick = function() {
+                    const newName = document.getElementById('department-name').value;
+                    const newDescription = document.getElementById('department-description').value;
+                    
+                    if (!newName) {
+                        alert('Por favor, ingrese un nombre para el departamento');
+                        return;
+                    }
+                    
+                    updateData(STORES.DEPARTMENTS, id, {
+                        name: newName,
+                        description: newDescription
+                    }).then(() => {
+                        // Registrar actividad
+                        saveActivity(
+                            currentUser.name,
+                            currentUser.role,
+                            'Secretaría',
+                            'actualizó el departamento',
+                            newName
+                        );
+                        
+                        modal.hide();
+                        document.getElementById('department-form').reset();
+                        
+                        // Restaurar el botón original
+                        saveBtn.textContent = 'Crear Departamento';
+                        saveBtn.removeAttribute('data-id');
+                        saveBtn.onclick = originalListener;
+                        
+                        loadDepartments();
+                        loadDashboardData();
+                        
+                        alert('Departamento actualizado con éxito');
+                    });
+                };
+            });
+        }
+        
+        // Eliminar departamento
+        function deleteDepartment(id) {
+            if (confirm('¿Está seguro que desea eliminar este departamento? Esta acción no se puede deshacer.')) {
+                getDataById(STORES.DEPARTMENTS, id).then(department => {
+                    if (!department) return;
+                    
+                    // Verificar si el departamento tiene carpetas
+                    getAllData(STORES.FOLDERS).then(folders => {
+                        const departmentFolders = folders.filter(folder => folder.departmentId === id);
+                        
+                        if (departmentFolders.length > 0) {
+                            alert('No se puede eliminar el departamento porque tiene carpetas asociadas. Elimine primero las carpetas.');
+                            return;
+                        }
+                        
+                        // Eliminar el departamento
+                        deleteData(STORES.DEPARTMENTS, id).then(() => {
+                            // Registrar actividad
+                            saveActivity(
+                                currentUser.name,
+                                currentUser.role,
+                                'Secretaría',
+                                'eliminó el departamento',
+                                department.name
+                            );
+                            
+                            loadDepartments();
+                            loadDashboardData();
+                            
+                            alert('Departamento eliminado con éxito');
+                        });
+                    });
+                });
+            }
+        }
+        
+        // Crear una nueva carpeta
+        function createFolder() {
+            const name = document.getElementById('folder-name').value;
+            const academicYear = document.getElementById('folder-academic-year').value;
+            const password = document.getElementById('folder-password').value;
+            const confirmPassword = document.getElementById('folder-confirm-password').value;
+            
+            if (!name || !academicYear || !password || !confirmPassword) {
+                alert('Por favor, complete todos los campos requeridos');
+                return;
+            }
+            
+            if (password.length < 8) {
+                alert('La contraseña debe tener al menos 8 caracteres');
+                return;
+            }
+            
+            if (password !== confirmPassword) {
+                alert('Las contraseñas no coinciden');
+                return;
+            }
+            
+            // Si no hay un departamento seleccionado, usar el primero disponible
+            let departmentId = currentDepartmentId;
+            
+            if (!departmentId) {
+                getAllData(STORES.DEPARTMENTS).then(departments => {
+                    if (departments.length > 0) {
+                        departmentId = departments[0].id;
+                        createFolderWithDepartment(name, academicYear, password, departmentId);
+                    } else {
+                        alert('No hay departamentos disponibles. Cree un departamento primero.');
+                    }
+                });
+            } else {
+                createFolderWithDepartment(name, academicYear, password, departmentId);
+            }
+        }
+        
+        function createFolderWithDepartment(name, academicYear, password, departmentId) {
+            const folder = {
+                name,
+                academicYear,
+                password,
+                departmentId,
+                createdAt: new Date().toISOString()
+            };
+            
+            saveData(STORES.FOLDERS, folder).then(id => {
+                // Registrar actividad
+                saveActivity(
+                    currentUser.name,
+                    currentUser.role,
+                    'Departamentos',
+                    'creó la carpeta',
+                    name
+                );
+                
+                // Cerrar modal y actualizar datos
+                bootstrap.Modal.getInstance(document.getElementById('addFolderModal')).hide();
+                document.getElementById('folder-form').reset();
+                document.getElementById('password-strength-meter').style.width = '0%';
+                
+                loadDashboardData();
+                
+                // Si estamos en el módulo de departamentos, recargar las carpetas
+                if (document.getElementById('departments-module').classList.contains('hidden') === false) {
+                    loadFoldersForDepartment(departmentId);
+                }
+                
+                alert('Carpeta creada con éxito');
+            });
+        }
+        
+        // Subir un documento
+        function uploadDocument() {
+            const fileInput = document.getElementById('document-file');
+            const name = document.getElementById('document-name').value;
+            const tags = document.getElementById('document-tags').value;
+            
+            if (!fileInput.files || fileInput.files.length === 0) {
+                alert('Por favor, seleccione un archivo PDF');
+                return;
+            }
+            
+            if (!name) {
+                alert('Por favor, ingrese un nombre para el documento');
+                return;
+            }
+            
+            const file = fileInput.files[0];
+            
+            if (file.size > 10 * 1024 * 1024) { // 10MB
+                alert('El archivo es demasiado grande. El tamaño máximo permitido es 10MB.');
+                return;
+            }
+            
+            if (file.type !== 'application/pdf') {
+                alert('Por favor, seleccione un archivo PDF válido');
+                return;
+            }
+            
+            // Si no hay una carpeta seleccionada, usar la primera disponible del departamento
+            let folderId = currentFolderId;
+            
+            if (!folderId) {
+                if (!currentDepartmentId) {
+                    alert('Seleccione un departamento y una carpeta primero');
+                    return;
+                }
+                
+                getAllData(STORES.FOLDERS).then(folders => {
+                    const departmentFolders = folders.filter(f => f.departmentId === currentDepartmentId);
+                    
+                    if (departmentFolders.length > 0) {
+                        folderId = departmentFolders[0].id;
+                        saveDocument(file, name, tags, folderId);
+                    } else {
+                        alert('No hay carpetas disponibles en este departamento. Cree una carpeta primero.');
+                    }
+                });
+            } else {
+                saveDocument(file, name, tags, folderId);
+            }
+        }
+        
+        function saveDocument(file, name, tags, folderId) {
+            getDataById(STORES.FOLDERS, folderId).then(folder => {
+                if (!folder) return;
+                
+                const reader = new FileReader();
+                
+                reader.onload = function(event) {
+                    const documentData = {
+                        name,
+                        tags,
+                        folderId,
+                        departmentId: folder.departmentId,
+                        file: file,
+                        uploadedAt: new Date().toISOString(),
+                        uploadedBy: currentUser.id
+                    };
+                    
+                    saveData(STORES.DOCUMENTS, documentData).then(id => {
+                        // Registrar actividad
+                        saveActivity(
+                            currentUser.name,
+                            currentUser.role,
+                            'Documentos',
+                            'subió el documento',
+                            name
+                        );
+                        
+                        // Cerrar modal y actualizar datos
+                        bootstrap.Modal.getInstance(document.getElementById('uploadFileModal')).hide();
+                        document.getElementById('document-form').reset();
+                        document.getElementById('pdf-preview').classList.add('hidden');
+                        
+                        loadDashboardData();
+                        
+                        // Si estamos en el módulo de departamentos, recargar los documentos
+                        if (document.getElementById('departments-module').classList.contains('hidden') === false) {
+                            loadDocumentsForFolder(folderId);
+                        }
+                        
+                        alert('Documento subido con éxito');
+                    });
+                };
+                
+                reader.onerror = function() {
+                    alert('Error al leer el archivo');
+                };
+                
+                reader.readAsArrayBuffer(file);
+            });
+        }
+        
+        // Eliminar documento
+        function deleteDocument(id) {
+            if (confirm('¿Está seguro que desea eliminar este documento? Esta acción no se puede deshacer.')) {
+                getDataById(STORES.DOCUMENTS, id).then(doc => {
+                    if (!doc) return;
+                    
+                    deleteData(STORES.DOCUMENTS, id).then(() => {
+                        // Registrar actividad
+                        saveActivity(
+                            currentUser.name,
+                            currentUser.role,
+                            'Documentos',
+                            'eliminó el documento',
+                            doc.name
+                        );
+                        
+                        loadDashboardData();
+                        
+                        // Si estamos en el módulo de departamentos, recargar los documentos
+                        if (document.getElementById('departments-module').classList.contains('hidden') === false) {
+                            loadDocumentsForFolder(doc.folderId);
+                        }
+                        
+                        alert('Documento eliminado con éxito');
+                    });
+                });
+            }
+        }
+        
+        // Registrar actividad
+        function saveActivity(user, role, department, action, details) {
+            const activity = {
+                date: new Date().toLocaleString(),
+                user,
+                role,
+                department,
+                action,
+                details
+            };
+            
+            saveData(STORES.ACTIVITIES, activity);
+        }
+        
+        // Función para buscar departamentos
+        function searchDepartments() {
+            const searchTerm = document.getElementById('department-search').value.toLowerCase();
+            const departmentCards = document.querySelectorAll('#departments-container .folder-card');
+            
+            departmentCards.forEach(card => {
+                const departmentName = card.querySelector('h6').textContent.toLowerCase();
+                
+                if (departmentName.includes(searchTerm)) {
+                    card.closest('.col-md-4').style.display = 'block';
+                } else {
+                    card.closest('.col-md-4').style.display = 'none';
                 }
             });
         }
-        // --- Navegación de módulos
-        function showModule(module) {
-            document.querySelectorAll('.module-container > div').forEach(md => md.classList.add('hidden'));
-            document.getElementById(module+'-module').classList.remove('hidden');
+        
+        // Función para buscar carpetas
+        function searchFolders() {
+            const searchTerm = document.getElementById('folder-search').value.toLowerCase();
+            const folderCards = document.querySelectorAll('#folders-container .folder-card');
+            
+            folderCards.forEach(card => {
+                const folderName = card.querySelector('h6').textContent.toLowerCase();
+                
+                if (folderName.includes(searchTerm)) {
+                    card.closest('.col-md-6').style.display = 'block';
+                } else {
+                    card.closest('.col-md-6').style.display = 'none';
+                }
+            });
         }
-
-        // Iniciar DB al cargar
+        
+        // Función para buscar documentos
+        function searchDocuments() {
+            const searchTerm = document.getElementById('document-search').value.toLowerCase();
+            const documentItems = document.querySelectorAll('#documents-container .document-item');
+            
+            documentItems.forEach(item => {
+                const documentName = item.querySelector('strong').textContent.toLowerCase();
+                
+                if (documentName.includes(searchTerm)) {
+                    item.style.display = 'flex';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        }
+        
+        // Mostrar un módulo específico
+        function showModule(moduleId) {
+            // Ocultar todos los módulos
+            document.querySelectorAll('.module-container > div').forEach(module => {
+                module.classList.add('hidden');
+            });
+            
+            // Mostrar el módulo seleccionado
+            document.getElementById(moduleId + '-module').classList.remove('hidden');
+            
+            // Actualizar navegación activa
+            document.querySelectorAll('.nav-link').forEach(navLink => {
+                navLink.classList.remove('active');
+                
+                if (navLink.getAttribute('data-module') === moduleId) {
+                    navLink.classList.add('active');
+                }
+            });
+        }
+        
+        // Verificar permisos para un módulo
+        function checkPermissions(moduleId) {
+            if (!currentUser) return false;
+            
+            // Todos los usuarios pueden ver el dashboard y la información
+            if (moduleId === 'dashboard' || moduleId === 'info') {
+                return true;
+            }
+            
+            // Solo admin puede ver configuración y control
+            if ((moduleId === 'configuration' || moduleId === 'control') && currentUser.role !== ROLES.ADMIN) {
+                return false;
+            }
+            
+            // Solo admin y secretaría pueden ver la secretaría general
+            if (moduleId === 'secretariat' && 
+                currentUser.role !== ROLES.ADMIN && 
+                currentUser.role !== ROLES.SECRETARIAT) {
+                return false;
+            }
+            
+            // Solo admin, secretaría y jefes de departamento pueden ver departamentos
+            if (moduleId === 'departments' && 
+                currentUser.role !== ROLES.ADMIN && 
+                currentUser.role !== ROLES.SECRETARIAT && 
+                currentUser.role !== ROLES.DEPARTMENT) {
+                return false;
+            }
+            
+            return true;
+        }
+        
+        // Obtener nombre legible del rol
+        function getRoleName(role) {
+            switch(role) {
+                case ROLES.ADMIN: return 'Administrador';
+                case ROLES.SECRETARIAT: return 'Secretaría';
+                case ROLES.DEPARTMENT: return 'Departamento';
+                case ROLES.USER: return 'Usuario';
+                default: return role;
+            }
+        }
+        
+        // Iniciar sesión
+        function login(email, password) {
+            getDataByIndex(STORES.USERS, 'email', email).then(user => {
+                if (!user) {
+                    alert('Usuario no encontrado');
+                    return;
+                }
+                
+                // Comparar contraseñas (en una aplicación real usaríamos bcrypt)
+                const hashedPassword = hashPassword(password);
+                
+                if (hashedPassword !== user.password) {
+                    alert('Contraseña incorrecta');
+                    return;
+                }
+                
+                // Inicio de sesión exitoso
+                currentUser = user;
+                document.getElementById('current-user-name').textContent = user.name;
+                
+                // Ocultar pantalla de login y mostrar aplicación
+                document.getElementById('login-screen').style.display = 'none';
+                document.getElementById('app-container').classList.remove('hidden');
+                
+                // Cargar datos iniciales
+                loadFacultyConfig();
+                loadDashboardData();
+                loadDepartments();
+                loadActivities();
+                
+                // Mostrar dashboard por defecto
+                showModule('dashboard');
+                
+                // Registrar actividad
+                saveActivity(
+                    user.name,
+                    user.role,
+                    'Sistema',
+                    'inició sesión',
+                    ''
+                );
+            });
+        }
+        
+        // Registrar nuevo usuario
+        function registerUser(name, email, password, role, departmentId) {
+            // Verificar si el usuario ya existe
+            getDataByIndex(STORES.USERS, 'email', email).then(existingUser => {
+                if (existingUser) {
+                    alert('Ya existe un usuario con este correo electrónico');
+                    return;
+                }
+                
+                const user = {
+                    name,
+                    email,
+                    password: hashPassword(password),
+                    role,
+                    departmentId: departmentId || null,
+                    createdAt: new Date().toISOString()
+                };
+                
+                saveData(STORES.USERS, user).then(() => {
+                    alert('Usuario registrado con éxito. Por favor, inicie sesión.');
+                    
+                    // Volver al formulario de login
+                    document.getElementById('register-container').classList.add('hidden');
+                    document.getElementById('login-form').reset();
+                });
+            });
+        }
+        
+        // Cerrar sesión
+        function logout() {
+            // Registrar actividad
+            saveActivity(
+                currentUser.name,
+                currentUser.role,
+                'Sistema',
+                'cerró sesión',
+                ''
+            );
+            
+            // Limpiar usuario actual
+            currentUser = null;
+            
+            // Ocultar aplicación y mostrar pantalla de login
+            document.getElementById('app-container').classList.add('hidden');
+            document.getElementById('login-screen').classList.remove('hidden');
+            document.getElementById('login-screen').style.display = 'block';
+            
+            // Limpiar formulario de login
+            document.getElementById('login-form').reset();
+        }
+        
+        // Event listeners para el login
+        document.getElementById('login-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            
+            if (!email || !password) {
+                alert('Por favor, complete todos los campos');
+                return;
+            }
+            
+            login(email, password);
+        });
+        
+        // Event listener para mostrar el formulario de registro
+        document.getElementById('show-register').addEventListener('click', function(e) {
+            e.preventDefault();
+            document.getElementById('login-screen').classList.add('hidden');
+            document.getElementById('register-container').classList.remove('hidden');
+            
+            // Cargar departamentos para el selector
+            getAllData(STORES.DEPARTMENTS).then(departments => {
+                const select = document.getElementById('register-department');
+                select.innerHTML = '<option value="">Seleccione un departamento</option>';
+                
+                departments.forEach(dept => {
+                    const option = document.createElement('option');
+                    option.value = dept.id;
+                    option.textContent = dept.name;
+                    select.appendChild(option);
+                });
+            });
+        });
+        
+        // Event listener para cancelar el registro
+        document.getElementById('cancel-register').addEventListener('click', function() {
+            document.getElementById('register-container').classList.add('hidden');
+            document.getElementById('login-screen').classList.remove('hidden');
+            document.getElementById('register-form').reset();
+        });
+        
+        // Event listener para el formulario de registro
+        document.getElementById('register-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const name = document.getElementById('register-name').value;
+            const email = document.getElementById('register-email').value;
+            const password = document.getElementById('register-password').value;
+            const confirmPassword = document.getElementById('register-confirm-password').value;
+            const role = document.getElementById('register-role').value;
+            const departmentId = document.getElementById('register-department').value || null;
+            
+            if (!name || !email || !password || !confirmPassword || !role) {
+                alert('Por favor, complete todos los campos requeridos');
+                return;
+            }
+            
+            if (password !== confirmPassword) {
+                alert('Las contraseñas no coinciden');
+                return;
+            }
+            
+            if (password.length < 8) {
+                alert('La contraseña debe tener al menos 8 caracteres');
+                return;
+            }
+            
+            registerUser(name, email, password, role, departmentId);
+        });
+        
+        // Mostrar/ocultar contraseña
+        document.querySelectorAll('.toggle-password').forEach(toggle => {
+            toggle.addEventListener('click', function() {
+                const passwordInput = this.previousElementSibling;
+                const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                passwordInput.setAttribute('type', type);
+                this.innerHTML = type === 'password' ? '<i class="fas fa-eye"></i>' : '<i class="fas fa-eye-slash"></i>';
+            });
+        });
+        
+        // Medidor de fortaleza de contraseña
+        document.getElementById('register-password').addEventListener('input', function() {
+            const password = this.value;
+            let strength = 0;
+            
+            if (password.length >= 8) strength += 30;
+            if (/[A-Z]/.test(password)) strength += 20;
+            if (/[a-z]/.test(password)) strength += 20;
+            if (/[0-9]/.test(password)) strength += 20;
+            if (/[^A-Za-z0-9]/.test(password)) strength += 10;
+            
+            const meter = document.getElementById('register-strength-meter');
+            meter.style.width = strength + '%';
+            
+            if (strength < 50) {
+                meter.style.backgroundColor = '#e74c3c';
+            } else if (strength < 80) {
+                meter.style.backgroundColor = '#f39c12';
+            } else {
+                meter.style.backgroundColor = '#2ecc71';
+            }
+        });
+        
+        document.getElementById('folder-password').addEventListener('input', function() {
+            const password = this.value;
+            let strength = 0;
+            
+            if (password.length >= 8) strength += 30;
+            if (/[A-Z]/.test(password)) strength += 20;
+            if (/[a-z]/.test(password)) strength += 20;
+            if (/[0-9]/.test(password)) strength += 20;
+            if (/[^A-Za-z0-9]/.test(password)) strength += 10;
+            
+            const meter = document.getElementById('password-strength-meter');
+            meter.style.width = strength + '%';
+            
+            if (strength < 50) {
+                meter.style.backgroundColor = '#e74c3c';
+            } else if (strength < 80) {
+                meter.style.backgroundColor = '#f39c12';
+            } else {
+                meter.style.backgroundColor = '#2ecc71';
+            }
+        });
+        
+        // Mostrar departamentos al seleccionar rol de departamento
+        document.getElementById('register-role').addEventListener('change', function() {
+            const departmentContainer = document.getElementById('department-select-container');
+            
+            if (this.value === ROLES.DEPARTMENT) {
+                departmentContainer.style.display = 'block';
+            } else {
+                departmentContainer.style.display = 'none';
+            }
+        });
+        
+        // Navegación entre módulos
+        document.querySelectorAll('[data-module]').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                const moduleId = this.getAttribute('data-module');
+                
+                if (checkPermissions(moduleId)) {
+                    showModule(moduleId);
+                } else {
+                    showModule('access-denied');
+                }
+            });
+        });
+        
+        // Botón para volver al dashboard desde acceso denegado
+        document.getElementById('go-to-dashboard-btn').addEventListener('click', function() {
+            showModule('dashboard');
+        });
+        
+        // Event listeners para botones de guardar
+        document.getElementById('save-config').addEventListener('click', saveFacultyConfig);
+        document.getElementById('save-department').addEventListener('click', createDepartment);
+        document.getElementById('save-folder').addEventListener('click', createFolder);
+        document.getElementById('save-document').addEventListener('click', uploadDocument);
+        
+        // Event listeners para buscadores
+        document.getElementById('department-search').addEventListener('input', searchDepartments);
+        document.getElementById('folder-search').addEventListener('input', searchFolders);
+        document.getElementById('document-search').addEventListener('input', searchDocuments);
+        
+        // Event listener para logout
+        document.getElementById('logout-btn').addEventListener('click', function(e) {
+            e.preventDefault();
+            logout();
+        });
+        
+        // Event listener para filtro de actividades
+        document.getElementById('filter-activities').addEventListener('click', function() {
+            const dateFilter = document.getElementById('activity-date-filter').value;
+            
+            if (!dateFilter) {
+                loadActivities();
+                return;
+            }
+            
+            getAllData(STORES.ACTIVITIES).then(activities => {
+                const filtered = activities.filter(activity => {
+                    const activityDate = new Date(activity.date).toLocaleDateString();
+                    const filterDate = new Date(dateFilter).toLocaleDateString();
+                    return activityDate === filterDate;
+                });
+                
+                const container = document.getElementById('activities-container');
+                container.innerHTML = '';
+                
+                if (filtered.length > 0) {
+                    filtered.forEach(activity => {
+                        const row = document.createElement('tr');
+                        
+                        let badgeClass = 'badge user-badge';
+                        if (activity.role === 'admin') badgeClass = 'badge admin-badge';
+                        if (activity.role === 'secretariat') badgeClass = 'badge secretariat-badge';
+                        if (activity.role === 'department') badgeClass = 'badge department-badge';
+                        
+                        row.innerHTML = `
+                            <td>${activity.date}</td>
+                            <td>${activity.user}</td>
+                            <td><span class="${badgeClass}">${getRoleName(activity.role)}</span></td>
+                            <td>${activity.department}</td>
+                            <td>${activity.action}</td>
+                            <td>${activity.details}</td>
+                        `;
+                        
+                        container.appendChild(row);
+                    });
+                } else {
+                    container.innerHTML = '<tr><td colspan="6" class="text-center">No hay actividades para esta fecha</td></tr>';
+                }
+            });
+        });
+        
+        // Event listener para exportar actividades
+        document.getElementById('export-activities').addEventListener('click', function() {
+            getAllData(STORES.ACTIVITIES).then(activities => {
+                if (activities.length === 0) {
+                    alert('No hay actividades para exportar');
+                    return;
+                }
+                
+                let csv = 'Fecha/Hora,Usuario,Rol,Departamento,Acción,Detalles\n';
+                
+                activities.reverse().forEach(activity => {
+                    csv += `"${activity.date}","${activity.user}","${getRoleName(activity.role)}","${activity.department}","${activity.action}","${activity.details}"\n`;
+                });
+                
+                const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = `actividades_${new Date().toISOString().slice(0, 10)}.csv`;
+                link.click();
+                
+                // Registrar actividad
+                saveActivity(
+                    currentUser.name,
+                    currentUser.role,
+                    'Control',
+                    'exportó el registro de actividades',
+                    ''
+                );
+            });
+        });
+        
+        // Vista previa del PDF
+        document.getElementById('document-file').addEventListener('change', function() {
+            const file = this.files[0];
+            
+            if (!file) return;
+            
+            if (file.type !== 'application/pdf') {
+                alert('Por favor, seleccione un archivo PDF válido');
+                this.value = '';
+                return;
+            }
+            
+            const preview = document.getElementById('pdf-preview');
+            const iframe = document.getElementById('pdf-preview-iframe');
+            
+            const url = URL.createObjectURL(file);
+            iframe.src = url;
+            preview.classList.remove('hidden');
+            
+            // Sugerir nombre del documento basado en el nombre del archivo
+            const fileName = file.name.replace('.pdf', '').replace(/_/g, ' ');
+            document.getElementById('document-name').value = fileName;
+        });
+        
+        // Inicializar la base de datos cuando el documento esté listo
         document.addEventListener('DOMContentLoaded', initDB);
     </script>
 </body>
