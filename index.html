@@ -246,18 +246,6 @@
             color: #777;
             font-style: italic;
         }
-        .login-container {
-            max-width: 500px;
-            margin: 50px auto;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            background-color: white;
-        }
-        .login-logo {
-            text-align: center;
-            margin-bottom: 30px;
-        }
         .pdf-preview {
             max-width: 100%;
             height: 300px;
@@ -303,102 +291,8 @@
     </style>
 </head>
 <body>
-    <!-- Pantalla de Login -->
-    <div id="login-screen">
-        <div class="login-container">
-            <div class="login-logo">
-                <div class="logo-container">
-                    <i class="fas fa-university logo-placeholder"></i>
-                </div>
-                <h2 class="faculty-name">GESTIFAC</h2>
-                <p>Sistema de Gestión Documental Universitaria</p>
-            </div>
-            
-            <form id="login-form">
-                <div class="mb-3">
-                    <label for="login-email" class="form-label">Correo Electrónico</label>
-                    <input type="email" class="form-control" id="login-email" required>
-                </div>
-                <div class="mb-3">
-                    <label for="login-password" class="form-label">Contraseña</label>
-                    <div class="password-container">
-                        <input type="password" class="form-control" id="login-password" required>
-                        <span class="toggle-password"><i class="fas fa-eye"></i></span>
-                    </div>
-                </div>
-                <button type="submit" class="btn btn-primary w-100">Iniciar Sesión</button>
-            </form>
-            
-            <div class="mt-3 text-center">
-                <p>¿No tienes una cuenta? <a href="#" id="show-register">Regístrate</a></p>
-            </div>
-        </div>
-        
-        <!-- Formulario de Registro -->
-        <div id="register-container" class="hidden">
-            <div class="login-container">
-                <div class="login-logo">
-                    <div class="logo-container">
-                        <i class="fas fa-university logo-placeholder"></i>
-                    </div>
-                    <h2 class="faculty-name">Registro de Usuario</h2>
-                </div>
-                
-                <form id="register-form">
-                    <div class="mb-3">
-                        <label for="register-name" class="form-label">Nombre Completo</label>
-                        <input type="text" class="form-control" id="register-name" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="register-email" class="form-label">Correo Electrónico</label>
-                        <input type="email" class="form-control" id="register-email" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="register-password" class="form-label">Contraseña</label>
-                        <div class="password-container">
-                            <input type="password" class="form-control" id="register-password" required>
-                            <span class="toggle-password"><i class="fas fa-eye"></i></span>
-                        </div>
-                        <div class="password-strength mt-2">
-                            <div class="strength-meter" id="register-strength-meter" style="width: 0%; background-color: #e74c3c;"></div>
-                        </div>
-                        <div class="form-text">Mínimo 8 caracteres, con letras, números y símbolos</div>
-                    </div>
-                    <div class="mb-3">
-                        <label for="register-confirm-password" class="form-label">Confirmar Contraseña</label>
-                        <div class="password-container">
-                            <input type="password" class="form-control" id="register-confirm-password" required>
-                            <span class="toggle-password"><i class="fas fa-eye"></i></span>
-                        </div>
-                    </div>
-                    <div class="mb-3">
-                        <label for="register-role" class="form-label">Rol</label>
-                        <select class="form-select" id="register-role" required>
-                            <option value="" disabled selected>Seleccione un rol</option>
-                            <option value="admin">Administrador</option>
-                            <option value="secretariat">Secretaría General</option>
-                            <option value="department">Jefe de Departamento</option>
-                            <option value="user">Usuario Regular</option>
-                        </select>
-                    </div>
-                    <div class="mb-3" id="department-select-container" style="display: none;">
-                        <label for="register-department" class="form-label">Departamento</label>
-                        <select class="form-select" id="register-department">
-                            <option value="">Seleccione un departamento</option>
-                        </select>
-                    </div>
-                    
-                    <div class="d-flex justify-content-between">
-                        <button type="button" class="btn btn-secondary" id="cancel-register">Cancelar</button>
-                        <button type="submit" class="btn btn-primary">Registrarse</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <!-- Aplicación Principal (oculta inicialmente) -->
-    <div class="app-container hidden" id="app-container">
+    <!-- Aplicación Principal -->
+    <div class="app-container" id="app-container">
         <!-- Encabezado con logo y nombre de facultad -->
         <div class="header">
             <div class="logo-container">
@@ -419,7 +313,7 @@
                 <div class="collapse navbar-collapse" id="mainNav">
                     <ul class="navbar-nav me-auto">
                         <li class="nav-item">
-                            <a class="nav-link" href="#" data-module="dashboard"><i class="fas fa-home"></i> Inicio</a>
+                            <a class="nav-link active" href="#" data-module="dashboard"><i class="fas fa-home"></i> Inicio</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="#" data-module="configuration"><i class="fas fa-cog"></i> Configuración</a>
@@ -440,7 +334,7 @@
                     <div class="d-flex">
                         <div class="dropdown">
                             <button class="btn btn-outline-light dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown">
-                                <i class="fas fa-user-circle me-2"></i><span id="current-user-name">Usuario</span>
+                                <i class="fas fa-user-circle me-2"></i><span id="current-user-name">Administrador</span>
                             </button>
                             <ul class="dropdown-menu dropdown-menu-end">
                                 <li><a class="dropdown-item" href="#"><i class="fas fa-user me-2"></i>Perfil</a></li>
@@ -996,7 +890,14 @@
         let db;
         let currentDepartmentId = null;
         let currentFolderId = null;
-        let currentUser = null;
+        let currentUser = {
+            id: 1,
+            name: "Administrador",
+            email: "admin@unge.edu.gq",
+            role: "admin",
+            departmentId: null,
+            createdAt: new Date().toISOString()
+        };
         let currentPage = 1;
         const ITEMS_PER_PAGE = 10;
         
@@ -1050,49 +951,16 @@
                 db = event.target.result;
                 console.log('Base de datos abierta con éxito');
                 
-                // Verificar si hay usuarios en la base de datos
-                checkInitialSetup();
+                // Cargar datos iniciales
+                loadFacultyConfig();
+                loadDashboardData();
+                loadDepartments();
+                loadActivities();
             };
             
             request.onerror = function(event) {
                 console.error('Error al abrir la base de datos:', event.target.error);
             };
-        }
-        
-        // Verificar configuración inicial
-        function checkInitialSetup() {
-            getAllData(STORES.USERS).then(users => {
-                if (users.length === 0) {
-                    // No hay usuarios, mostrar pantalla de registro
-                    document.getElementById('login-screen').classList.remove('hidden');
-                    document.getElementById('register-container').classList.remove('hidden');
-                    document.getElementById('login-screen').style.display = 'block';
-                    
-                    // Crear usuario admin por defecto
-                    const adminUser = {
-                        name: 'Administrador',
-                        email: 'admin@unge.edu.gq',
-                        password: hashPassword('Admin123!'),
-                        role: ROLES.ADMIN,
-                        departmentId: null,
-                        createdAt: new Date().toISOString()
-                    };
-                    
-                    saveData(STORES.USERS, adminUser).then(() => {
-                        console.log('Usuario administrador creado por defecto');
-                    });
-                } else {
-                    // Hay usuarios, mostrar pantalla de login
-                    document.getElementById('login-screen').classList.remove('hidden');
-                    document.getElementById('login-screen').style.display = 'block';
-                }
-            });
-        }
-        
-        // Función para hashear contraseñas (simplificada para este ejemplo)
-        function hashPassword(password) {
-            // En una aplicación real, usaría un algoritmo seguro como bcrypt
-            return btoa(encodeURIComponent(password));
         }
         
         // Guardar datos en la base de datos
@@ -2230,78 +2098,6 @@
             }
         }
         
-        // Iniciar sesión
-        function login(email, password) {
-            getDataByIndex(STORES.USERS, 'email', email).then(user => {
-                if (!user) {
-                    alert('Usuario no encontrado');
-                    return;
-                }
-                
-                // Comparar contraseñas (en una aplicación real usaríamos bcrypt)
-                const hashedPassword = hashPassword(password);
-                
-                if (hashedPassword !== user.password) {
-                    alert('Contraseña incorrecta');
-                    return;
-                }
-                
-                // Inicio de sesión exitoso
-                currentUser = user;
-                document.getElementById('current-user-name').textContent = user.name;
-                
-                // Ocultar pantalla de login y mostrar aplicación
-                document.getElementById('login-screen').style.display = 'none';
-                document.getElementById('app-container').classList.remove('hidden');
-                
-                // Cargar datos iniciales
-                loadFacultyConfig();
-                loadDashboardData();
-                loadDepartments();
-                loadActivities();
-                
-                // Mostrar dashboard por defecto
-                showModule('dashboard');
-                
-                // Registrar actividad
-                saveActivity(
-                    user.name,
-                    user.role,
-                    'Sistema',
-                    'inició sesión',
-                    ''
-                );
-            });
-        }
-        
-        // Registrar nuevo usuario
-        function registerUser(name, email, password, role, departmentId) {
-            // Verificar si el usuario ya existe
-            getDataByIndex(STORES.USERS, 'email', email).then(existingUser => {
-                if (existingUser) {
-                    alert('Ya existe un usuario con este correo electrónico');
-                    return;
-                }
-                
-                const user = {
-                    name,
-                    email,
-                    password: hashPassword(password),
-                    role,
-                    departmentId: departmentId || null,
-                    createdAt: new Date().toISOString()
-                };
-                
-                saveData(STORES.USERS, user).then(() => {
-                    alert('Usuario registrado con éxito. Por favor, inicie sesión.');
-                    
-                    // Volver al formulario de login
-                    document.getElementById('register-container').classList.add('hidden');
-                    document.getElementById('login-form').reset();
-                });
-            });
-        }
-        
         // Cerrar sesión
         function logout() {
             // Registrar actividad
@@ -2316,85 +2112,9 @@
             // Limpiar usuario actual
             currentUser = null;
             
-            // Ocultar aplicación y mostrar pantalla de login
-            document.getElementById('app-container').classList.add('hidden');
-            document.getElementById('login-screen').classList.remove('hidden');
-            document.getElementById('login-screen').style.display = 'block';
-            
-            // Limpiar formulario de login
-            document.getElementById('login-form').reset();
+            // Recargar la página para volver al estado inicial
+            location.reload();
         }
-        
-        // Event listeners para el login
-        document.getElementById('login-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const email = document.getElementById('login-email').value;
-            const password = document.getElementById('login-password').value;
-            
-            if (!email || !password) {
-                alert('Por favor, complete todos los campos');
-                return;
-            }
-            
-            login(email, password);
-        });
-        
-        // Event listener para mostrar el formulario de registro
-        document.getElementById('show-register').addEventListener('click', function(e) {
-            e.preventDefault();
-            document.getElementById('login-screen').classList.add('hidden');
-            document.getElementById('register-container').classList.remove('hidden');
-            
-            // Cargar departamentos para el selector
-            getAllData(STORES.DEPARTMENTS).then(departments => {
-                const select = document.getElementById('register-department');
-                select.innerHTML = '<option value="">Seleccione un departamento</option>';
-                
-                departments.forEach(dept => {
-                    const option = document.createElement('option');
-                    option.value = dept.id;
-                    option.textContent = dept.name;
-                    select.appendChild(option);
-                });
-            });
-        });
-        
-        // Event listener para cancelar el registro
-        document.getElementById('cancel-register').addEventListener('click', function() {
-            document.getElementById('register-container').classList.add('hidden');
-            document.getElementById('login-screen').classList.remove('hidden');
-            document.getElementById('register-form').reset();
-        });
-        
-        // Event listener para el formulario de registro
-        document.getElementById('register-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const name = document.getElementById('register-name').value;
-            const email = document.getElementById('register-email').value;
-            const password = document.getElementById('register-password').value;
-            const confirmPassword = document.getElementById('register-confirm-password').value;
-            const role = document.getElementById('register-role').value;
-            const departmentId = document.getElementById('register-department').value || null;
-            
-            if (!name || !email || !password || !confirmPassword || !role) {
-                alert('Por favor, complete todos los campos requeridos');
-                return;
-            }
-            
-            if (password !== confirmPassword) {
-                alert('Las contraseñas no coinciden');
-                return;
-            }
-            
-            if (password.length < 8) {
-                alert('La contraseña debe tener al menos 8 caracteres');
-                return;
-            }
-            
-            registerUser(name, email, password, role, departmentId);
-        });
         
         // Mostrar/ocultar contraseña
         document.querySelectorAll('.toggle-password').forEach(toggle => {
@@ -2407,28 +2127,6 @@
         });
         
         // Medidor de fortaleza de contraseña
-        document.getElementById('register-password').addEventListener('input', function() {
-            const password = this.value;
-            let strength = 0;
-            
-            if (password.length >= 8) strength += 30;
-            if (/[A-Z]/.test(password)) strength += 20;
-            if (/[a-z]/.test(password)) strength += 20;
-            if (/[0-9]/.test(password)) strength += 20;
-            if (/[^A-Za-z0-9]/.test(password)) strength += 10;
-            
-            const meter = document.getElementById('register-strength-meter');
-            meter.style.width = strength + '%';
-            
-            if (strength < 50) {
-                meter.style.backgroundColor = '#e74c3c';
-            } else if (strength < 80) {
-                meter.style.backgroundColor = '#f39c12';
-            } else {
-                meter.style.backgroundColor = '#2ecc71';
-            }
-        });
-        
         document.getElementById('folder-password').addEventListener('input', function() {
             const password = this.value;
             let strength = 0;
@@ -2448,17 +2146,6 @@
                 meter.style.backgroundColor = '#f39c12';
             } else {
                 meter.style.backgroundColor = '#2ecc71';
-            }
-        });
-        
-        // Mostrar departamentos al seleccionar rol de departamento
-        document.getElementById('register-role').addEventListener('change', function() {
-            const departmentContainer = document.getElementById('department-select-container');
-            
-            if (this.value === ROLES.DEPARTMENT) {
-                departmentContainer.style.display = 'block';
-            } else {
-                departmentContainer.style.display = 'none';
             }
         });
         
