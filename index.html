@@ -159,6 +159,10 @@
             margin-bottom: 30px;
             box-shadow: 0 5px 15px rgba(0,0,0,0.2);
         }
+        
+        .strength-weak { background-color: #dc3545; }
+        .strength-medium { background-color: #ffc107; }
+        .strength-strong { background-color: #28a745; }
     </style>
 </head>
 <body>
@@ -230,12 +234,12 @@
                         </div>
                         <div class="mt-2">
                             <div id="passwordStrength" class="password-strength"></div>
-                            <small class="text-muted">12 caracteres: 6 letras (1ra mayúscula) + 4 números + 2 símbolos (@#&)</small>
+                            <small class="text-muted">Mínimo 8 caracteres: 1 mayúscula, 1 minúscula, 1 número y 1 símbolo</small>
                         </div>
                     </div>
                     <div class="mb-3">
                         <label for="role" class="form-label">Rol</label>
-                        <select class="form-select" id="role" required onchange="updatePasswordPattern()">
+                        <select class="form-select" id="role" required>
                             <option value="">Seleccionar rol</option>
                             <option value="Administrador">Administrador</option>
                             <option value="Secretaría General">Secretaría General</option>
@@ -600,6 +604,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         // Variables globales
+        let db = null;
         let currentUser = null;
         let currentDepartment = null;
         let currentFolder = null;
@@ -608,12 +613,11 @@
         // Inicialización
         document.addEventListener('DOMContentLoaded', function() {
             initDB();
-            checkAuth();
         });
         
         // Base de datos IndexedDB
         function initDB() {
-            const request = indexedDB.open('UniversityManagementDB', 2);
+            const request = indexedDB.open('UniversityManagementDB', 3);
             
             request.onupgradeneeded = function(event) {
                 const db = event.target.result;
@@ -654,8 +658,10 @@
                 }
             };
             
-            request.onsuccess = function() {
+            request.onsuccess = function(event) {
+                db = event.target.result;
                 console.log('Base de datos inicializada');
+                checkAuth();
                 loadConfig();
             };
             
@@ -673,22 +679,12 @@
             const password = document.getElementById('password').value;
             const role = document.getElementById('role').value;
             
-            // Validar contraseña según rol
-            let passwordValid = false;
-            const passwordPattern = /^([A-Z][a-z]{5})(\d{4})([@#&]{2})$/;
-            
-            if (role === 'Administrador') {
-                passwordValid = password.startsWith('Admini') && passwordPattern.test(password);
-            } else if (role === 'Secretaría General') {
-                passwordValid = password.startsWith('Secret') && passwordPattern.test(password);
-            } else if (role === 'Departamento') {
-                passwordValid = password.startsWith('Depart') && passwordPattern.test(password);
-            } else if (role === 'Usuario') {
-                passwordValid = passwordPattern.test(password);
-            }
+            // Validar contraseña
+            const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@#$%^&+=!]).{8,}$/;
+            const passwordValid = passwordPattern.test(password);
             
             if (!passwordValid) {
-                showAuthError('La contraseña no cumple con los requisitos para el rol seleccionado');
+                showAuthError('La contraseña debe tener al menos 8 caracteres, incluyendo 1 mayúscula, 1 minúscula, 1 número y 1 símbolo');
                 return;
             }
             
@@ -703,16 +699,30 @@
             
             const transaction = db.transaction(['users'], 'readwrite');
             const store = transaction.objectStore('users');
-            const request = store.add(user);
             
-            request.onsuccess = function() {
-                alert('Registro exitoso. Ahora puede iniciar sesión.');
-                document.getElementById('authError').classList.add('d-none');
-                document.getElementById('login-tab').click();
+            // Verificar si el usuario ya existe
+            const getRequest = store.get(email);
+            
+            getRequest.onsuccess = function() {
+                if (getRequest.result) {
+                    showAuthError('El email ya está registrado');
+                } else {
+                    const addRequest = store.add(user);
+                    addRequest.onsuccess = function() {
+                        alert('Registro exitoso. Ahora puede iniciar sesión.');
+                        document.getElementById('authError').classList.add('d-none');
+                        document.getElementById('login-tab').click();
+                        logAction(`Nuevo usuario registrado: ${email} (${role})`);
+                    };
+                    
+                    addRequest.onerror = function() {
+                        showAuthError('Error al registrar el usuario');
+                    };
+                }
             };
             
-            request.onerror = function() {
-                showAuthError('El email ya está registrado');
+            getRequest.onerror = function() {
+                showAuthError('Error al verificar el email');
             };
         }
         
@@ -720,6 +730,11 @@
         function login() {
             const email = document.getElementById('loginEmail').value;
             const password = document.getElementById('loginPassword').value;
+            
+            if (!email || !password) {
+                showAuthError('Por favor complete todos los campos');
+                return;
+            }
             
             const transaction = db.transaction(['users'], 'readonly');
             const store = transaction.objectStore('users');
@@ -751,10 +766,12 @@
         
         // Verificar autenticación
         function checkAuth() {
-            // En un sistema real, esto verificaría una sesión activa
-            // Para este ejemplo, simplemente mostramos la pantalla de login
-            document.getElementById('loginScreen').classList.remove('d-none');
-            document.getElementById('dashboard').classList.add('d-none');
+            if (currentUser) {
+                showDashboardView();
+            } else {
+                document.getElementById('loginScreen').classList.remove('d-none');
+                document.getElementById('dashboard').classList.add('d-none');
+            }
         }
         
         // Mostrar dashboard
@@ -927,7 +944,7 @@
         
         function loadDepartments() {
             const departmentsList = document.getElementById('departmentsList');
-            departmentsList.innerHTML = '<p>Cargando departamentos...</p>';
+            departmentsList.innerHTML = '<p class="text-center">Cargando departamentos...</p>';
             
             const transaction = db.transaction(['departments'], 'readonly');
             const store = transaction.objectStore('departments');
@@ -949,11 +966,11 @@
                             <div class="card-body">
                                 <h5><i class="bi bi-building me-2"></i>${dept.name}</h5>
                                 <p class="text-muted mb-1">Creado: ${formatDate(dept.createdAt)}</p>
-                                <button class="btn btn-sm btn-outline-primary mt-2" onclick="showDepartmentFolders(${dept.id}, '${dept.name}')">
+                                <button class="btn btn-sm btn-outline-primary mt-2" onclick="showDepartmentFolders(${dept.id}, '${dept.name.replace(/'/g, "\\'")}')">
                                     Ver Carpetas
                                 </button>
                                 ${currentUser.role === 'Administrador' || currentUser.role === 'Secretaría General' ? `
-                                <button class="btn btn-sm btn-outline-danger mt-2" onclick="deleteDepartment(${dept.id}, '${dept.name}')">
+                                <button class="btn btn-sm btn-outline-danger mt-2" onclick="deleteDepartment(${dept.id}, '${dept.name.replace(/'/g, "\\'")}')">
                                     Eliminar
                                 </button>
                                 ` : ''}
@@ -995,7 +1012,7 @@
         
         function loadFolders(departmentId) {
             const foldersList = document.getElementById('foldersList');
-            foldersList.innerHTML = '<p>Cargando carpetas...</p>';
+            foldersList.innerHTML = '<p class="text-center">Cargando carpetas...</p>';
             
             const transaction = db.transaction(['folders'], 'readonly');
             const store = transaction.objectStore('folders');
@@ -1019,14 +1036,14 @@
                                 <h5><i class="bi bi-folder me-2"></i>${folder.name}</h5>
                                 <p class="text-muted mb-1">Año: ${folder.academicYear}</p>
                                 <p class="text-muted">Creado: ${formatDate(folder.createdAt)}</p>
-                                <button class="btn btn-sm btn-primary" onclick="showAccessFolderModal(${folder.id}, '${folder.name}')">
+                                <button class="btn btn-sm btn-primary" onclick="showAccessFolderModal(${folder.id}, '${folder.name.replace(/'/g, "\\'")}')">
                                     Acceder
                                 </button>
-                                <button class="btn btn-sm btn-outline-secondary" onclick="showFolderDocuments(${folder.id}, '${folder.name}')">
+                                <button class="btn btn-sm btn-outline-secondary" onclick="showFolderDocuments(${folder.id}, '${folder.name.replace(/'/g, "\\'")}')">
                                     Ver Documentos
                                 </button>
                                 ${currentUser.role === 'Administrador' || currentUser.role === 'Secretaría General' ? `
-                                <button class="btn btn-sm btn-outline-danger mt-2" onclick="deleteFolder(${folder.id}, '${folder.name}')">
+                                <button class="btn btn-sm btn-outline-danger mt-2" onclick="deleteFolder(${folder.id}, '${folder.name.replace(/'/g, "\\'")}')">
                                     Eliminar
                                 </button>
                                 ` : ''}
@@ -1061,7 +1078,7 @@
                 departmentId: currentDepartment.id,
                 name: name,
                 academicYear: academicYear,
-                password: btoa(password), // Encriptación básica
+                password: password,
                 createdAt: new Date()
             };
             
@@ -1096,7 +1113,7 @@
             
             request.onsuccess = function() {
                 const folder = request.result;
-                if (folder && atob(folder.password) === password) {
+                if (folder && folder.password === password) {
                     const modal = bootstrap.Modal.getInstance(document.getElementById('accessFolderModal'));
                     modal.hide();
                     showFolderDocuments(folder.id, folder.name);
@@ -1112,7 +1129,7 @@
             const content = document.getElementById('departamentosContentInner');
             content.innerHTML = `
                 <div class="d-flex align-items-center mb-4">
-                    <button class="btn btn-outline-secondary me-3" onclick="showDepartmentFolders(${currentDepartment.id}, '${currentDepartment.name}')">
+                    <button class="btn btn-outline-secondary me-3" onclick="showDepartmentFolders(${currentDepartment.id}, '${currentDepartment.name.replace(/'/g, "\\'")}')">
                         <i class="bi bi-arrow-left"></i> Volver
                     </button>
                     <h3 class="mb-0">${currentDepartment.name} / ${folderName}</h3>
@@ -1138,7 +1155,7 @@
         
         function loadDocuments(folderId) {
             const documentsList = document.getElementById('documentsList');
-            documentsList.innerHTML = '<p>Cargando documentos...</p>';
+            documentsList.innerHTML = '<p class="text-center">Cargando documentos...</p>';
             
             const transaction = db.transaction(['documents'], 'readonly');
             const store = transaction.objectStore('documents');
@@ -1164,17 +1181,17 @@
                                 <p class="text-muted">Tamaño: ${formatFileSize(doc.size)}</p>
                                 
                                 <div class="pdf-actions">
-                                    <button class="btn btn-sm btn-outline-primary" onclick="downloadPdf(${doc.id}, '${doc.name}')">
+                                    <button class="btn btn-sm btn-outline-primary" onclick="downloadPdf(${doc.id}, '${doc.name.replace(/'/g, "\\'")}')">
                                         <i class="bi bi-download"></i>
                                     </button>
                                     <button class="btn btn-sm btn-outline-success" onclick="printPdf(${doc.id})">
                                         <i class="bi bi-printer"></i>
                                     </button>
                                     ${currentUser.role !== 'Usuario' ? `
-                                    <button class="btn btn-sm btn-outline-warning" onclick="showEditPdfModal(${doc.id}, '${doc.name}')">
+                                    <button class="btn btn-sm btn-outline-warning" onclick="showEditPdfModal(${doc.id}, '${doc.name.replace(/'/g, "\\'")}')">
                                         <i class="bi bi-pencil"></i>
                                     </button>
-                                    <button class="btn btn-sm btn-outline-danger" onclick="deletePdf(${doc.id}, '${doc.name}')">
+                                    <button class="btn btn-sm btn-outline-danger" onclick="deletePdf(${doc.id}, '${doc.name.replace(/'/g, "\\'")}')">
                                         <i class="bi bi-trash"></i>
                                     </button>
                                     ` : ''}
@@ -1415,36 +1432,24 @@
             const strengthBar = document.getElementById('passwordStrength');
             let strength = 0;
             
-            // Validar el patrón básico
-            const pattern = /^([A-Z][a-z]{5})(\d{4})([@#&]{2})$/;
-            const validPattern = pattern.test(password);
-            
-            if (validPattern) {
-                strength = 100;
-                strengthBar.style.backgroundColor = '#28a745';
-            } else {
-                strength = 30;
-                strengthBar.style.backgroundColor = '#dc3545';
-            }
+            // Validar fortaleza de la contraseña
+            if (password.length >= 8) strength += 20;
+            if (/[A-Z]/.test(password)) strength += 20;
+            if (/[a-z]/.test(password)) strength += 20;
+            if (/\d/.test(password)) strength += 20;
+            if (/[@#$%^&+=!]/.test(password)) strength += 20;
             
             strengthBar.style.width = `${strength}%`;
-        }
-        
-        function updatePasswordPattern() {
-            const role = document.getElementById('role').value;
-            let pattern = '';
             
-            if (role === 'Administrador') {
-                pattern = 'Admini****@@';
-            } else if (role === 'Secretaría General') {
-                pattern = 'Secret****@@';
-            } else if (role === 'Departamento') {
-                pattern = 'Depart****@@';
+            // Actualizar clase de color
+            strengthBar.className = 'password-strength';
+            if (strength < 60) {
+                strengthBar.classList.add('strength-weak');
+            } else if (strength < 80) {
+                strengthBar.classList.add('strength-medium');
             } else {
-                pattern = 'Letras (1ra mayúscula) + 4 números + 2 símbolos (@#&)';
+                strengthBar.classList.add('strength-strong');
             }
-            
-            document.getElementById('password').placeholder = pattern;
         }
         
         function previewLogo(event) {
@@ -1476,6 +1481,8 @@
         
         // Funciones para logs
         function logAction(action) {
+            if (!db) return;
+            
             const log = {
                 action: action,
                 user: currentUser.fullName,
@@ -1489,8 +1496,10 @@
         }
         
         function loadRecentActivity() {
+            if (!db) return;
+            
             const activityContainer = document.getElementById('recentActivity');
-            activityContainer.innerHTML = '<p>Cargando actividad reciente...</p>';
+            activityContainer.innerHTML = '<p class="text-center">Cargando actividad reciente...</p>';
             
             const transaction = db.transaction(['logs'], 'readonly');
             const store = transaction.objectStore('logs');
@@ -1521,8 +1530,10 @@
         }
         
         function loadControlLogs() {
+            if (!db) return;
+            
             const logsContainer = document.getElementById('controlLogs');
-            logsContainer.innerHTML = '<p>Cargando registros...</p>';
+            logsContainer.innerHTML = '<p class="text-center">Cargando registros...</p>';
             
             const transaction = db.transaction(['logs'], 'readonly');
             const store = transaction.objectStore('logs');
@@ -1549,96 +1560,6 @@
                 }
             };
         }
-        
-        // Simulación de base de datos IndexedDB
-        const db = {
-            transaction: function(stores, mode) {
-                return {
-                    objectStore: function(storeName) {
-                        return {
-                            get: function(key) {
-                                return { onsuccess: function(cb) { 
-                                    const data = localStorage.getItem(storeName);
-                                    const store = data ? JSON.parse(data) : {};
-                                    cb({ result: store[key] });
-                                } };
-                            },
-                            getAll: function() {
-                                return { onsuccess: function(cb) { 
-                                    const data = localStorage.getItem(storeName);
-                                    const store = data ? JSON.parse(data) : {};
-                                    cb({ result: Object.values(store) });
-                                } };
-                            },
-                            put: function(item) {
-                                const data = localStorage.getItem(storeName);
-                                const store = data ? JSON.parse(data) : {};
-                                store[item.id] = item;
-                                localStorage.setItem(storeName, JSON.stringify(store));
-                                return { onsuccess: function(cb) { cb(); } };
-                            },
-                            add: function(item) {
-                                const data = localStorage.getItem(storeName);
-                                const store = data ? JSON.parse(data) : {};
-                                const id = Date.now();
-                                item.id = id;
-                                store[id] = item;
-                                localStorage.setItem(storeName, JSON.stringify(store));
-                                return { onsuccess: function(cb) { cb(); } };
-                            },
-                            delete: function(key) {
-                                const data = localStorage.getItem(storeName);
-                                const store = data ? JSON.parse(data) : {};
-                                delete store[key];
-                                localStorage.setItem(storeName, JSON.stringify(store));
-                                return { onsuccess: function(cb) { cb(); } };
-                            },
-                            index: function(indexName) {
-                                return {
-                                    getAll: function(key) {
-                                        return { onsuccess: function(cb) { 
-                                            const data = localStorage.getItem(storeName);
-                                            const store = data ? JSON.parse(data) : {};
-                                            const items = Object.values(store).filter(item => item[indexName] === key);
-                                            cb({ result: items });
-                                        } };
-                                    },
-                                    openCursor: function(range, direction) {
-                                        return { onsuccess: function(cb) { 
-                                            const data = localStorage.getItem(storeName);
-                                            const store = data ? JSON.parse(data) : {};
-                                            const items = Object.values(store);
-                                            
-                                            if (direction === 'prev') {
-                                                items.sort((a, b) => b.timestamp - a.timestamp);
-                                            } else {
-                                                items.sort((a, b) => a.timestamp - b.timestamp);
-                                            }
-                                            
-                                            let index = 0;
-                                            cb({ target: { result: {
-                                                value: items[index],
-                                                continue: function() {
-                                                    index++;
-                                                    if (index < items.length) {
-                                                        cb({ target: { result: {
-                                                            value: items[index],
-                                                            continue: this.continue
-                                                        } } });
-                                                    } else {
-                                                        cb({ target: { result: null } });
-                                                    }
-                                                }
-                                            } } });
-                                        } };
-                                    }
-                                };
-                            }
-                        };
-                    }
-                };
-            }
-        };
     </script>
 </body>
 </html>
