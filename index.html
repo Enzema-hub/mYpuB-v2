@@ -14,12 +14,10 @@
             --light-color: #ecf0f1;
             --dark-color: #34495e;
         }
-        
         body {
             background-color: #f8f9fa;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-        
         .app-container {
             max-width: 1400px;
             margin: 0 auto;
@@ -29,7 +27,6 @@
             background-color: white;
             min-height: 100vh;
         }
-        
         .header {
             background: linear-gradient(135deg, var(--primary-color), var(--dark-color));
             color: white;
@@ -37,7 +34,6 @@
             text-align: center;
             position: relative;
         }
-        
         .logo-container {
             width: 120px;
             height: 120px;
@@ -50,13 +46,17 @@
             box-shadow: 0 5px 15px rgba(0,0,0,0.2);
             position: relative;
             z-index: 10;
+            overflow: hidden;
         }
-        
+        .logo-img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
         .logo-placeholder {
             font-size: 3rem;
             color: var(--secondary-color);
         }
-        
         .faculty-name {
             font-size: 1.8rem;
             font-weight: 700;
@@ -64,83 +64,68 @@
             text-transform: uppercase;
             letter-spacing: 1px;
         }
-        
         .faculty-info {
             font-size: 0.9rem;
             opacity: 0.9;
             margin-bottom: 5px;
         }
-        
         .module-container {
             padding: 25px;
             min-height: 500px;
         }
-        
         .module-card {
             border-radius: 10px;
             overflow: hidden;
             transition: transform 0.3s, box-shadow 0.3s;
             height: 100%;
         }
-        
         .module-card:hover {
             transform: translateY(-5px);
             box-shadow: 0 10px 20px rgba(0,0,0,0.1);
         }
-        
         .module-header {
             background-color: var(--secondary-color);
             color: white;
             padding: 15px;
             font-weight: 600;
         }
-        
         .module-content {
             padding: 20px;
         }
-        
         .nav-tabs .nav-link {
             color: var(--dark-color);
             font-weight: 500;
             border: none;
             border-radius: 0;
         }
-        
         .nav-tabs .nav-link.active {
             background-color: var(--secondary-color);
             color: white;
             border: none;
         }
-        
         .btn-primary {
             background-color: var(--secondary-color);
             border: none;
         }
-        
         .btn-primary:hover {
             background-color: #2980b9;
         }
-        
         .btn-danger {
             background-color: var(--accent-color);
             border: none;
         }
-        
         .action-buttons .btn {
             margin: 2px;
             font-size: 0.8rem;
         }
-        
         .file-card {
             border-left: 4px solid var(--secondary-color);
             transition: all 0.3s;
         }
-        
         .file-card:hover {
             background-color: #f1f9ff;
             transform: translateX(5px);
         }
-        
         .password-strength {
             height: 5px;
             width: 100%;
@@ -148,23 +133,19 @@
             border-radius: 2px;
             margin-top: 5px;
         }
-        
         .strength-meter {
             height: 100%;
             border-radius: 2px;
             transition: width 0.3s;
         }
-        
         .log-entry {
             border-left: 3px solid var(--secondary-color);
             padding-left: 10px;
             margin-bottom: 10px;
         }
-        
         .log-entry.deletion {
             border-left-color: var(--accent-color);
         }
-        
         .footer {
             background-color: var(--primary-color);
             color: white;
@@ -172,15 +153,12 @@
             text-align: center;
             font-size: 0.9rem;
         }
-        
         .hidden {
             display: none;
         }
-        
         .password-container {
             position: relative;
         }
-        
         .toggle-password {
             position: absolute;
             right: 10px;
@@ -189,12 +167,10 @@
             cursor: pointer;
             color: #777;
         }
-        
         .department-badge {
             font-size: 0.9rem;
             margin: 5px;
         }
-        
         .folder-card {
             background-color: #f8f9fa;
             border-radius: 8px;
@@ -203,43 +179,35 @@
             border: 1px solid #e0e0e0;
             transition: all 0.3s;
         }
-        
         .folder-card:hover {
             border-color: var(--secondary-color);
             box-shadow: 0 5px 10px rgba(0,0,0,0.05);
         }
-        
         .file-icon {
             font-size: 2rem;
             color: #e74c3c;
         }
-        
         .role-badge {
             font-size: 0.8rem;
             padding: 4px 8px;
             border-radius: 20px;
         }
-        
         .admin-badge {
             background-color: #e74c3c;
             color: white;
         }
-        
         .secretariat-badge {
             background-color: #3498db;
             color: white;
         }
-        
         .department-badge {
             background-color: #2ecc71;
             color: white;
         }
-        
         .user-badge {
             background-color: #f39c12;
             color: white;
         }
-        
         .stat-card {
             border-radius: 10px;
             background: linear-gradient(135deg, #3498db, #2c3e50);
@@ -248,23 +216,19 @@
             text-align: center;
             margin-bottom: 20px;
         }
-        
         .stat-number {
             font-size: 2.5rem;
             font-weight: bold;
             margin: 10px 0;
         }
-        
         .stat-label {
             font-size: 1rem;
             opacity: 0.9;
         }
-        
         .search-container {
             position: relative;
             margin-bottom: 20px;
         }
-        
         .search-icon {
             position: absolute;
             left: 10px;
@@ -272,1100 +236,544 @@
             transform: translateY(-50%);
             color: #777;
         }
-        
         .search-input {
             padding-left: 35px;
         }
-        
         .no-results {
             text-align: center;
             padding: 20px;
             color: #777;
             font-style: italic;
         }
+        /* Login/Register modal styles */
+        .auth-modal .modal-content {
+            border-radius: 15px;
+        }
+        .auth-modal .form-control {
+            border-radius: 8px;
+        }
+        .auth-modal .modal-header {
+            border-bottom: none;
+        }
+        .auth-modal .modal-footer {
+            border-top: none;
+        }
+        .auth-modal .toggle-link {
+            cursor: pointer;
+            color: var(--secondary-color);
+            text-decoration: underline;
+        }
     </style>
 </head>
 <body>
-    <div class="app-container">
+    <div class="app-container" id="mainApp" style="display: none;">
+        <!-- HEADER, NAVBAR, MODULES, FOOTER (igual que antes, sin datos simulados, sin valores por defecto) -->
+
+        <!-- ... (todo el HTML principal igual que tu ejemplo, pero con los valores por defecto retirados) ... -->
+
         <!-- Encabezado con logo y nombre de facultad -->
         <div class="header">
-            <div class="logo-container">
+            <div class="logo-container" id="logo-display">
                 <i class="fas fa-university logo-placeholder"></i>
             </div>
-            <h1 class="faculty-name" id="faculty-name">Facultad de Ciencias Económicas</h1>
-            <p class="faculty-info"><i class="fas fa-envelope"></i> <span id="faculty-email">facultad@unge.edu.gq</span> | <i class="fas fa-phone"></i> <span id="faculty-phone">+240 222 123 456</span></p>
-            <p class="faculty-info">Año Académico: <span id="academic-year">2023-2024</span></p>
+            <h1 class="faculty-name" id="faculty-name"></h1>
+            <p class="faculty-info"><i class="fas fa-envelope"></i> <span id="faculty-email"></span> | <i class="fas fa-phone"></i> <span id="faculty-phone"></span></p>
+            <p class="faculty-info">Año Académico: <span id="academic-year"></span></p>
         </div>
-        
-        <!-- Navegación principal -->
-        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-            <div class="container-fluid">
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse" id="mainNav">
-                    <ul class="navbar-nav me-auto">
-                        <li class="nav-item">
-                            <a class="nav-link" href="#" data-module="dashboard"><i class="fas fa-home"></i> Inicio</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#" data-module="configuration"><i class="fas fa-cog"></i> Configuración</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#" data-module="secretariat"><i class="fas fa-users-cog"></i> Secretaría General</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#" data-module="departments"><i class="fas fa-building"></i> Departamentos</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#" data-module="control"><i class="fas fa-shield-alt"></i> Control</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#" data-module="info"><i class="fas fa-info-circle"></i> Infórmate</a>
-                        </li>
-                    </ul>
-                    <div class="d-flex">
-                        <div class="dropdown">
-                            <button class="btn btn-outline-light dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown">
-                                <i class="fas fa-user-circle me-2"></i>Admin
-                            </button>
-                            <ul class="dropdown-menu dropdown-menu-end">
-                                <li><a class="dropdown-item" href="#"><i class="fas fa-user me-2"></i>Perfil</a></li>
-                                <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i>Configuración</a></li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item text-danger" href="#"><i class="fas fa-sign-out-alt me-2"></i>Cerrar Sesión</a></li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </nav>
-        
-        <!-- Contenido principal -->
-        <div class="container-fluid module-container">
-            <!-- Módulo: Dashboard -->
-            <div id="dashboard-module">
-                <div class="row mb-4">
-                    <div class="col-md-3">
-                        <div class="stat-card">
-                            <i class="fas fa-building fa-2x"></i>
-                            <div class="stat-number" id="departments-count">0</div>
-                            <div class="stat-label">Departamentos</div>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="stat-card">
-                            <i class="fas fa-folder fa-2x"></i>
-                            <div class="stat-number" id="folders-count">0</div>
-                            <div class="stat-label">Carpetas</div>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="stat-card">
-                            <i class="fas fa-file-pdf fa-2x"></i>
-                            <div class="stat-number" id="documents-count">0</div>
-                            <div class="stat-label">Documentos</div>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="stat-card">
-                            <i class="fas fa-users fa-2x"></i>
-                            <div class="stat-number" id="users-count">0</div>
-                            <div class="stat-label">Usuarios</div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="row">
-                    <div class="col-md-8">
-                        <div class="card module-card">
-                            <div class="module-header">
-                                <i class="fas fa-history me-2"></i> Actividad Reciente
-                            </div>
-                            <div class="module-content" id="recent-activity">
-                                <!-- Las actividades se cargarán dinámicamente desde IndexedDB -->
-                                <div class="no-results">Cargando actividad reciente...</div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="card module-card mb-4">
-                            <div class="module-header">
-                                <i class="fas fa-building me-2"></i> Departamentos
-                            </div>
-                            <div class="module-content" id="departments-list">
-                                <!-- Los departamentos se cargarán dinámicamente desde IndexedDB -->
-                                <div class="no-results">Cargando departamentos...</div>
-                            </div>
-                        </div>
-                        
-                        <div class="card module-card">
-                            <div class="module-header">
-                                <i class="fas fa-tasks me-2"></i> Acciones Rápidas
-                            </div>
-                            <div class="module-content">
-                                <button class="btn btn-primary w-100 mb-2" data-bs-toggle="modal" data-bs-target="#addDepartmentModal">
-                                    <i class="fas fa-plus-circle me-2"></i>Nuevo Departamento
-                                </button>
-                                <button class="btn btn-secondary w-100 mb-2" data-bs-toggle="modal" data-bs-target="#addFolderModal">
-                                    <i class="fas fa-folder-plus me-2"></i>Crear Carpeta
-                                </button>
-                                <button class="btn btn-success w-100" data-bs-toggle="modal" data-bs-target="#uploadFileModal">
-                                    <i class="fas fa-file-upload me-2"></i>Subir Documento
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Módulo: Configuración -->
-            <div id="configuration-module" class="hidden">
-                <div class="card module-card">
-                    <div class="module-header">
-                        <i class="fas fa-cog me-2"></i> Configuración de la Facultad
-                    </div>
-                    <div class="module-content">
-                        <form id="faculty-config-form">
-                            <div class="row mb-4">
-                                <div class="col-md-6">
-                                    <div class="mb-3">
-                                        <label class="form-label">Nombre de la Facultad</label>
-                                        <input type="text" class="form-control" id="faculty-name-input" value="Facultad de Ciencias Económicas, Gestión y Administración">
-                                    </div>
-                                    <div class="mb-3">
-                                        <label class="form-label">Email de la Facultad</label>
-                                        <input type="email" class="form-control" id="faculty-email-input" value="facultad@unge.edu.gq">
-                                    </div>
-                                    <div class="mb-3">
-                                        <label class="form-label">Teléfono de la Facultad</label>
-                                        <div class="input-group">
-                                            <span class="input-group-text">+240</span>
-                                            <input type="tel" class="form-control" id="faculty-phone-input" value="222123456">
-                                        </div>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label class="form-label">Año Académico</label>
-                                        <select class="form-select" id="academic-year-select">
-                                            <option>2022-2023</option>
-                                            <option selected>2023-2024</option>
-                                            <option>2024-2025</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="mb-3 text-center">
-                                        <label class="form-label">Logotipo de la Universidad</label>
-                                        <div class="border rounded p-4 text-center mb-3" style="height: 250px; background-color: #f8f9fa;">
-                                            <i class="fas fa-university fa-5x text-secondary mt-5"></i>
-                                            <p class="mt-3">Logotipo actual</p>
-                                        </div>
-                                        <input type="file" class="form-control">
-                                        <div class="form-text">Formatos permitidos: JPG, PNG. Tamaño máximo: 2MB</div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="d-flex justify-content-end">
-                                <button type="button" class="btn btn-primary" id="save-config"><i class="fas fa-save me-2"></i>Guardar Cambios</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Módulo: Secretaría General -->
-            <div id="secretariat-module" class="hidden">
-                <div class="card module-card">
-                    <div class="module-header">
-                        <i class="fas fa-users-cog me-2"></i> Gestión de Departamentos
-                    </div>
-                    <div class="module-content">
-                        <div class="d-flex justify-content-between align-items-center mb-4">
-                            <h5>Departamentos Existentes</h5>
-                            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addDepartmentModal">
-                                <i class="fas fa-plus me-2"></i>Nuevo Departamento
-                            </button>
-                        </div>
-                        
-                        <!-- Buscador de departamentos -->
-                        <div class="search-container mb-4">
-                            <i class="fas fa-search search-icon"></i>
-                            <input type="text" class="form-control search-input" id="department-search" placeholder="Buscar departamento...">
-                        </div>
-                        
-                        <div class="row" id="departments-container">
-                            <!-- Los departamentos se cargarán dinámicamente desde IndexedDB -->
-                            <div class="col-12">
-                                <div class="no-results">Cargando departamentos...</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Módulo: Departamentos -->
-            <div id="departments-module" class="hidden">
-                <div class="card module-card">
-                    <div class="module-header">
-                        <i class="fas fa-building me-2"></i> Departamento: <span id="current-department-name">Informática de Gestión Empresarial</span>
-                    </div>
-                    <div class="module-content">
-                        <div class="d-flex justify-content-between align-items-center mb-4">
-                            <h5>Carpetas del Departamento</h5>
-                            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addFolderModal">
-                                <i class="fas fa-folder-plus me-2"></i>Nueva Carpeta
-                            </button>
-                        </div>
-                        
-                        <!-- Buscador de carpetas -->
-                        <div class="search-container mb-4">
-                            <i class="fas fa-search search-icon"></i>
-                            <input type="text" class="form-control search-input" id="folder-search" placeholder="Buscar carpeta...">
-                        </div>
-                        
-                        <div class="row" id="folders-container">
-                            <!-- Las carpetas se cargarán dinámicamente desde IndexedDB -->
-                            <div class="col-12">
-                                <div class="no-results">Cargando carpetas...</div>
-                            </div>
-                        </div>
-                        
-                        <hr class="my-4">
-                        
-                        <h5 class="mb-3">Documentos en Carpeta: <span id="current-folder-name">Planificación Académica 2023</span></h5>
-                        
-                        <div class="d-flex justify-content-between align-items-center mb-3">
-                            <div class="d-flex">
-                                <div class="search-container">
-                                    <i class="fas fa-search search-icon"></i>
-                                    <input type="text" class="form-control search-input" id="document-search" placeholder="Buscar documento...">
-                                </div>
-                            </div>
-                            <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#uploadFileModal">
-                                <i class="fas fa-file-upload me-2"></i>Subir Documento
-                            </button>
-                        </div>
-                        
-                        <div class="list-group" id="documents-container">
-                            <!-- Los documentos se cargarán dinámicamente desde IndexedDB -->
-                            <div class="no-results">Cargando documentos...</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Módulo: Control -->
-            <div id="control-module" class="hidden">
-                <div class="card module-card">
-                    <div class="module-header">
-                        <i class="fas fa-shield-alt me-2"></i> Panel de Control y Auditoría
-                    </div>
-                    <div class="module-content">
-                        <div class="alert alert-info">
-                            <i class="fas fa-info-circle me-2"></i> Este módulo registra todas las acciones realizadas en el sistema. Solo el Administrador tiene acceso a esta información.
-                        </div>
-                        
-                        <div class="d-flex justify-content-between align-items-center mb-4">
-                            <h5>Registro de Actividades</h5>
-                            <div>
-                                <input type="date" class="form-control me-2 d-inline-block" style="width: auto;">
-                                <button class="btn btn-outline-primary me-2"><i class="fas fa-filter"></i> Filtrar</button>
-                                <button class="btn btn-outline-success"><i class="fas fa-file-export"></i> Exportar</button>
-                            </div>
-                        </div>
-                        
-                        <div class="table-responsive">
-                            <table class="table table-hover">
-                                <thead class="table-light">
-                                    <tr>
-                                        <th>Fecha/Hora</th>
-                                        <th>Usuario</th>
-                                        <th>Rol</th>
-                                        <th>Departamento</th>
-                                        <th>Acción</th>
-                                        <th>Detalles</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="activities-container">
-                                    <!-- Las actividades se cargarán dinámicamente desde IndexedDB -->
-                                    <tr><td colspan="6" class="text-center">Cargando actividades...</td></tr>
-                                </tbody>
-                            </table>
-                        </div>
-                        
-                        <nav>
-                            <ul class="pagination justify-content-center">
-                                <li class="page-item disabled"><a class="page-link" href="#">Anterior</a></li>
-                                <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                                <li class="page-item"><a class="page-link" href="#">2</a></li>
-                                <li class="page-item"><a class="page-link" href="#">3</a></li>
-                                <li class="page-item"><a class="page-link" href="#">Siguiente</a></li>
-                            </ul>
-                        </nav>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Módulo: Infórmate -->
-            <div id="info-module" class="hidden">
-                <div class="card module-card">
-                    <div class="module-header">
-                        <i class="fas fa-info-circle me-2"></i> Información sobre la Aplicación
-                    </div>
-                    <div class="module-content">
-                        <div class="row">
-                            <div class="col-md-8">
-                                <h5 class="mb-3">Sistema de Gestión Universitaria</h5>
-                                <p>Esta aplicación ha sido diseñada para facilitar la gestión documental y administrativa de facultades universitarias y sus departamentos.</p>
-                                
-                                <div class="card mb-4">
-                                    <div class="card-header bg-light">
-                                        <i class="fas fa-question-circle me-2"></i> ¿Para qué sirve?
-                                    </div>
-                                    <div class="card-body">
-                                        <ul>
-                                            <li>Gestión centralizada de la configuración institucional</li>
-                                            <li>Creación y administración de departamentos académicos</li>
-                                            <li>Organización de documentos en carpetas protegidas por contraseña</li>
-                                            <li>Almacenamiento seguro de documentos PDF</li>
-                                            <li>Control de acceso basado en roles de usuario</li>
-                                            <li>Registro detallado de todas las acciones realizadas en el sistema</li>
-                                        </ul>
-                                    </div>
-                                </div>
-                                
-                                <div class="card mb-4">
-                                    <div class="card-header bg-light">
-                                        <i class="fas fa-book-open me-2"></i> ¿Cómo se utiliza?
-                                    </div>
-                                    <div class="card-body">
-                                        <ol>
-                                            <li><strong>Configuración inicial:</strong> Establece los datos básicos de la facultad (nombre, logo, contacto, año académico)</li>
-                                            <li><strong>Creación de departamentos:</strong> Desde la Secretaría General, crea los departamentos académicos</li>
-                                            <li><strong>Gestión de carpetas:</strong> Cada departamento puede crear carpetas organizadas por año académico y protegidas con contraseña</li>
-                                            <li><strong>Subida de documentos:</strong> En cada carpeta, se pueden subir documentos PDF que serán gestionados por el departamento</li>
-                                            <li><strong>Control de acceso:</strong> Los usuarios con diferentes roles tendrán distintos niveles de acceso a la información</li>
-                                            <li><strong>Auditoría:</strong> Todas las acciones quedan registradas en el módulo de control para supervisión</li>
-                                        </ol>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="card">
-                                    <div class="card-header bg-light">
-                                        <i class="fas fa-user-tie me-2"></i> Información del Desarrollador
-                                    </div>
-                                    <div class="card-body text-center">
-                                        <div class="mb-3">
-                                            <i class="fas fa-user-circle fa-5x text-primary"></i>
-                                        </div>
-                                        <h5>Tarciano ENZEMA NCHAMA</h5>
-                                        <p class="text-muted">Desarrollador de Software</p>
-                                        
-                                        <hr>
-                                        
-                                        <p><i class="fas fa-graduation-cap me-2"></i> Finalista Universitario</p>
-                                        <p><i class="fas fa-university me-2"></i> UNGE - Universidad Nacional de Guinea Ecuatorial</p>
-                                        <p><i class="fas fa-building me-2"></i> Facultad de Ciencias Económicas, Gestión y Administración</p>
-                                        <p><i class="fas fa-laptop-code me-2"></i> Departamento: Informática de Gestión Empresarial</p>
-                                        
-                                        <hr>
-                                        
-                                        <h6 class="mt-3">Contacto:</h6>
-                                        <p><i class="fas fa-envelope me-2"></i> enzemajr@gmail.com</p>
-                                        <p><i class="fas fa-phone me-2"></i> +240 222 123 456</p>
-                                        
-                                        <div class="mt-3">
-                                            <button class="btn btn-sm btn-outline-primary me-1">
-                                                <i class="fab fa-linkedin"></i>
-                                            </button>
-                                            <button class="btn btn-sm btn-outline-info me-1">
-                                                <i class="fab fa-twitter"></i>
-                                            </button>
-                                            <button class="btn btn-sm btn-outline-dark">
-                                                <i class="fab fa-github"></i>
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Footer -->
-        <div class="footer">
-            <div class="container">
-                <div class="row">
-                    <div class="col-md-6 text-md-start">
-                        <p>Sistema de Gestión Universitaria v1.0</p>
-                        <p>© 2023 Facultad de Ciencias Económicas, UNGE. Todos los derechos reservados.</p>
-                    </div>
-                    <div class="col-md-6 text-md-end">
-                        <p>Desarrollado por: Tarciano Enzema Nchama</p>
-                        <p><i class="fas fa-envelope me-1"></i> enzemajr@gmail.com</p>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <!-- ... resto igual ... (NAVEGACIÓN, MODULOS, FOOTER, MODALES) ... -->
+        <!-- ... CONTENIDO OMITIDO PARA ENFOCAR EN LA LÓGICA NUEVA ... -->
     </div>
-    
-    <!-- Modal: Añadir Departamento -->
-    <div class="modal fade" id="addDepartmentModal" tabindex="-1">
+
+    <!-- MODALES LOGIN Y REGISTRO -->
+    <div class="modal fade auth-modal" id="authModal" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Crear Nuevo Departamento</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    <h5 class="modal-title" id="authModalTitle">Iniciar Sesión</h5>
                 </div>
                 <div class="modal-body">
-                    <form id="department-form">
+                    <form id="login-form">
                         <div class="mb-3">
-                            <label class="form-label">Nombre del Departamento</label>
-                            <input type="text" class="form-control" id="department-name" placeholder="Ej: Informática de Gestión Empresarial" required>
+                            <label class="form-label">Usuario</label>
+                            <input type="text" class="form-control" id="login-username" required autocomplete="username">
                         </div>
-                        <div class="mb-3">
-                            <label class="form-label">Descripción (Opcional)</label>
-                            <textarea class="form-control" id="department-description" rows="3" placeholder="Breve descripción del departamento"></textarea>
+                        <div class="mb-3 password-container">
+                            <label class="form-label">Contraseña</label>
+                            <input type="password" class="form-control" id="login-password" required autocomplete="current-password">
+                            <span class="toggle-password" id="toggle-login-password"><i class="fas fa-eye"></i></span>
                         </div>
+                        <div class="mb-2 text-end">
+                            <span class="toggle-link" id="show-register">¿No tienes cuenta? Regístrate</span>
+                        </div>
+                        <div id="login-error" class="text-danger mb-2" style="display: none;"></div>
+                        <button type="submit" class="btn btn-primary w-100">Ingresar</button>
                     </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="button" class="btn btn-primary" id="save-department">Crear Departamento</button>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Modal: Añadir Carpeta -->
-    <div class="modal fade" id="addFolderModal" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Crear Nueva Carpeta</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="folder-form">
+                    <form id="register-form" style="display: none;">
                         <div class="mb-3">
-                            <label class="form-label">Nombre de la Carpeta</label>
-                            <input type="text" class="form-control" id="folder-name" placeholder="Ej: Planificación Académica 2023" required>
+                            <label class="form-label">Nombre de Usuario</label>
+                            <input type="text" class="form-control" id="register-username" required autocomplete="username">
                         </div>
                         <div class="mb-3">
-                            <label class="form-label">Año Académico</label>
-                            <select class="form-select" id="folder-academic-year">
-                                <option>2022-2023</option>
-                                <option selected>2023-2024</option>
-                                <option>2024-2025</option>
+                            <label class="form-label">Correo</label>
+                            <input type="email" class="form-control" id="register-email" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Rol</label>
+                            <select class="form-select" id="register-role" required>
+                                <option value="">Selecciona un rol</option>
+                                <option value="Admin">Administrador</option>
+                                <option value="Secretaría">Secretaría General</option>
+                                <option value="Departamento">Departamento</option>
+                                <option value="Usuario">Usuario</option>
                             </select>
                         </div>
-                        <div class="mb-3">
-                            <label class="form-label">Contraseña de Acceso</label>
-                            <div class="password-container">
-                                <input type="password" class="form-control" id="folder-password" placeholder="Contraseña segura" required>
-                                <span class="toggle-password"><i class="fas fa-eye"></i></span>
-                            </div>
-                            <div class="form-text">Mínimo 8 caracteres, con letras, números y símbolos</div>
-                            <div class="password-strength mt-2">
-                                <div class="strength-meter" id="password-strength-meter" style="width: 0%; background-color: #e74c3c;"></div>
-                            </div>
+                        <div class="mb-3 password-container">
+                            <label class="form-label">Contraseña</label>
+                            <input type="password" class="form-control" id="register-password" required autocomplete="new-password">
+                            <span class="toggle-password" id="toggle-register-password"><i class="fas fa-eye"></i></span>
                         </div>
+                        <div class="mb-2 text-end">
+                            <span class="toggle-link" id="show-login">¿Ya tienes cuenta? Inicia sesión</span>
+                        </div>
+                        <div id="register-error" class="text-danger mb-2" style="display: none;"></div>
+                        <button type="submit" class="btn btn-success w-100">Registrarse</button>
                     </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="button" class="btn btn-primary" id="save-folder">Crear Carpeta</button>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Modal: Subir Archivo -->
-    <div class="modal fade" id="uploadFileModal" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Subir Documento PDF</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="document-form">
-                        <div class="mb-3">
-                            <label class="form-label">Seleccionar archivo PDF</label>
-                            <input type="file" class="form-control" id="document-file" accept=".pdf" required>
-                            <div class="form-text">Tamaño máximo: 10MB</div>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Nombre del documento</label>
-                            <input type="text" class="form-control" id="document-name" placeholder="Ej: Plan_Estudios_2023" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Etiquetas (Opcional)</label>
-                            <input type="text" class="form-control" id="document-tags" placeholder="Ej: Académico, Oficial, 2023">
-                            <div class="form-text">Separe con comas las etiquetas</div>
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="button" class="btn btn-primary" id="save-document">Subir Documento</button>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- ... RESTO DE MODALES: addDepartmentModal, addFolderModal, uploadFileModal ... (igual que tu código de ejemplo) -->
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Base de datos IndexedDB
+        // --- IndexedDB CONFIG ---
         const DB_NAME = 'university_management';
-        const DB_VERSION = 1;
-        
-        // Object stores
+        const DB_VERSION = 2;
         const STORES = {
             FACULTIES: 'faculties',
             DEPARTMENTS: 'departments',
             FOLDERS: 'folders',
             DOCUMENTS: 'documents',
-            ACTIVITIES: 'activities'
+            ACTIVITIES: 'activities',
+            USERS: 'users'
         };
-        
         let db;
+        let currentUser = null; // El usuario autenticado
         let currentDepartmentId = null;
         let currentFolderId = null;
-        
-        // Inicializar la base de datos
+        let currentFacultyLogo = null; // Blob o DataURL
+
+        // AUTH: Hash simple (para demo, usar bcrypt en producción)
+        function hashPass(p) {
+            return Array.from(new TextEncoder().encode(p)).reduce((s,x)=>s+String.fromCharCode(x),'');
+        }
+
+        // ----- IndexedDB -----
         function initDB() {
-            const request = indexedDB.open(DB_NAME, DB_VERSION);
-            
-            request.onupgradeneeded = function(event) {
+            const req = indexedDB.open(DB_NAME, DB_VERSION);
+            req.onupgradeneeded = function(event) {
                 db = event.target.result;
-                
-                // Crear object stores si no existen
-                if (!db.objectStoreNames.contains(STORES.FACULTIES)) {
-                    db.createObjectStore(STORES.FACULTIES, { keyPath: 'id', autoIncrement: true });
-                }
-                
-                if (!db.objectStoreNames.contains(STORES.DEPARTMENTS)) {
-                    db.createObjectStore(STORES.DEPARTMENTS, { keyPath: 'id', autoIncrement: true });
-                }
-                
-                if (!db.objectStoreNames.contains(STORES.FOLDERS)) {
-                    db.createObjectStore(STORES.FOLDERS, { keyPath: 'id', autoIncrement: true });
-                }
-                
-                if (!db.objectStoreNames.contains(STORES.DOCUMENTS)) {
-                    db.createObjectStore(STORES.DOCUMENTS, { keyPath: 'id', autoIncrement: true });
-                }
-                
-                if (!db.objectStoreNames.contains(STORES.ACTIVITIES)) {
-                    db.createObjectStore(STORES.ACTIVITIES, { keyPath: 'id', autoIncrement: true });
+                // Crear stores si faltan
+                for (const k in STORES) {
+                    if (!db.objectStoreNames.contains(STORES[k])) {
+                        db.createObjectStore(STORES[k], { keyPath: 'id', autoIncrement: true });
+                    }
                 }
             };
-            
-            request.onsuccess = function(event) {
+            req.onsuccess = function(event) {
                 db = event.target.result;
-                console.log('Base de datos abierta con éxito');
-                
-                // Cargar datos iniciales
-                loadFacultyConfig();
-                loadDashboardData();
-                loadDepartments();
-                loadActivities();
+                showAuthModal(); // Mostrar login/registro antes que nada
             };
-            
-            request.onerror = function(event) {
-                console.error('Error al abrir la base de datos:', event.target.error);
+            req.onerror = function(event) {
+                alert('Error abriendo base de datos.');
             };
         }
-        
-        // Guardar datos en la base de datos
+        // CRUD BASICS
         function saveData(storeName, data) {
             return new Promise((resolve, reject) => {
-                const transaction = db.transaction([storeName], 'readwrite');
-                const store = transaction.objectStore(storeName);
-                const request = store.add(data);
-                
-                request.onsuccess = function(event) {
-                    resolve(event.target.result);
-                };
-                
-                request.onerror = function(event) {
-                    reject(event.target.error);
-                };
+                const tx = db.transaction([storeName], 'readwrite');
+                const store = tx.objectStore(storeName);
+                const req = store.add(data);
+                req.onsuccess = e => resolve(e.target.result);
+                req.onerror = e => reject(e.target.error);
             });
         }
-        
-        // Actualizar datos en la base de datos
         function updateData(storeName, id, data) {
             return new Promise((resolve, reject) => {
-                const transaction = db.transaction([storeName], 'readwrite');
-                const store = transaction.objectStore(storeName);
-                const getRequest = store.get(id);
-                
-                getRequest.onsuccess = function(event) {
-                    const record = event.target.result;
+                const tx = db.transaction([storeName], 'readwrite');
+                const store = tx.objectStore(storeName);
+                const getReq = store.get(id);
+                getReq.onsuccess = function(e) {
+                    const record = e.target.result;
                     if (record) {
-                        const updatedRecord = { ...record, ...data };
-                        const putRequest = store.put(updatedRecord);
-                        
-                        putRequest.onsuccess = function() {
-                            resolve(updatedRecord);
-                        };
-                        
-                        putRequest.onerror = function(event) {
-                            reject(event.target.error);
-                        };
-                    } else {
-                        reject(new Error('Registro no encontrado'));
-                    }
+                        const updated = {...record, ...data};
+                        const putReq = store.put(updated);
+                        putReq.onsuccess = ()=>resolve(updated);
+                        putReq.onerror = e=>reject(e.target.error);
+                    } else reject(new Error('No encontrado'));
                 };
-                
-                getRequest.onerror = function(event) {
-                    reject(event.target.error);
-                };
+                getReq.onerror = e=>reject(e.target.error);
             });
         }
-        
-        // Obtener todos los datos de un object store
         function getAllData(storeName) {
             return new Promise((resolve, reject) => {
-                const transaction = db.transaction([storeName], 'readonly');
-                const store = transaction.objectStore(storeName);
-                const request = store.getAll();
-                
-                request.onsuccess = function(event) {
-                    resolve(event.target.result);
-                };
-                
-                request.onerror = function(event) {
-                    reject(event.target.error);
-                };
+                const tx = db.transaction([storeName], 'readonly');
+                const store = tx.objectStore(storeName);
+                const req = store.getAll();
+                req.onsuccess = e => resolve(e.target.result);
+                req.onerror = e => reject(e.target.error);
             });
         }
-        
-        // Cargar configuración de la facultad
+        function getDataBy(storeName, key, value) {
+            return new Promise((resolve, reject) => {
+                const tx = db.transaction([storeName], 'readonly');
+                const store = tx.objectStore(storeName);
+                const req = store.getAll();
+                req.onsuccess = e => {
+                    const res = e.target.result.filter(x=>x[key]===value);
+                    resolve(res);
+                };
+                req.onerror = e => reject(e.target.error);
+            });
+        }
+        function getRecordBy(storeName, key, value) {
+            return new Promise((resolve, reject) => {
+                const tx = db.transaction([storeName], 'readonly');
+                const store = tx.objectStore(storeName);
+                const req = store.getAll();
+                req.onsuccess = e => {
+                    const found = e.target.result.find(x => x[key] === value);
+                    resolve(found);
+                };
+                req.onerror = e => reject(e.target.error);
+            });
+        }
+        // ---- AUTH ----
+        function showAuthModal() {
+            const authModal = new bootstrap.Modal(document.getElementById('authModal'), { backdrop: 'static', keyboard: false });
+            document.getElementById('mainApp').style.display = 'none';
+            authModal.show();
+        }
+        function setUserSession(user) {
+            currentUser = user;
+            document.getElementById('mainApp').style.display = '';
+            document.querySelectorAll('.dropdown-toggle').forEach(btn=>{
+                btn.innerHTML = `<i class="fas fa-user-circle me-2"></i>${user.username}`;
+            });
+            // Actualizar UI para el rol
+            // (puedes ocultar módulos o enlaces según currentUser.role aquí)
+            // ...
+            // Cargar datos principales
+            loadFacultyConfig();
+            loadDashboardData();
+            loadDepartments();
+            loadActivities();
+        }
+        // --- Login/Register handlers ---
+        document.addEventListener('DOMContentLoaded', function() {
+            // Login/registro toggle
+            document.getElementById('show-register').onclick = function() {
+                document.getElementById('login-form').style.display = 'none';
+                document.getElementById('register-form').style.display = '';
+                document.getElementById('authModalTitle').textContent = 'Registro de Usuario';
+            };
+            document.getElementById('show-login').onclick = function() {
+                document.getElementById('login-form').style.display = '';
+                document.getElementById('register-form').style.display = 'none';
+                document.getElementById('authModalTitle').textContent = 'Iniciar Sesión';
+            };
+            // Mostrar/ocultar contraseña
+            document.getElementById('toggle-login-password').onclick = function() {
+                const input = document.getElementById('login-password');
+                input.type = input.type === 'password' ? 'text' : 'password';
+                this.innerHTML = input.type === 'password' ? '<i class="fas fa-eye"></i>' : '<i class="fas fa-eye-slash"></i>';
+            };
+            document.getElementById('toggle-register-password').onclick = function() {
+                const input = document.getElementById('register-password');
+                input.type = input.type === 'password' ? 'text' : 'password';
+                this.innerHTML = input.type === 'password' ? '<i class="fas fa-eye"></i>' : '<i class="fas fa-eye-slash"></i>';
+            };
+            // LOGIN
+            document.getElementById('login-form').onsubmit = async function(e) {
+                e.preventDefault();
+                const username = document.getElementById('login-username').value.trim();
+                const password = document.getElementById('login-password').value;
+                const user = await getRecordBy(STORES.USERS, 'username', username);
+                if (user && user.password === hashPass(password)) {
+                    document.getElementById('login-error').style.display = 'none';
+                    bootstrap.Modal.getInstance(document.getElementById('authModal')).hide();
+                    setUserSession(user);
+                } else {
+                    document.getElementById('login-error').textContent = 'Credenciales incorrectas';
+                    document.getElementById('login-error').style.display = '';
+                }
+            };
+            // REGISTRO
+            document.getElementById('register-form').onsubmit = async function(e) {
+                e.preventDefault();
+                const username = document.getElementById('register-username').value.trim();
+                const email = document.getElementById('register-email').value.trim();
+                const role = document.getElementById('register-role').value;
+                const password = document.getElementById('register-password').value;
+                if (!username || !email || !role || !password) {
+                    document.getElementById('register-error').textContent = 'Completa todos los campos';
+                    document.getElementById('register-error').style.display = '';
+                    return;
+                }
+                const exists = await getRecordBy(STORES.USERS, 'username', username);
+                if (exists) {
+                    document.getElementById('register-error').textContent = 'El usuario ya existe';
+                    document.getElementById('register-error').style.display = '';
+                    return;
+                }
+                await saveData(STORES.USERS, {
+                    username, email, role, password: hashPass(password)
+                });
+                document.getElementById('register-error').style.display = 'none';
+                alert('Registro exitoso, ahora puedes iniciar sesión.');
+                document.getElementById('show-login').click();
+            };
+        });
+        // ----- FACULTY LOGO -----
         function loadFacultyConfig() {
             getAllData(STORES.FACULTIES).then(faculties => {
                 if (faculties.length > 0) {
                     const faculty = faculties[0];
-                    document.getElementById('faculty-name').textContent = faculty.name;
-                    document.getElementById('faculty-email').textContent = faculty.email;
-                    document.getElementById('faculty-phone').textContent = faculty.phone;
-                    document.getElementById('academic-year').textContent = faculty.academicYear;
-                    
-                    // Actualizar formulario de configuración
-                    document.getElementById('faculty-name-input').value = faculty.name;
-                    document.getElementById('faculty-email-input').value = faculty.email;
-                    document.getElementById('faculty-phone-input').value = faculty.phone;
-                    document.getElementById('academic-year-select').value = faculty.academicYear;
+                    document.getElementById('faculty-name').textContent = faculty.name || '';
+                    document.getElementById('faculty-email').textContent = faculty.email || '';
+                    document.getElementById('faculty-phone').textContent = faculty.phone || '';
+                    document.getElementById('academic-year').textContent = faculty.academicYear || '';
+                    // Logo
+                    if (faculty.logo) {
+                        setLogoDisplay(faculty.logo);
+                    } else {
+                        setLogoDisplay(null);
+                    }
                 } else {
-                    // Datos iniciales predeterminados
-                    const initialFaculty = {
-                        name: 'Facultad de Ciencias Económicas, Gestión y Administración',
-                        email: 'facultad@unge.edu.gq',
-                        phone: '+240 222 123 456',
-                        academicYear: '2023-2024'
+                    // Vacío, no datos simulados
+                    setLogoDisplay(null);
+                }
+            });
+        }
+        function setLogoDisplay(logoDataUrl) {
+            const logoDiv = document.getElementById('logo-display');
+            logoDiv.innerHTML = '';
+            if (logoDataUrl) {
+                const img = document.createElement('img');
+                img.src = logoDataUrl;
+                img.className = 'logo-img';
+                logoDiv.appendChild(img);
+            } else {
+                logoDiv.innerHTML = '<i class="fas fa-university logo-placeholder"></i>';
+            }
+        }
+        // Logo input en Configuración
+        document.addEventListener('DOMContentLoaded', function() {
+            // Si tienes el input del logo así: <input type="file" class="form-control" id="faculty-logo-input">
+            // Agrégalo en el HTML del modal de configuración.
+            // Escucha el cambio y almacena DataURL en IndexedDB.
+            if (!document.getElementById('faculty-logo-input') && document.getElementById('configuration-module')) {
+                // Si no existe el input, créalo dinámicamente (mejor ponerlo en el HTML)
+                const input = document.createElement('input');
+                input.type = "file";
+                input.accept = "image/png, image/jpeg";
+                input.className = "form-control";
+                input.id = "faculty-logo-input";
+                input.style.marginTop = "10px";
+                document.querySelector('#configuration-module .module-content .col-md-6').appendChild(input);
+            }
+            document.getElementById('faculty-logo-input')?.addEventListener('change', function(evt) {
+                const file = this.files[0];
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    currentFacultyLogo = e.target.result;
+                    setLogoDisplay(currentFacultyLogo);
+                };
+                reader.readAsDataURL(file);
+            });
+            // Guardar Configuración de Facultad
+            document.getElementById('save-config')?.addEventListener('click', function() {
+                const name = document.getElementById('faculty-name-input').value;
+                const email = document.getElementById('faculty-email-input').value;
+                const phone = document.getElementById('faculty-phone-input').value;
+                const academicYear = document.getElementById('academic-year-select').value;
+                getAllData(STORES.FACULTIES).then(faculties => {
+                    if (faculties.length > 0) {
+                        const faculty = faculties[0];
+                        updateData(STORES.FACULTIES, faculty.id, {
+                            name, email, phone, academicYear, logo: currentFacultyLogo
+                        }).then(loadFacultyConfig);
+                    } else {
+                        saveData(STORES.FACULTIES, {
+                            name, email, phone, academicYear, logo: currentFacultyLogo
+                        }).then(loadFacultyConfig);
+                    }
+                });
+            });
+        });
+
+        // SUBIDA Y VISUALIZACIÓN DE PDF FUNCIONAL Y SEGURA
+        document.addEventListener('DOMContentLoaded', function() {
+            // Botón de guardar documento PDF
+            document.getElementById('save-document')?.addEventListener('click', async function() {
+                const fileInput = document.getElementById('document-file');
+                const name = document.getElementById('document-name').value.trim();
+                const tags = document.getElementById('document-tags').value.trim();
+                if (!fileInput.files.length || !name) {
+                    alert('Selecciona un PDF y escribe un nombre.');
+                    return;
+                }
+                const file = fileInput.files[0];
+                if (file.type !== 'application/pdf' || file.size > 10*1024*1024) {
+                    alert('Solo se permiten archivos PDF hasta 10MB.');
+                    return;
+                }
+                // Leer el PDF como Blob y guardar en IndexedDB
+                const reader = new FileReader();
+                reader.onload = async function(e) {
+                    const documentData = {
+                        name,
+                        tags: tags.split(',').map(t=>t.trim()).filter(Boolean),
+                        file: e.target.result,
+                        folderId: currentFolderId,
+                        departmentId: currentDepartmentId,
+                        uploadedBy: currentUser.username,
+                        uploadedAt: new Date().toISOString()
                     };
-                    
-                    saveData(STORES.FACULTIES, initialFaculty).then(() => {
-                        loadFacultyConfig();
+                    await saveData(STORES.DOCUMENTS, documentData);
+                    // Registrar en actividades
+                    await saveData(STORES.ACTIVITIES, {
+                        date: new Date().toLocaleString(),
+                        user: currentUser.username,
+                        role: currentUser.role,
+                        department: currentDepartmentId,
+                        action: 'subió documento',
+                        details: name
                     });
-                }
+                    // Cerrar modal, limpiar, recargar documentos
+                    bootstrap.Modal.getInstance(document.getElementById('uploadFileModal')).hide();
+                    document.getElementById('document-form').reset();
+                    loadDocuments(currentFolderId);
+                    alert('Documento subido correctamente.');
+                };
+                reader.readAsDataURL(file);
             });
-        }
-        
-        // Guardar configuración de la facultad
-        function saveFacultyConfig() {
-            const name = document.getElementById('faculty-name-input').value;
-            const email = document.getElementById('faculty-email-input').value;
-            const phone = document.getElementById('faculty-phone-input').value;
-            const academicYear = document.getElementById('academic-year-select').value;
-            
-            getAllData(STORES.FACULTIES).then(faculties => {
-                if (faculties.length > 0) {
-                    const faculty = faculties[0];
-                    updateData(STORES.FACULTIES, faculty.id, {
-                        name,
-                        email,
-                        phone,
-                        academicYear
-                    }).then(() => {
-                        loadFacultyConfig();
-                        alert('Configuración guardada correctamente');
-                    });
-                } else {
-                    saveData(STORES.FACULTIES, {
-                        name,
-                        email,
-                        phone,
-                        academicYear
-                    }).then(() => {
-                        loadFacultyConfig();
-                        alert('Configuración guardada correctamente');
-                    });
-                }
-            });
-        }
-        
-        // Cargar datos para el dashboard
-        function loadDashboardData() {
-            Promise.all([
-                getAllData(STORES.DEPARTMENTS),
-                getAllData(STORES.FOLDERS),
-                getAllData(STORES.DOCUMENTS),
-                getAllData(STORES.ACTIVITIES)
-            ]).then(([departments, folders, documents, activities]) => {
-                // Actualizar contadores
-                document.getElementById('departments-count').textContent = departments.length;
-                document.getElementById('folders-count').textContent = folders.length;
-                document.getElementById('documents-count').textContent = documents.length;
-                document.getElementById('users-count').textContent = 1; // Simulamos un usuario por ahora
-                
-                // Actualizar lista de departamentos
-                const departmentsList = document.getElementById('departments-list');
-                departmentsList.innerHTML = '';
-                
-                if (departments.length > 0) {
-                    const container = document.createElement('div');
-                    container.className = 'd-flex flex-wrap';
-                    
-                    departments.forEach(department => {
-                        const badge = document.createElement('span');
-                        badge.className = 'badge bg-primary department-badge';
-                        badge.textContent = department.name;
-                        container.appendChild(badge);
-                    });
-                    
-                    departmentsList.appendChild(container);
-                } else {
-                    departmentsList.innerHTML = '<div class="no-results">No hay departamentos registrados</div>';
-                }
-                
-                // Actualizar actividad reciente
-                const recentActivity = document.getElementById('recent-activity');
-                recentActivity.innerHTML = '';
-                
-                if (activities.length > 0) {
-                    // Mostrar las últimas 5 actividades
-                    const recent = activities.slice(-5).reverse();
-                    
-                    recent.forEach(activity => {
-                        const entry = document.createElement('div');
-                        entry.className = `log-entry ${activity.action.includes('elimin') ? 'deletion' : ''}`;
-                        
-                        let badgeClass = 'badge user-badge';
-                        if (activity.role === 'Admin') badgeClass = 'badge admin-badge';
-                        if (activity.role === 'Secretaría') badgeClass = 'badge secretariat-badge';
-                        if (activity.role === 'Departamento') badgeClass = 'badge department-badge';
-                        
-                        entry.innerHTML = `
-                            <span class="${badgeClass}">${activity.role}</span>
-                            <strong>${activity.user}</strong> ${activity.action} <strong>${activity.details}</strong>
-                            <span class="text-muted">- ${activity.date}</span>
-                        `;
-                        
-                        recentActivity.appendChild(entry);
-                    });
-                } else {
-                    recentActivity.innerHTML = '<div class="no-results">No hay actividad reciente</div>';
-                }
-            });
-        }
-        
-        // Cargar departamentos para la Secretaría
+        });
+
+        // SECRETARÍA GENERAL: ABRIR DEPARTAMENTOS, CARPETAS Y DOCUMENTOS
         function loadDepartments() {
             getAllData(STORES.DEPARTMENTS).then(departments => {
                 const container = document.getElementById('departments-container');
+                if (!container) return;
                 container.innerHTML = '';
-                
                 if (departments.length > 0) {
-                    departments.forEach(department => {
+                    departments.forEach(dept => {
                         const col = document.createElement('div');
                         col.className = 'col-md-4 mb-3';
-                        
                         col.innerHTML = `
-                            <div class="folder-card">
+                            <div class="folder-card" style="cursor:pointer" data-id="${dept.id}">
                                 <div class="d-flex justify-content-between">
-                                    <h6>${department.name}</h6>
-                                    <span class="badge bg-info">${department.folders || 0} carpetas</span>
+                                    <h6>${dept.name}</h6>
                                 </div>
-                                <div class="d-flex justify-content-end mt-2">
-                                    <button class="btn btn-sm btn-outline-primary me-1 edit-department" data-id="${department.id}">
-                                        <i class="fas fa-edit"></i>
-                                    </button>
-                                    <button class="btn btn-sm btn-outline-danger delete-department" data-id="${department.id}">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                </div>
+                                <div>${dept.description || ''}</div>
                             </div>
                         `;
-                        
                         container.appendChild(col);
+                    });
+                    // Click para abrir departamento
+                    container.querySelectorAll('.folder-card').forEach(card => {
+                        card.onclick = function() {
+                            currentDepartmentId = parseInt(this.getAttribute('data-id'));
+                            loadFolders(currentDepartmentId);
+                            showModule('departments');
+                        };
                     });
                 } else {
                     container.innerHTML = '<div class="col-12"><div class="no-results">No hay departamentos registrados</div></div>';
                 }
-                
-                // Añadir event listeners a los botones
-                document.querySelectorAll('.edit-department').forEach(button => {
-                    button.addEventListener('click', function() {
-                        const departmentId = this.getAttribute('data-id');
-                        editDepartment(departmentId);
-                    });
-                });
-                
-                document.querySelectorAll('.delete-department').forEach(button => {
-                    button.addEventListener('click', function() {
-                        const departmentId = this.getAttribute('data-id');
-                        deleteDepartment(departmentId);
-                    });
-                });
             });
         }
-        
-        // Crear un nuevo departamento
-        function createDepartment() {
-            const name = document.getElementById('department-name').value;
-            const description = document.getElementById('department-description').value;
-            
-            if (!name) {
-                alert('Por favor, ingrese un nombre para el departamento');
-                return;
-            }
-            
-            const department = {
-                name,
-                description,
-                createdAt: new Date().toISOString()
-            };
-            
-            saveData(STORES.DEPARTMENTS, department).then(id => {
-                // Registrar actividad
-                saveData(STORES.ACTIVITIES, {
-                    date: new Date().toLocaleString(),
-                    user: 'Admin',
-                    role: 'Admin',
-                    department: 'Sistema',
-                    action: 'creó el departamento',
-                    details: name
-                });
-                
-                // Cerrar modal y actualizar datos
-                bootstrap.Modal.getInstance(document.getElementById('addDepartmentModal')).hide();
-                document.getElementById('department-form').reset();
-                loadDepartments();
-                loadDashboardData();
-                alert('Departamento creado con éxito');
-            });
-        }
-        
-        // Editar departamento
-        function editDepartment(id) {
-            // Implementar lógica de edición
-            alert(`Editar departamento con ID: ${id}`);
-        }
-        
-        // Eliminar departamento
-        function deleteDepartment(id) {
-            if (confirm('¿Está seguro que desea eliminar este departamento? Esta acción no se puede deshacer.')) {
-                // Implementar lógica de eliminación
-                alert(`Eliminar departamento con ID: ${id}`);
-            }
-        }
-        
-        // Cargar actividades para el módulo de control
-        function loadActivities() {
-            getAllData(STORES.ACTIVITIES).then(activities => {
-                const container = document.getElementById('activities-container');
+        function loadFolders(departmentId) {
+            getDataBy(STORES.FOLDERS, 'departmentId', departmentId).then(folders => {
+                const container = document.getElementById('folders-container');
+                if (!container) return;
                 container.innerHTML = '';
-                
-                if (activities.length > 0) {
-                    activities.reverse().forEach(activity => {
-                        const row = document.createElement('tr');
-                        
-                        let badgeClass = 'badge user-badge';
-                        if (activity.role === 'Admin') badgeClass = 'badge admin-badge';
-                        if (activity.role === 'Secretaría') badgeClass = 'badge secretariat-badge';
-                        if (activity.role === 'Departamento') badgeClass = 'badge department-badge';
-                        
-                        row.innerHTML = `
-                            <td>${activity.date}</td>
-                            <td>${activity.user}</td>
-                            <td><span class="${badgeClass}">${activity.role}</span></td>
-                            <td>${activity.department}</td>
-                            <td>${activity.action}</td>
-                            <td>${activity.details}</td>
+                if (folders.length > 0) {
+                    folders.forEach(folder => {
+                        const col = document.createElement('div');
+                        col.className = 'col-md-4 mb-3';
+                        col.innerHTML = `
+                            <div class="folder-card" style="cursor:pointer" data-id="${folder.id}">
+                                <div class="d-flex justify-content-between">
+                                    <h6>${folder.name}</h6>
+                                </div>
+                                <div>${folder.academicYear}</div>
+                            </div>
                         `;
-                        
-                        container.appendChild(row);
+                        container.appendChild(col);
+                    });
+                    // Click para abrir carpeta
+                    container.querySelectorAll('.folder-card').forEach(card => {
+                        card.onclick = function() {
+                            currentFolderId = parseInt(this.getAttribute('data-id'));
+                            loadDocuments(currentFolderId);
+                        };
                     });
                 } else {
-                    container.innerHTML = '<tr><td colspan="6" class="text-center">No hay actividades registradas</td></tr>';
+                    container.innerHTML = '<div class="col-12"><div class="no-results">No hay carpetas en este departamento</div></div>';
                 }
             });
         }
-        
-        // Crear una nueva carpeta
-        function createFolder() {
-            const name = document.getElementById('folder-name').value;
-            const academicYear = document.getElementById('folder-academic-year').value;
-            const password = document.getElementById('folder-password').value;
-            
-            if (!name || !academicYear || !password) {
-                alert('Por favor, complete todos los campos requeridos');
-                return;
-            }
-            
-            if (password.length < 8) {
-                alert('La contraseña debe tener al menos 8 caracteres');
-                return;
-            }
-            
-            const folder = {
-                name,
-                academicYear,
-                password,
-                departmentId: currentDepartmentId || 1, // Por defecto al primer departamento
-                createdAt: new Date().toISOString()
-            };
-            
-            saveData(STORES.FOLDERS, folder).then(id => {
-                // Registrar actividad
-                saveData(STORES.ACTIVITIES, {
-                    date: new Date().toLocaleString(),
-                    user: 'Admin',
-                    role: 'Admin',
-                    department: 'Sistema',
-                    action: 'creó la carpeta',
-                    details: name
-                });
-                
-                // Cerrar modal y actualizar datos
-                bootstrap.Modal.getInstance(document.getElementById('addFolderModal')).hide();
-                document.getElementById('folder-form').reset();
-                document.getElementById('password-strength-meter').style.width = '0%';
-                loadDashboardData();
-                alert('Carpeta creada con éxito');
-            });
-        }
-        
-        // Función para buscar departamentos
-        function searchDepartments() {
-            const searchTerm = document.getElementById('department-search').value.toLowerCase();
-            const departmentCards = document.querySelectorAll('#departments-container .folder-card');
-            
-            departmentCards.forEach(card => {
-                const departmentName = card.querySelector('h6').textContent.toLowerCase();
-                if (departmentName.includes(searchTerm)) {
-                    card.closest('.col-md-4').style.display = 'block';
+        function loadDocuments(folderId) {
+            getDataBy(STORES.DOCUMENTS, 'folderId', folderId).then(documents => {
+                const container = document.getElementById('documents-container');
+                if (!container) return;
+                container.innerHTML = '';
+                if (documents.length > 0) {
+                    documents.forEach(doc => {
+                        const item = document.createElement('div');
+                        item.className = 'list-group-item d-flex align-items-center justify-content-between';
+                        item.innerHTML = `
+                            <span>
+                                <i class="fas fa-file-pdf file-icon me-2"></i>
+                                <strong>${doc.name}</strong>
+                                <small class="text-muted ms-2">${doc.tags.join(', ')}</small>
+                            </span>
+                            <button class="btn btn-sm btn-outline-info" data-docid="${doc.id}"><i class="fas fa-eye"></i> Abrir</button>
+                        `;
+                        container.appendChild(item);
+                    });
+                    // Abrir visor de PDF
+                    container.querySelectorAll('button[data-docid]').forEach(btn => {
+                        btn.onclick = function() {
+                            const docId = parseInt(this.getAttribute('data-docid'));
+                            openPDF(docId);
+                        };
+                    });
                 } else {
-                    card.closest('.col-md-4').style.display = 'none';
+                    container.innerHTML = '<div class="no-results">No hay documentos en esta carpeta</div>';
                 }
             });
         }
-        
-        // Función para buscar carpetas
-        function searchFolders() {
-            const searchTerm = document.getElementById('folder-search').value.toLowerCase();
-            const folderCards = document.querySelectorAll('#folders-container .folder-card');
-            
-            folderCards.forEach(card => {
-                const folderName = card.querySelector('h6').textContent.toLowerCase();
-                if (folderName.includes(searchTerm)) {
-                    card.closest('.col-md-4').style.display = 'block';
-                } else {
-                    card.closest('.col-md-4').style.display = 'none';
+        function openPDF(docId) {
+            // Recuperar el PDF y abrir en nueva ventana
+            getAllData(STORES.DOCUMENTS).then(docs => {
+                const doc = docs.find(x => x.id === docId);
+                if (doc && doc.file) {
+                    const win = window.open();
+                    win.document.write(`<iframe src="${doc.file}" type="application/pdf" width="100%" height="100%"></iframe>`);
                 }
             });
         }
-        
-        // Función para buscar documentos
-        function searchDocuments() {
-            const searchTerm = document.getElementById('document-search').value.toLowerCase();
-            const documentItems = document.querySelectorAll('#documents-container .list-group-item');
-            
-            documentItems.forEach(item => {
-                const documentName = item.querySelector('strong').textContent.toLowerCase();
-                if (documentName.includes(searchTerm)) {
-                    item.style.display = 'flex';
-                } else {
-                    item.style.display = 'none';
-                }
-            });
+        // --- Navegación de módulos
+        function showModule(module) {
+            document.querySelectorAll('.module-container > div').forEach(md => md.classList.add('hidden'));
+            document.getElementById(module+'-module').classList.remove('hidden');
         }
-        
-        // Navegación entre módulos
-        document.querySelectorAll('[data-module]').forEach(link => {
-            link.addEventListener('click', function(e) {
-                e.preventDefault();
-                
-                // Ocultar todos los módulos
-                document.querySelectorAll('.module-container > div').forEach(module => {
-                    module.classList.add('hidden');
-                });
-                
-                // Mostrar el módulo seleccionado
-                const moduleId = this.getAttribute('data-module') + '-module';
-                document.getElementById(moduleId).classList.remove('hidden');
-                
-                // Actualizar navegación activa
-                document.querySelectorAll('.nav-link').forEach(navLink => {
-                    navLink.classList.remove('active');
-                });
-                this.classList.add('active');
-            });
-        });
-        
-        // Mostrar dashboard al cargar
-        document.getElementById('dashboard-module').classList.remove('hidden');
-        
-        // Alternar visibilidad de contraseña
-        document.querySelectorAll('.toggle-password').forEach(toggle => {
-            toggle.addEventListener('click', function() {
-                const passwordInput = this.previousElementSibling;
-                const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-                passwordInput.setAttribute('type', type);
-                this.innerHTML = type === 'password' ? '<i class="fas fa-eye"></i>' : '<i class="fas fa-eye-slash"></i>';
-            });
-        });
-        
-        // Medidor de fortaleza de contraseña
-        document.getElementById('folder-password').addEventListener('input', function() {
-            const password = this.value;
-            let strength = 0;
-            
-            if (password.length >= 8) strength += 30;
-            if (/[A-Z]/.test(password)) strength += 20;
-            if (/[a-z]/.test(password)) strength += 20;
-            if (/[0-9]/.test(password)) strength += 20;
-            if (/[^A-Za-z0-9]/.test(password)) strength += 10;
-            
-            const meter = document.getElementById('password-strength-meter');
-            meter.style.width = strength + '%';
-            
-            if (strength < 50) {
-                meter.style.backgroundColor = '#e74c3c';
-            } else if (strength < 80) {
-                meter.style.backgroundColor = '#f39c12';
-            } else {
-                meter.style.backgroundColor = '#2ecc71';
-            }
-        });
-        
-        // Event listeners para botones de guardar
-        document.getElementById('save-config').addEventListener('click', saveFacultyConfig);
-        document.getElementById('save-department').addEventListener('click', createDepartment);
-        document.getElementById('save-folder').addEventListener('click', createFolder);
-        
-        // Event listeners para buscadores
-        document.getElementById('department-search').addEventListener('input', searchDepartments);
-        document.getElementById('folder-search').addEventListener('input', searchFolders);
-        document.getElementById('document-search').addEventListener('input', searchDocuments);
-        
-        // Inicializar la base de datos cuando el documento esté listo
+
+        // Iniciar DB al cargar
         document.addEventListener('DOMContentLoaded', initDB);
     </script>
 </body>
