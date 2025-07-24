@@ -1,0 +1,1543 @@
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GESTIFAC</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        .navbar-brand {
+            font-weight: bold;
+            font-size: 1.1rem; 
+        }
+        .card {
+            margin-bottom: 20px;
+        }
+        .file-item {
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            padding: 10px;
+            margin-bottom: 10px;
+            background-color: #f8f9fa;
+        }
+        .file-actions {
+            margin-top: 10px;
+        }
+        .file-actions button {
+            margin-right: 5px;
+            margin-bottom: 5px;
+        }
+        .login-container {
+            max-width: 400px;
+            margin: 0 auto;
+            margin-top: 100px;
+        }
+        .main-content {
+            margin-top: 20px;
+        }
+        .nav-pills .nav-link {
+            margin-bottom: 5px;
+        }
+        .nav-pills .nav-link.active {
+            background-color: #0d6efd;
+        }
+        .password-requirements {
+            font-size: 0.8em;
+            color: #6c757d;
+            margin-top: 5px;
+        }
+        .control-log {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+        .folder-container {
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 15px;
+            background-color: #ffffff;
+        }
+        .folder-header {
+            background-color: #e9ecef;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            display: flex; 
+            align-items: center; 
+            justify-content: space-between; 
+        }
+        .folder-name-container { 
+            display: flex;
+            align-items: center;
+        }
+        .folder-actions-header { 
+            display: flex;
+            gap: 5px;
+        }
+        .folder-content {
+            margin-top: 10px;
+            padding-left: 20px; 
+        }
+        .access-required {
+            background-color: #fff3cd;
+            border: 1px solid #ffecb5;
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+        .hidden {
+            display: none;
+        }
+        .gestifac-footer-name {
+            font-weight: bold;
+            font-family: Georgia, serif;
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Screen -->
+    <div id="loginScreen" class="container">
+        <div class="login-container">
+            <div class="card">
+                <div class="card-header text-center">
+                    <h4>GESTIFAC</h4>
+                </div>
+                <div class="card-body">
+                    <ul class="nav nav-pills nav-justified mb-3" id="authTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="login-tab" data-bs-toggle="pill" data-bs-target="#login" type="button" role="tab">Iniciar Sesión</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="register-tab" data-bs-toggle="pill" data-bs-target="#register" type="button" role="tab">Registrarse</button>
+                        </li>
+                    </ul>
+                    <div class="tab-content">
+                        <div class="tab-pane fade show active" id="login" role="tabpanel">
+                            <form id="loginForm">
+                                <div class="mb-3">
+                                    <label for="loginEmail" class="form-label">Email</label>
+                                    <input type="email" class="form-control" id="loginEmail" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="loginPassword" class="form-label">Contraseña</label>
+                                    <input type="password" class="form-control" id="loginPassword" required>
+                                </div>
+                                <button type="submit" class="btn btn-primary w-100">Iniciar Sesión</button>
+                            </form>
+                        </div>
+                        <div class="tab-pane fade" id="register" role="tabpanel">
+                            <form id="registerForm">
+                                <div class="mb-3">
+                                    <label for="registerName" class="form-label">Nombre Completo</label>
+                                    <input type="text" class="form-control" id="registerName" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="registerAddress" class="form-label">Dirección</label>
+                                    <input type="text" class="form-control" id="registerAddress" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="registerPhone" class="form-label">Teléfono (con prefijo)</label>
+                                    <input type="tel" class="form-control" id="registerPhone" placeholder="+240123456789" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="registerEmail" class="form-label">Email</label>
+                                    <input type="email" class="form-control" id="registerEmail" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="registerPassword" class="form-label">Contraseña</label>
+                                    <input type="password" class="form-control" id="registerPassword" required>
+                                    <div class="password-requirements">
+                                        <small>12 caracteres: 6 letras (primera mayúscula) + 4 números + 2 símbolos (@#&)<br>
+                                        Roles especiales: Admini (Admin), Secret (Secretaría), Depart (Departamento)</small>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="registerRole" class="form-label">Rol</label>
+                                    <select class="form-select" id="registerRole" required>
+                                        <option value="">Seleccionar rol</option>
+                                        <option value="administrador">Administrador</option>
+                                        <option value="secretaria">Secretaría General</option>
+                                        <option value="departamento">Departamento de</option>
+                                        <option value="usuario">Usuario</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3" id="departmentNameDiv" style="display: none;">
+                                    <label for="departmentName" class="form-label">Nombre del Departamento</label>
+                                    <select class="form-select" id="departmentName"></select>
+                                </div>
+                                <button type="submit" class="btn btn-success w-100">Registrarse</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Application -->
+    <div id="mainApp" class="hidden">
+        <!-- Navigation -->
+        <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+            <div class="container-fluid">
+                <a class="navbar-brand d-flex flex-column align-items-center mx-auto" href="#" id="facultyBrand">
+                    <img id="facultyLogo" src="" alt="Logo de la Universidad" style="display: none; height: 40px;">
+                    <span id="facultyNameText">GESTIFAC</span>
+                </a>
+                <div class="navbar-nav ms-auto">
+                    <span class="navbar-text me-3" id="currentUser"></span>
+                    <button class="btn btn-danger btn-sm" onclick="logout()">Cerrar Sesión</button>
+                </div>
+            </div>
+        </nav>
+
+        <div class="container-fluid main-content">
+            <div class="row">
+                <!-- Sidebar -->
+                <div class="col-md-3">
+                    <div class="nav flex-column nav-pills" id="sidebarNav">
+                        <button class="nav-link active" onclick="showSection('dashboard', this)">
+                            <i class="bi bi-house-door"></i> Dashboard
+                        </button>
+                        <button class="nav-link" onclick="showSection('secretaria', this)" id="secretariaBtn">
+                            <i class="bi bi-building"></i> Secretaría General
+                        </button>
+                        <button class="nav-link" onclick="showSection('departments', this)" id="departmentsBtn">
+                            <i class="bi bi-folder"></i> Departamentos
+                        </button>
+                        <button class="nav-link" onclick="showSection('control', this)" id="controlBtn">
+                            <i class="bi bi-list-check"></i> Control
+                        </button>
+                        <button class="nav-link" onclick="showSection('configuration', this)" id="configBtn">
+                            <i class="bi bi-gear"></i> Configuración
+                        </button>
+                        <button class="nav-link" onclick="showSection('informate', this)">
+                            <i class="bi bi-info-circle"></i> Infórmate
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Main Content -->
+                <div class="col-md-9">
+                    <!-- Dashboard -->
+                    <div id="dashboardSection" class="section">
+                        <h2>Bienvenido a GESTIFAC</h2>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="card">
+                                    <div class="card-body text-center">
+                                        <i class="bi bi-building display-4 text-primary"></i>
+                                        <h5 class="card-title">Departamentos</h5>
+                                        <p class="card-text" id="totalDepartments">0 departamentos</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="card">
+                                    <div class="card-body text-center">
+                                        <i class="bi bi-folder display-4 text-success"></i>
+                                        <h5 class="card-title">Carpetas</h5>
+                                        <p class="card-text" id="totalFolders">0 carpetas</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="card">
+                                    <div class="card-body text-center">
+                                        <i class="bi bi-file-pdf display-4 text-danger"></i>
+                                        <h5 class="card-title">Documentos</h5>
+                                        <p class="card-text" id="totalDocuments">0 documentos</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Secretaría General -->
+                    <div id="secretariaSection" class="section hidden">
+                        <h2>Secretaría General</h2>
+                        <div class="card">
+                            <div class="card-header">
+                                <h5>Crear Departamento</h5>
+                            </div>
+                            <div class="card-body">
+                                <form id="departmentForm">
+                                    <div class="mb-3">
+                                        <label for="departmentNameInput" class="form-label">Nombre del Departamento</label>
+                                        <input type="text" class="form-control" id="departmentNameInput" required>
+                                    </div>
+                                    <button type="submit" class="btn btn-success">Crear Departamento</button>
+                                </form>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header">
+                                <h5>Departamentos Existentes</h5>
+                            </div>
+                            <div class="card-body">
+                                <div id="departmentsList"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Departments -->
+                    <div id="departmentsSection" class="section hidden">
+                        <h2>Gestión de Departamentos</h2>
+                        <div id="departmentContent"></div>
+                    </div>
+
+                    <!-- Control -->
+                    <div id="controlSection" class="section hidden">
+                        <h2>Control de Actividades</h2>
+                        <div class="card">
+                            <div class="card-body">
+                                <div id="controlLogs"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Configuration -->
+                    <div id="configurationSection" class="section hidden">
+                        <h2>Configuración</h2>
+                        <div class="card">
+                            <div class="card-body">
+                                <form id="configForm">
+                                    <div class="mb-3">
+                                        <label for="facultyNameInput" class="form-label">Nombre de la Facultad</label>
+                                        <input type="text" class="form-control" id="facultyNameInput" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="logoUpload" class="form-label">Logo de la Universidad</label>
+                                        <input type="file" class="form-control" id="logoUpload" accept="image/*">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="facultyEmail" class="form-label">Email de la Facultad</label>
+                                        <input type="email" class="form-control" id="facultyEmail" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="facultyPhone" class="form-label">Teléfono de la Facultad</label>
+                                        <input type="tel" class="form-control" id="facultyPhone" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="academicYear" class="form-label">Año Académico</label>
+                                        <input type="text" class="form-control" id="academicYear" placeholder="2023-2024" required>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary">Guardar Configuración</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Infórmate -->
+                    <div id="informateSection" class="section hidden">
+                        <h2>Infórmate</h2>
+                        <div class="card">
+                            <div class="card-header">
+                                <h5>Acerca de la Aplicación</h5>
+                            </div>
+                            <div class="card-body">
+                                <h6>¿Para qué sirve?</h6>
+                                <p>Esta aplicación está diseñada para la gestión integral de una facultad universitaria y sus departamentos. Permite organizar, almacenar y gestionar documentos académicos, incluyendo la creación de subcarpetas dentro de las carpetas existentes, de manera eficiente y segura.</p>
+                                
+                                <h6>¿Cómo se utiliza?</h6>
+                                <ul>
+                                    <li><strong>Administradores y Secretaría General:</strong> Control total de la aplicación. Pueden crear y gestionar departamentos, carpetas (con subcarpetas), y documentos, así como supervisar todas las actividades.</li>
+                                    <li><strong>Departamentos:</strong> Acceso a la gestión de carpetas y documentos de su departamento. Tienen permisos para visualizar, descargar, imprimir y ver los archivos PDF, pero no pueden crear nuevas carpetas o subir/modificar archivos.</li>
+                                    <li><strong>Usuarios:</strong> Acceso de solo lectura a la información general del sistema (Dashboard, Infórmate), sin acceso a los documentos de los departamentos.</li>
+                                </ul>
+                                
+                                <h6>Desarrollador</h6>
+                                <div class="card bg-light">
+                                    <div class="card-body">
+                                        <p><strong>Nombre completo:</strong> Tarciano ENZEMA NCHAMA</p>
+                                        <p><strong>Formación académica:</strong> Finalista universitario de la UNGE</p>
+                                        <p><strong>Facultad:</strong> Ciencias económicas gestión y administración</p>
+                                        <p><strong>Departamento:</strong> Informática de gestión empresarial</p>
+                                        <p><strong>Contacto:</strong> 
+                                            <a href="mailto:enzemajr@gmail.com" class="me-2"><i class="bi bi-envelope"></i> enzemajr@gmail.com</a> | 
+                                            <a href="https://wa.me/240222084663" class="text-dark"><i class="bi bi-whatsapp"></i> WhatsApp</a>
+                                        </p>
+                                        <p class="mt-2">Puede comunicarse con el desarrollador de la aplicación mediante email o WhatsApp pulsando en los respectivos iconos o enlaces.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="bg-dark text-white py-4 mt-5">
+            <div class="container text-center">
+                <p class="mb-1">&copy; <span id="currentYear"></span> <span class="gestifac-footer-name">GESTIFAC</span>. Todos los derechos reservados.</p>
+                <p class="mb-1">Desarrollado por: Tarciano ENZEMA NCHAMA</p>
+                <p class="mb-0">
+                    <a href="mailto:enzemajr@gmail.com" class="text-white me-2"><i class="bi bi-envelope"></i> enzemajr@gmail.com</a> | 
+                    <a href="https://wa.me/240222084663" class="text-white"><i class="bi bi-whatsapp"></i> WhatsApp</a>
+                </p>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Modals -->
+    <!-- Rename File Modal -->
+    <div class="modal fade" id="renameFileModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Renombrar Archivo</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="renameFileForm">
+                        <div class="mb-3">
+                            <label for="newFileName" class="form-label">Nuevo nombre</label>
+                            <input type="text" class="form-control" id="newFileName" required>
+                        </div>
+                        <input type="hidden" id="currentFileId">
+                        <button type="submit" class="btn btn-primary">Renombrar</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    
+    <script>
+        // Global variables
+        let currentUser = null;
+        let db = null;
+        let renameFileModal;
+
+        // Initialize IndexedDB
+        function initDB() {
+            return new Promise((resolve, reject) => {
+                const request = indexedDB.open('FacultyDB', 1);
+                
+                request.onerror = () => reject(request.error);
+                request.onsuccess = () => {
+                    db = request.result;
+                    resolve(db);
+                };
+                
+                request.onupgradeneeded = (event) => {
+                    db = event.target.result;
+                    
+                    // Users store
+                    if (!db.objectStoreNames.contains('users')) {
+                        const userStore = db.createObjectStore('users', { keyPath: 'id', autoIncrement: true });
+                        userStore.createIndex('email', 'email', { unique: true });
+                    }
+                    
+                    // Configuration store
+                    if (!db.objectStoreNames.contains('config')) {
+                        db.createObjectStore('config', { keyPath: 'key' });
+                    }
+                    
+                    // Departments store
+                    if (!db.objectStoreNames.contains('departments')) {
+                        db.createObjectStore('departments', { keyPath: 'id', autoIncrement: true });
+                    }
+                    
+                    // Folders store
+                    if (!db.objectStoreNames.contains('folders')) {
+                        // Added parentId field implicitly for existing DBs, will be undefined for old entries
+                        db.createObjectStore('folders', { keyPath: 'id', autoIncrement: true });
+                    }
+                    
+                    // Files store
+                    if (!db.objectStoreNames.contains('files')) {
+                        db.createObjectStore('files', { keyPath: 'id', autoIncrement: true });
+                    }
+                    
+                    // Control logs store
+                    if (!db.objectStoreNames.contains('controlLogs')) {
+                        db.createObjectStore('controlLogs', { keyPath: 'id', autoIncrement: true });
+                    }
+                };
+            });
+        }
+
+        // Database operations
+        function addData(storeName, data) {
+            return new Promise((resolve, reject) => {
+                const transaction = db.transaction([storeName], 'readwrite');
+                const store = transaction.objectStore(storeName);
+                const request = store.add(data);
+                
+                request.onsuccess = () => resolve(request.result);
+                request.onerror = () => reject(request.error);
+            });
+        }
+
+        function updateData(storeName, data) {
+            return new Promise((resolve, reject) => {
+                const transaction = db.transaction([storeName], 'readwrite');
+                const store = transaction.objectStore(storeName);
+                const request = store.put(data);
+                
+                request.onsuccess = () => resolve(request.result);
+                request.onerror = () => reject(request.error);
+            });
+        }
+
+        function getData(storeName, key = null) {
+            return new Promise((resolve, reject) => {
+                const transaction = db.transaction([storeName], 'readonly');
+                const store = transaction.objectStore(storeName);
+                
+                if (key) {
+                    const request = store.get(key);
+                    request.onsuccess = () => resolve(request.result);
+                    request.onerror = () => reject(request.error);
+                } else {
+                    const request = store.getAll();
+                    request.onsuccess = () => resolve(request.result);
+                    request.onerror = () => reject(request.error);
+                }
+            });
+        }
+
+        function deleteData(storeName, key) {
+            return new Promise((resolve, reject) => {
+                const transaction = db.transaction([storeName], 'readwrite');
+                const store = transaction.objectStore(storeName);
+                const request = store.delete(key);
+                
+                request.onsuccess = () => resolve();
+                request.onerror = () => reject(request.error);
+            });
+        }
+        
+        function clearStore(storeName) {
+            return new Promise((resolve, reject) => {
+                const transaction = db.transaction([storeName], 'readwrite');
+                const store = transaction.objectStore(storeName);
+                const request = store.clear();
+                
+                request.onsuccess = () => resolve();
+                request.onerror = () => reject(request.error);
+            });
+        }
+
+        // Utility functions
+        function encryptPassword(password) {
+            return CryptoJS.SHA256(password).toString();
+        }
+
+        function validatePassword(password, role) {
+            const regex = /^([A-Z][a-z]{5})(\d{4})([@#&]{2})$/;
+            if (!regex.test(password)) return false;
+            
+            const letters = password.substr(0, 6);
+            
+            if (role === 'administrador' && letters !== 'Admini') return false;
+            if (role === 'secretaria' && letters !== 'Secret') return false;
+            if (role === 'departamento' && letters !== 'Depart') return false;
+            
+            return true;
+        }
+
+        function validatePhone(phone) {
+            const regex = /^\+\d{10,15}$/;
+            return regex.test(phone);
+        }
+
+        function validateEmail(email) {
+            const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return regex.test(email);
+        }
+
+        function logActivity(action, details) {
+            const log = {
+                user: currentUser.name,
+                role: currentUser.role,
+                action: action,
+                details: details,
+                timestamp: new Date().toISOString(),
+                date: new Date().toLocaleDateString(),
+                time: new Date().toLocaleTimeString()
+            };
+            
+            addData('controlLogs', log);
+        }
+
+        // File conversion utilities
+        function fileToBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = error => reject(error);
+            });
+        }
+
+        function base64ToBlob(base64Data, contentType) {
+            const byteCharacters = atob(base64Data.split(',')[1]);
+            const byteNumbers = new Array(byteCharacters.length);
+            
+            for (let i = 0; i < byteCharacters.length; i++) {
+                byteNumbers[i] = byteCharacters.charCodeAt(i);
+            }
+            
+            const byteArray = new Uint8Array(byteNumbers);
+            return new Blob([byteArray], { type: contentType });
+        }
+
+        // Authentication functions
+        async function register(userData) {
+            try {
+                const existingUser = await getData('users').then(users => 
+                    users.find(u => u.email === userData.email)
+                );
+                
+                if (existingUser) {
+                    throw new Error('El email ya está registrado');
+                }
+
+                if (!validatePassword(userData.password, userData.role)) {
+                    throw new Error('La contraseña no cumple con los requisitos del rol seleccionado');
+                }
+
+                if (!validatePhone(userData.phone)) {
+                    throw new Error('El teléfono debe incluir el prefijo y ser válido');
+                }
+
+                if (!validateEmail(userData.email)) {
+                    throw new Error('El email no es válido');
+                }
+
+                userData.password = encryptPassword(userData.password);
+                const userId = await addData('users', userData);
+                
+                alert('Usuario registrado exitosamente');
+                document.getElementById('registerForm').reset();
+                
+                // Switch to login tab after successful registration
+                const loginTab = new bootstrap.Tab(document.getElementById('login-tab'));
+                loginTab.show();
+
+                // Log the new user registration
+                await addData('controlLogs', {
+                    user: userData.name,
+                    role: userData.role,
+                    action: 'Nuevo Registro de Usuario',
+                    details: `El usuario ${userData.name} (${userData.email}) con rol ${userData.role} se ha registrado por primera vez.`,
+                    timestamp: new Date().toISOString(),
+                    date: new Date().toLocaleDateString(),
+                    time: new Date().toLocaleTimeString()
+                });
+                
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
+        }
+
+        async function login(email, password) {
+            try {
+                const users = await getData('users');
+                const user = users.find(u => u.email === email && u.password === encryptPassword(password));
+                
+                if (!user) {
+                    throw new Error('Credenciales incorrectas');
+                }
+
+                currentUser = user;
+                document.getElementById('loginScreen').classList.add('hidden');
+                document.getElementById('mainApp').classList.remove('hidden');
+                
+                updateNavigation();
+                // Ensure dashboard is loaded and active
+                showSection('dashboard', document.querySelector('#sidebarNav .nav-link.active'));
+                
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
+        }
+
+        function logout() {
+            currentUser = null;
+            document.getElementById('loginScreen').classList.remove('hidden');
+            document.getElementById('mainApp').classList.add('hidden');
+            document.getElementById('loginForm').reset();
+            
+            // Reset sidebar active state
+            const navLinks = document.querySelectorAll('#sidebarNav .nav-link');
+            navLinks.forEach(link => link.classList.remove('active'));
+            document.getElementById('dashboardSection').classList.add('hidden'); // Hide content
+            document.getElementById('sidebarNav').firstElementChild.classList.add('active'); // Set dashboard as active in sidebar
+        }
+
+        function updateNavigation() {
+            document.getElementById('currentUser').textContent = `${currentUser.name} (${currentUser.role})`;
+            
+            // Show all navigation buttons initially, then hide based on role
+            document.getElementById('configBtn').style.display = 'block';
+            document.getElementById('secretariaBtn').style.display = 'block';
+            document.getElementById('controlBtn').style.display = 'block';
+
+            if (currentUser.role === 'usuario') {
+                document.getElementById('configBtn').style.display = 'none';
+                document.getElementById('secretariaBtn').style.display = 'none';
+                document.getElementById('controlBtn').style.display = 'none';
+            } else if (currentUser.role === 'departamento') {
+                document.getElementById('configBtn').style.display = 'none';
+                document.getElementById('secretariaBtn').style.display = 'none';
+                document.getElementById('controlBtn').style.display = 'none';
+            } else if (currentUser.role === 'secretaria') {
+                // Secretarias do not access the control module as per last prompt decision
+                document.getElementById('controlBtn').style.display = 'none';
+            }
+        }
+
+        // Section management
+        function showSection(sectionName, clickedElement) {
+            // Hide all sections
+            const sections = document.querySelectorAll('.section');
+            sections.forEach(section => section.classList.add('hidden'));
+            
+            // Remove active class from all nav links
+            const navLinks = document.querySelectorAll('.nav-link');
+            navLinks.forEach(link => link.classList.remove('active'));
+            
+            // Show selected section
+            document.getElementById(sectionName + 'Section').classList.remove('hidden');
+            
+            // Add active class to clicked nav link
+            if (clickedElement) {
+                clickedElement.classList.add('active');
+            }
+            
+            // Load section content
+            switch(sectionName) {
+                case 'dashboard':
+                    loadDashboard();
+                    break;
+                case 'configuration':
+                    loadConfiguration();
+                    break;
+                case 'secretaria':
+                    loadSecretaria();
+                    break;
+                case 'departments':
+                    loadDepartments();
+                    break;
+                case 'control':
+                    loadControl();
+                    break;
+            }
+        }
+
+        // Dashboard functions
+        async function loadDashboard() {
+            try {
+                const config = await getData('config', 'faculty');
+                const facultyNameText = document.getElementById('facultyNameText');
+                const facultyLogo = document.getElementById('facultyLogo');
+
+                if (config) {
+                    facultyNameText.textContent = config.name || 'GESTIFAC';
+                    
+                    if (config.logo) {
+                        facultyLogo.src = config.logo;
+                        facultyLogo.style.display = 'block';
+                    } else {
+                        facultyLogo.style.display = 'none'; // Hide if no logo is configured
+                    }
+                } else {
+                    // Default values if no config is found
+                    facultyNameText.textContent = 'GESTIFAC';
+                    facultyLogo.style.display = 'none';
+                }
+
+                // Update footer information
+                document.getElementById('currentYear').textContent = new Date().getFullYear();
+
+                const departments = await getData('departments');
+                const folders = await getData('folders');
+                const files = await getData('files');
+
+                document.getElementById('totalDepartments').textContent = `${departments.length} departamentos`;
+                document.getElementById('totalFolders').textContent = `${folders.length} carpetas`;
+                document.getElementById('totalDocuments').textContent = `${files.length} documentos`;
+                
+            } catch (error) {
+                console.error('Error loading dashboard:', error);
+            }
+        }
+
+        // Configuration functions
+        async function loadConfiguration() {
+            try {
+                const config = await getData('config', 'faculty');
+                if (config) {
+                    document.getElementById('facultyNameInput').value = config.name || '';
+                    document.getElementById('facultyEmail').value = config.email || '';
+                    document.getElementById('facultyPhone').value = config.phone || '';
+                    document.getElementById('academicYear').value = config.academicYear || '';
+                }
+            } catch (error) {
+                console.error('Error loading configuration:', error);
+            }
+        }
+
+        async function saveConfiguration(formData) {
+            try {
+                const configData = {
+                    key: 'faculty',
+                    name: formData.name,
+                    email: formData.email,
+                    phone: formData.phone,
+                    academicYear: formData.academicYear
+                };
+
+                if (formData.logo) {
+                    configData.logo = formData.logo;
+                }
+
+                await updateData('config', configData);
+                alert('Configuración guardada exitosamente');
+                loadDashboard(); // Reload dashboard to update navbar logo and name
+                
+            } catch (error) {
+                alert('Error guardando configuración: ' + error.message);
+            }
+        }
+
+        // Secretaría functions
+        async function loadSecretaria() {
+            try {
+                const departments = await getData('departments');
+                const departmentsList = document.getElementById('departmentsList');
+                
+                if (departments.length === 0) {
+                    departmentsList.innerHTML = '<p class="text-muted">No hay departamentos creados</p>';
+                } else {
+                    departmentsList.innerHTML = departments.map(dept => `
+                        <div class="card mb-2">
+                            <div class="card-body">
+                                <h6>${dept.name}</h6>
+                                <small class="text-muted">Creado: ${new Date(dept.created).toLocaleDateString()}</small>
+                                <button class="btn btn-sm btn-danger float-end" onclick="deleteDepartment(${dept.id})">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+                
+                // Update department select in registration
+                updateDepartmentSelect();
+                
+            } catch (error) {
+                console.error('Error loading secretaría:', error);
+            }
+        }
+
+        async function createDepartment(name) {
+            try {
+                const department = {
+                    name: name,
+                    created: new Date().toISOString(),
+                    createdBy: currentUser.name
+                };
+
+                await addData('departments', department);
+                logActivity('Crear Departamento', `Departamento "${name}" creado`);
+                alert('Departamento creado exitosamente');
+                loadSecretaria();
+                
+            } catch (error) {
+                alert('Error creando departamento: ' + error.message);
+            }
+        }
+
+        async function deleteDepartment(id) {
+            if (confirm('¿Está seguro de eliminar este departamento? Esto eliminará todas sus carpetas y archivos asociados.')) {
+                try {
+                    const department = await getData('departments', id);
+                    
+                    // Delete associated folders and files
+                    const folders = await getData('folders');
+                    const departmentFolders = folders.filter(f => f.departmentId === id);
+                    
+                    for (const folder of departmentFolders) {
+                        await deleteFolderAndContentsRecursive(folder.id); // Recursively delete all content
+                    }
+                    
+                    await deleteData('departments', id);
+                    logActivity('Eliminar Departamento', `Departamento "${department.name}" eliminado`);
+                    loadSecretaria();
+                    
+                } catch (error) {
+                    alert('Error eliminando departamento: ' + error.message);
+                }
+            }
+        }
+
+        async function updateDepartmentSelect() {
+            try {
+                const departments = await getData('departments');
+                const select = document.getElementById('departmentName');
+                
+                select.innerHTML = '<option value="">Seleccionar departamento</option>';
+                departments.forEach(dept => {
+                    select.innerHTML += `<option value="${dept.name}">${dept.name}</option>`;
+                });
+                
+            } catch (error) {
+                console.error('Error updating department select:', error);
+            }
+        }
+
+        // Departments functions
+        async function loadDepartments() {
+            try {
+                const departments = await getData('departments');
+                let departmentsToShow = departments;
+                
+                if (currentUser.role === 'departamento') {
+                    departmentsToShow = departments.filter(d => d.name === currentUser.departmentName);
+                }
+                
+                const content = document.getElementById('departmentContent');
+                
+                if (departmentsToShow.length === 0) {
+                    content.innerHTML = '<p class="text-muted">No hay departamentos disponibles</p>';
+                    return;
+                }
+                
+                let html = '';
+                
+                for (const dept of departmentsToShow) {
+                    html += `
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <h5>${dept.name}</h5>
+                                ${(currentUser.role === 'administrador' || currentUser.role === 'secretaria') ? `
+                                    <button class="btn btn-sm btn-primary float-end" onclick="showCreateFolderForm(${dept.id}, null)">
+                                        <i class="bi bi-folder-plus"></i> Nueva Carpeta
+                                    </button>
+                                ` : ''}
+                            </div>
+                            <div class="card-body">
+                                <div id="createFolderForm${dept.id}" class="mb-3" style="display: none;">
+                                    <form onsubmit="createFolder(event, ${dept.id}, null)">
+                                        <div class="row">
+                                            <div class="col-md-5">
+                                                <input type="text" class="form-control" id="folderNameInput${dept.id}_null" placeholder="Nombre de carpeta" required>
+                                            </div>
+                                            <div class="col-md-5">
+                                                <input type="text" class="form-control" id="folderAcademicYearInput${dept.id}_null" placeholder="Año académico" required>
+                                            </div>
+                                            <div class="col-md-2">
+                                                <button type="submit" class="btn btn-success btn-sm">Crear</button>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                
+                                <div id="foldersContainer${dept.id}">
+                                    <!-- Folders will be rendered here -->
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                content.innerHTML = html;
+
+                // After rendering department shells, populate them with folders
+                for (const dept of departmentsToShow) {
+                    const foldersContainer = document.getElementById(`foldersContainer${dept.id}`);
+                    if (foldersContainer) {
+                        foldersContainer.innerHTML = await renderFoldersForParent(dept.id, null);
+                    }
+                }
+                
+            } catch (error) {
+                console.error('Error loading departments:', error);
+            }
+        }
+
+        async function renderFiles(files) {
+            if (files.length === 0) {
+                return '<p class="text-muted">No hay archivos en esta carpeta</p>';
+            }
+            
+            let html = '<div class="list-group">';
+            
+            for (const file of files) {
+                html += `
+                    <div class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                        <div class="me-auto">
+                            <i class="bi bi-file-earmark-pdf"></i>
+                            <strong>${file.name}</strong>
+                            <small class="text-muted d-block">Subido: ${new Date(file.uploaded).toLocaleDateString()} por ${file.uploadedBy}</small>
+                        </div>
+                        <div class="file-actions">
+                            <button class="btn btn-sm btn-primary" onclick="viewFile(${file.id})" title="Ver">
+                                <i class="bi bi-eye"></i>
+                            </button>
+                            <button class="btn btn-sm btn-info" onclick="downloadFile(${file.id})" title="Descargar">
+                                <i class="bi bi-download"></i>
+                            </button>
+                            <button class="btn btn-sm btn-secondary" onclick="printFile(${file.id})" title="Imprimir">
+                                <i class="bi bi-printer"></i>
+                            </button>
+                            ${(currentUser.role === 'administrador' || currentUser.role === 'secretaria') ? `
+                                <button class="btn btn-sm btn-warning" onclick="renameFile(${file.id})" title="Renombrar">
+                                    <i class="bi bi-pencil"></i>
+                                </button>
+                                <button class="btn btn-sm btn-danger" onclick="deleteFile(${file.id})" title="Eliminar">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            ` : ''}
+                        </div>
+                    </div>
+                `;
+            }
+            
+            html += '</div>';
+            return html;
+        }
+
+        // Renders folders for a given parent (either a department or another folder)
+        async function renderFoldersForParent(departmentId, parentFolderId) {
+            const allFolders = await getData('folders');
+            const filteredFolders = allFolders.filter(f => 
+                f.departmentId === departmentId && 
+                (f.parentId === parentFolderId || (parentFolderId === null && f.parentId === undefined)) // Handles existing folders without parentId
+            );
+            
+            if (filteredFolders.length === 0) {
+                return parentFolderId === null ? '<p class="text-muted">No hay carpetas en este departamento</p>' : '<p class="text-muted">No hay subcarpetas en esta carpeta</p>';
+            }
+            
+            let html = '';
+            
+            for (const folder of filteredFolders) {
+                const files = await getData('files');
+                const folderFiles = files.filter(f => f.folderId === folder.id);
+                
+                // Determine form ID based on parent type
+                const formIdSuffix = folder.id;
+
+                let folderContentHtml = '';
+                if (currentUser.role === 'usuario') {
+                    folderContentHtml = `
+                        <div class="alert alert-warning mt-3">
+                            <h5><i class="bi bi-exclamation-triangle"></i> Acceso Denegado</h5>
+                            <p>Usted no tiene permiso para acceder a los documentos de esta carpeta.</p>
+                        </div>
+                    `;
+                } else { // Administrador, Secretaría, and Departamento roles can see content
+                    folderContentHtml = `
+                        <div id="subfoldersList${folder.id}" class="mb-3">
+                            ${await renderFoldersForParent(folder.departmentId, folder.id)}
+                        </div>
+                        <div id="folderFiles${folder.id}" style="display: block;">
+                            <div class="mb-3">
+                                <label for="fileUpload${folder.id}" class="form-label">Subir archivo PDF</label>
+                                ${(currentUser.role === 'administrador' || currentUser.role === 'secretaria') ? `
+                                    <input type="file" class="form-control" id="fileUpload${folder.id}" accept=".pdf" onchange="uploadFile(${folder.id})">
+                                    <small class="text-muted">Solo archivos PDF</small>
+                                ` : '<p class="text-muted">No tiene permiso para subir archivos.</p>'}
+                            </div>
+                            
+                            <div id="filesList${folder.id}">
+                                ${await renderFiles(folderFiles)}
+                            </div>
+                        </div>
+                    `;
+                }
+
+                html += `
+                    <div class="folder-container">
+                        <div class="folder-header" onclick="toggleFolder(${folder.id})">
+                            <div class="folder-name-container">
+                                <i class="bi bi-folder me-2"></i>
+                                <strong>${folder.name}</strong>
+                                <span class="badge bg-secondary ms-2">${folder.academicYear}</span>
+                                <span class="badge bg-info ms-2">${folderFiles.length} archivos</span>
+                            </div>
+                            <div class="folder-actions-header">
+                                ${(currentUser.role === 'administrador' || currentUser.role === 'secretaria') ? `
+                                    <button class="btn btn-sm btn-primary" onclick="event.stopPropagation(); showCreateFolderForm(${folder.departmentId}, ${folder.id})" title="Crear subcarpeta">
+                                        <i class="bi bi-folder-plus"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-danger" onclick="event.stopPropagation(); deleteFolder(${folder.id})" title="Eliminar carpeta">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                ` : ''}
+                            </div>
+                        </div>
+                        
+                        <div id="folderContent${folder.id}" class="folder-content" style="display: none;">
+                            <div id="createFolderForm${formIdSuffix}" class="mb-3" style="display: none;">
+                                <form onsubmit="createFolder(event, ${folder.departmentId}, ${folder.id})">
+                                    <div class="row">
+                                        <div class="col-md-5">
+                                            <input type="text" class="form-control" id="folderNameInput_sub_${folder.id}" placeholder="Nombre de subcarpeta" required>
+                                        </div>
+                                        <div class="col-md-5">
+                                            <input type="text" class="form-control" id="folderAcademicYearInput_sub_${folder.id}" placeholder="Año académico" required>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <button type="submit" class="btn btn-success btn-sm">Crear</button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+
+                            ${folderContentHtml}
+                        </div>
+                    </div>
+                `;
+            }
+            
+            return html;
+        }
+
+        // showCreateFolderForm function now needs to know where the form is located
+        function showCreateFolderForm(departmentId, parentFolderId) {
+            let formId;
+            let nameInputId;
+            let academicYearInputId;
+
+            if (parentFolderId === null) {
+                formId = `createFolderForm${departmentId}`;
+                nameInputId = `folderNameInput${departmentId}_null`;
+                academicYearInputId = `folderAcademicYearInput${departmentId}_null`;
+            } else {
+                formId = `createFolderForm${parentFolderId}`; // Use parent folder ID as suffix for subfolder forms
+                nameInputId = `folderNameInput_sub_${parentFolderId}`;
+                academicYearInputId = `folderAcademicYearInput_sub_${parentFolderId}`;
+            }
+
+            const formDiv = document.getElementById(formId);
+            if (formDiv) {
+                formDiv.style.display = formDiv.style.display === 'none' ? 'block' : 'none';
+                // Clear inputs specific to this form
+                const nameInput = document.getElementById(nameInputId);
+                const academicYearInput = document.getElementById(academicYearInputId);
+                if (nameInput) nameInput.value = '';
+                if (academicYearInput) academicYearInput.value = '';
+            }
+        }
+
+        async function createFolder(event, departmentId, parentFolderId = null) {
+            event.preventDefault();
+            
+            const form = event.target;
+            const nameInputId = parentFolderId === null ? `folderNameInput${departmentId}_null` : `folderNameInput_sub_${parentFolderId}`;
+            const academicYearInputId = parentFolderId === null ? `folderAcademicYearInput${departmentId}_null` : `folderAcademicYearInput_sub_${parentFolderId}`;
+
+            const name = document.getElementById(nameInputId).value;
+            const academicYear = document.getElementById(academicYearInputId).value;
+            
+            try {
+                const department = await getData('departments', departmentId);
+                
+                const folder = {
+                    name: name,
+                    academicYear: academicYear,
+                    departmentId: departmentId,
+                    departmentName: department.name,
+                    parentId: parentFolderId, // New field to store parent folder ID
+                    created: new Date().toISOString(),
+                    createdBy: currentUser.name
+                };
+
+                await addData('folders', folder);
+                logActivity('Crear Carpeta', `Carpeta "${name}" (Año: ${academicYear}) creada en ${parentFolderId ? `carpeta ID ${parentFolderId}` : `departamento "${department.name}"`}`);
+                
+                form.reset();
+                form.parentElement.style.display = 'none'; // Hide the form after creation
+                loadDepartments(); // Reload all departments to reflect new folder
+                
+            } catch (error) {
+                alert('Error creando carpeta: ' + error.message);
+            }
+        }
+
+        function toggleFolder(folderId) {
+            const content = document.getElementById(`folderContent${folderId}`);
+            content.style.display = content.style.display === 'none' ? 'block' : 'none';
+        }
+
+        async function uploadFile(folderId) {
+            const input = document.getElementById(`fileUpload${folderId}`);
+            const file = input.files[0];
+            
+            if (!file) return;
+            
+            if (file.type !== 'application/pdf') {
+                alert('Solo se permiten archivos PDF');
+                return;
+            }
+            
+            try {
+                const folder = await getData('folders', folderId);
+                const base64Data = await fileToBase64(file);
+                
+                const fileData = {
+                    name: file.name,
+                    data: base64Data,
+                    size: file.size,
+                    type: file.type,
+                    folderId: folderId,
+                    folderName: folder.name,
+                    departmentName: folder.departmentName,
+                    uploaded: new Date().toISOString(),
+                    uploadedBy: currentUser.name
+                };
+
+                await addData('files', fileData);
+                logActivity('Subir Documento', `Documento "${file.name}" subido en carpeta "${folder.name}" del departamento "${folder.departmentName}"`);
+                
+                input.value = ''; // Clear the file input
+                loadDepartments(); // Reload departments to display the new file
+                
+            } catch (error) {
+                alert('Error subiendo archivo: ' + error.message);
+            }
+        }
+
+        async function downloadFile(fileId) {
+            try {
+                const file = await getData('files', fileId);
+                const blob = base64ToBlob(file.data, file.type);
+                const url = URL.createObjectURL(blob);
+                
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = file.name;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                
+                logActivity('Descargar Documento', `Documento "${file.name}" descargado del departamento "${file.departmentName}"`);
+                
+            } catch (error) {
+                alert('Error descargando archivo: ' + error.message);
+            }
+        }
+
+        async function printFile(fileId) {
+            try {
+                const file = await getData('files', fileId);
+                const blob = base64ToBlob(file.data, file.type);
+                const url = URL.createObjectURL(blob);
+                
+                const printWindow = window.open(url);
+                printWindow.onload = () => {
+                    printWindow.print();
+                };
+                
+                logActivity('Imprimir Documento', `Documento "${file.name}" impreso del departamento "${file.departmentName}"`);
+                
+            } catch (error) {
+                alert('Error imprimiendo archivo: ' + error.message);
+            }
+        }
+
+        async function viewFile(fileId) {
+            try {
+                const file = await getData('files', fileId);
+                const blob = base64ToBlob(file.data, file.type);
+                const url = URL.createObjectURL(blob);
+
+                // Open the PDF in a new tab for viewing
+                window.open(url, '_blank');
+
+                logActivity('Ver Documento', `Documento "${file.name}" visualizado del departamento "${file.departmentName}"`);
+
+            } catch (error) {
+                alert('Error visualizando archivo: ' + error.message);
+            }
+        }
+
+        function renameFile(fileId) {
+            getData('files', fileId).then(file => {
+                document.getElementById('newFileName').value = file.name.replace(/\.pdf$/i, ''); // Remove .pdf extension for renaming input
+                document.getElementById('currentFileId').value = fileId;
+                renameFileModal.show();
+            });
+        }
+
+        async function saveFileRename(fileId, newName) {
+            try {
+                const file = await getData('files', fileId);
+                const oldName = file.name;
+                // Ensure the new name always ends with .pdf
+                file.name = newName.replace(/\.pdf$/i, '') + '.pdf'; 
+                
+                await updateData('files', file);
+                logActivity('Renombrar Documento', `Documento "${oldName}" renombrado a "${file.name}" en departamento "${file.departmentName}"`);
+                
+                renameFileModal.hide();
+                loadDepartments();
+                
+            } catch (error) {
+                alert('Error renombrando archivo: ' + error.message);
+            }
+        }
+
+        async function deleteFile(fileId) {
+            if (confirm('¿Está seguro de eliminar este archivo?')) {
+                try {
+                    const file = await getData('files', fileId);
+                    await deleteData('files', fileId);
+                    logActivity('Eliminar Documento', `Documento "${file.name}" eliminado del departamento "${file.departmentName}"`);
+                    loadDepartments();
+                } catch (error) {
+                    alert('Error eliminando archivo: ' + error.message);
+                }
+            }
+        }
+
+        async function deleteFolder(folderId) {
+            if (confirm('¿Está seguro de eliminar esta carpeta y todo su contenido (subcarpetas y archivos)?')) {
+                try {
+                    const folderToDelete = await getData('folders', folderId);
+                    if (!folderToDelete) {
+                        alert('Carpeta no encontrada.');
+                        return;
+                    }
+
+                    // Recursively delete subfolders and their files
+                    await deleteFolderAndContentsRecursive(folderId);
+                    
+                    logActivity('Eliminar Carpeta', `Carpeta "${folderToDelete.name}" eliminada (y su contenido) del departamento "${folderToDelete.departmentName}"`);
+                    
+                    loadDepartments();
+                    
+                } catch (error) {
+                    alert('Error eliminando carpeta: ' + error.message);
+                }
+            }
+        }
+
+        // Helper function for recursive deletion of folders and files
+        async function deleteFolderAndContentsRecursive(folderId) {
+            const allFolders = await getData('folders');
+            const allFiles = await getData('files');
+
+            // Delete files in the current folder
+            const filesInFolder = allFiles.filter(f => f.folderId === folderId);
+            for (const file of filesInFolder) {
+                await deleteData('files', file.id);
+            }
+
+            // Find and delete subfolders recursively
+            const subfolders = allFolders.filter(f => f.parentId === folderId);
+            for (const subfolder of subfolders) {
+                await deleteFolderAndContentsRecursive(subfolder.id); // Recursive call
+            }
+
+            // Finally, delete the current folder itself
+            await deleteData('folders', folderId);
+        }
+
+        // Control functions
+        async function loadControl() {
+            const controlLogsDiv = document.getElementById('controlLogs');
+            
+            if (currentUser.role !== 'administrador') {
+                controlLogsDiv.innerHTML = `
+                    <div class="alert alert-warning">
+                        <h5><i class="bi bi-exclamation-triangle"></i> Acceso Denegado</h5>
+                        <p>No tienes permiso para abrir este módulo, póngase en contacto con el administrador (enzemajr@gmail.com)</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            try {
+                const logs = await getData('controlLogs');
+                const sortedLogs = logs.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+                
+                let html = '';
+                if (sortedLogs.length === 0) {
+                    html = '<p class="text-muted">No hay actividades registradas</p>';
+                } else {
+                    html += `
+                        <div class="d-flex justify-content-end mb-3">
+                            <button class="btn btn-danger btn-sm" onclick="clearAllLogs()">
+                                <i class="bi bi-trash"></i> Borrar Todo el Historial
+                            </button>
+                        </div>
+                    `;
+                    html += sortedLogs.map(log => `
+                        <div class="control-log d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>${log.action}</strong>
+                                <p class="mb-1">${log.details}</p>
+                                <small class="text-muted">
+                                    Usuario: ${log.user} (${log.role}) | 
+                                    Fecha: ${log.date} | 
+                                    Hora: ${log.time}
+                                </small>
+                            </div>
+                            <div>
+                                <span class="badge bg-primary me-2">${log.action.split(' ')[0]}</span>
+                                <button class="btn btn-sm btn-outline-danger" onclick="deleteLog(${log.id})" title="Eliminar registro">
+                                    <i class="bi bi-x-circle"></i>
+                                </button>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+                
+                controlLogsDiv.innerHTML = html;
+                
+            } catch (error) {
+                console.error('Error loading control logs:', error);
+            }
+        }
+
+        async function deleteLog(logId) {
+            if (currentUser.role !== 'administrador') {
+                alert('No tienes permiso para eliminar registros de control.');
+                return;
+            }
+            if (confirm('¿Está seguro de eliminar este registro de actividad?')) {
+                try {
+                    const log = await getData('controlLogs', logId);
+                    await deleteData('controlLogs', logId);
+                    alert('Registro eliminado exitosamente.');
+                    loadControl(); // Refresh the list
+                } catch (error) {
+                    alert('Error eliminando registro: ' + error.message);
+                }
+            }
+        }
+
+        async function clearAllLogs() {
+            if (currentUser.role !== 'administrador') {
+                alert('No tienes permiso para borrar todo el historial de control.');
+                return;
+            }
+            if (confirm('¿Está seguro de eliminar TODO el historial de actividades? Esta acción no se puede deshacer.')) {
+                try {
+                    await clearStore('controlLogs');
+                    alert('Historial de actividades borrado exitosamente.');
+                    loadControl(); // Refresh the list
+                } catch (error) {
+                    alert('Error borrando historial: ' + error.message);
+                }
+            }
+        }
+
+        // Event listeners
+        document.addEventListener('DOMContentLoaded', async function() {
+            try {
+                await initDB();
+                
+                // Initialize modals
+                renameFileModal = new bootstrap.Modal(document.getElementById('renameFileModal'));
+                
+                // Login form
+                document.getElementById('loginForm').addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    const email = document.getElementById('loginEmail').value;
+                    const password = document.getElementById('loginPassword').value;
+                    login(email, password);
+                });
+
+                // Register form
+                document.getElementById('registerForm').addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    
+                    const selectedRole = document.getElementById('registerRole').value;
+                    if (!selectedRole) {
+                        alert('Por favor, selecciona un rol.');
+                        return;
+                    }
+
+                    const userData = {
+                        name: document.getElementById('registerName').value,
+                        address: document.getElementById('registerAddress').value,
+                        phone: document.getElementById('registerPhone').value,
+                        email: document.getElementById('registerEmail').value,
+                        password: document.getElementById('registerPassword').value,
+                        role: selectedRole, // Capture the selected role
+                        departmentName: null
+                    };
+
+                    if (selectedRole === 'departamento') {
+                        const deptName = document.getElementById('departmentName').value;
+                        if (!deptName) {
+                            alert('Por favor, selecciona el departamento para el rol "Departamento de".');
+                            return;
+                        }
+                        userData.departmentName = deptName;
+                    }
+                    
+                    register(userData);
+                });
+
+                // Role change handler
+                document.getElementById('registerRole').addEventListener('change', function() {
+                    const departmentDiv = document.getElementById('departmentNameDiv');
+                    if (this.value === 'departamento') {
+                        departmentDiv.style.display = 'block';
+                        updateDepartmentSelect();
+                    } else {
+                        departmentDiv.style.display = 'none';
+                        document.getElementById('departmentName').value = ''; // Clear selection when not department role
+                    }
+                });
+
+                // Configuration form
+                document.getElementById('configForm').addEventListener('submit', async function(e) {
+                    e.preventDefault();
+                    
+                    const formData = {
+                        name: document.getElementById('facultyNameInput').value,
+                        email: document.getElementById('facultyEmail').value,
+                        phone: document.getElementById('facultyPhone').value,
+                        academicYear: document.getElementById('academicYear').value
+                    };
+                    
+                    const logoFile = document.getElementById('logoUpload').files[0];
+                    if (logoFile) {
+                        formData.logo = await fileToBase64(logoFile);
+                    }
+                    
+                    saveConfiguration(formData);
+                });
+
+                // Department form (for creating new departments by Secretaria)
+                document.getElementById('departmentForm').addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    const name = document.getElementById('departmentNameInput').value;
+                    createDepartment(name);
+                    document.getElementById('departmentForm').reset();
+                });
+
+                // Rename file form
+                document.getElementById('renameFileForm').addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    const fileId = document.getElementById('currentFileId').value;
+                    const newName = document.getElementById('newFileName').value;
+                    saveFileRename(fileId, newName);
+                });
+                
+            } catch (error) {
+                console.error('Error initializing app:', error);
+                alert('Error inicializando la aplicación: ' + error.message);
+            }
+        });
+    </script>
+</body>
+</html>
